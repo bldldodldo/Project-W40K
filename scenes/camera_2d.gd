@@ -32,6 +32,8 @@ func get_center_camera():
 
 func _process(delta):
 	
+	print(zoom, zoom_limit)
+	
 	if is_zooming:
 		zoom.x = lerp(zoom.x, zoom.x*zoom_factor, zoom_speed*delta)
 		zoom.y = lerp(zoom.y, zoom.y*zoom_factor, zoom_speed*delta)
