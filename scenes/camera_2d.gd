@@ -1,7 +1,7 @@
 extends Camera2D
 
 # Zoom speed
-var zoom_speed = 100
+var zoom_speed = 105
 
 # Zoom factor (<1 or >1)
 var zoom_factor = 1
