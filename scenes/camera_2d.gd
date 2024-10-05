@@ -1,7 +1,7 @@
 extends Camera2D
 
 # Zoom speed
-var zoom_speed = 400
+var zoom_speed = 100
 
 # Zoom factor (<1 or >1)
 var zoom_factor = 1
@@ -34,7 +34,7 @@ func get_center_camera():
 
 func _process(delta):
 	clamp_camera_and_zoom()
-	print(zoom, zoom_limit, position)
+	#print(zoom, zoom_limit, position)
 	
 	if is_zooming:
 		zoom.x = lerp(zoom.x, zoom.x*zoom_factor, zoom_speed*delta)
@@ -58,9 +58,13 @@ func _process(delta):
 	if Input.is_action_just_pressed("ui_zoom_in") and zoom != max_zoom:
 		zoom_factor = 1.01
 		is_zooming = true
-		var mouse_pos = get_global_mouse_position()
+		var mouse_pos_float = Vector2(get_global_mouse_position())
+		var viewport_size_float = Vector2(get_viewport().get_size())
 		zoom_limit += Vector2(zoom_step, zoom_step)  # Zoom in
-		#position = mouse_pos
+		var _future_pos = Vector2(1,1)
+		_future_pos.x = clamp(mouse_pos_float.x, viewport_size_float.x/(2*zoom.x), viewport_size_float.x*(1 - 1/(2*zoom.x)))
+		_future_pos.y = clamp(mouse_pos_float.y, viewport_size_float.y/(2*zoom.y), viewport_size_float.y*(1 - 1/(2*zoom.y)))
+		position = _future_pos
 		#position_pile.push_back(position)
 		
 	elif Input.is_action_just_pressed("ui_zoom_out") and zoom != min_zoom:
@@ -103,16 +107,16 @@ func _process(delta):
 
 func clamp_camera_and_zoom():
 	var viewport_size = get_viewport().get_size()
-	print(viewport_size)
-	print("la cam est : ", position)
+	#print(viewport_size)
+	#print("la cam est : ", position)
 		# Clamp the zoom value to min and max limits
 	zoom_limit.x = clamp(zoom_limit.x, min_zoom.x, max_zoom.x)
 	zoom_limit.y = clamp(zoom_limit.y, min_zoom.y, max_zoom.y)
 
 	# Clamp the camera to min and max limits
-	print("clamps ", position.x, " between ", viewport_size.x/(2*zoom.x) ," and ",viewport_size.x - viewport_size.x/(2*zoom.x))
-	position.x = clamp(position.x, viewport_size.x/(2*zoom.x), viewport_size.x*(1/zoom.x - 1/2/zoom.x))	
-	position.y = clamp(position.y, viewport_size.y/(2*zoom.y), viewport_size.y*(1/zoom.y - 1/2/zoom.y))
+
+	position.x = clamp(position.x, viewport_size.x/(2*zoom.x), viewport_size.x*(1 - 1/(2*zoom.x)))	
+	position.y = clamp(position.y, viewport_size.y/(2*zoom.y), viewport_size.y*(1 - 1/(2*zoom.y)))
 	
 
 func show_combatant_status_main(comb: Dictionary) -> void:
