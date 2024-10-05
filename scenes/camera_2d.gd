@@ -1,7 +1,7 @@
 extends Camera2D
 
 # Zoom speed
-var zoom_speed = 200
+var zoom_speed = 400
 
 # Zoom factor (<1 or >1)
 var zoom_factor = 1
@@ -13,10 +13,10 @@ var is_dezooming = false
 var min_zoom = Vector2(1, 1)  # Zoomed in
 var max_zoom = Vector2(5, 5)   # Default view (prevent zooming out beyond this)
 var zoom_limit = Vector2(1, 1)
-var zoom_step = 2
+var zoom_step = 0.3
 var see_limit = Vector2(1, 1)
 var see_step = 2
-#var position_pile = []
+var position_pile = []
 
 func is_in_interval(value: float, min_val: float, max_val: float) -> bool:
 	return value >= min_val and value <= max_val
@@ -24,6 +24,8 @@ func is_in_interval(value: float, min_val: float, max_val: float) -> bool:
 func _ready():
 	# Set initial zoom
 	zoom = Vector2(1, 1)
+	position = get_viewport().get_size()/2
+	print("init la cam est ", position)
 
 func get_center_camera():
 	var res = position
@@ -31,8 +33,8 @@ func get_center_camera():
 	return res
 
 func _process(delta):
-	
-	print(zoom, zoom_limit)
+	clamp_camera_and_zoom()
+	print(zoom, zoom_limit, position)
 	
 	if is_zooming:
 		zoom.x = lerp(zoom.x, zoom.x*zoom_factor, zoom_speed*delta)
@@ -57,21 +59,19 @@ func _process(delta):
 		zoom_factor = 1.01
 		is_zooming = true
 		var mouse_pos = get_global_mouse_position()
-		var viewport_size = Vector2(get_viewport().get_size())
 		zoom_limit += Vector2(zoom_step, zoom_step)  # Zoom in
-		position = (3*position + mouse_pos)/4
+		#position = mouse_pos
 		#position_pile.push_back(position)
-		clamp_camera_and_zoom(viewport_size)
+		
 	elif Input.is_action_just_pressed("ui_zoom_out") and zoom != min_zoom:
 		zoom_factor = 0.99
 		is_dezooming = true
 		var mouse_pos = get_global_mouse_position()
 		var viewport_size = Vector2(get_viewport().get_size())
-		zoom_limit -= Vector2(zoom_speed, zoom_speed)  # Zoom out
+		zoom_limit -= Vector2(zoom_step, zoom_step)  # Zoom out
 		#var _next_position = position_pile.pop_back()
 		#if _next_position != null:
-		#	position = _next_position
-		clamp_camera_and_zoom(viewport_size)
+			#position = _next_position
 		#Input.warp_mouse(viewport_size/2)
 
 
@@ -81,9 +81,9 @@ func _process(delta):
 	#_constrain_camera()
 
 	# Auto-center when reaching the minimum zoom level
-	if zoom == min_zoom:
+	#if zoom == min_zoom:
 		
-		position = get_viewport().get_size()/2
+		#position = get_viewport().get_size()/2
 
 # Function to constrain the camera position
 #func _constrain_camera():
@@ -101,14 +101,18 @@ func _process(delta):
 	#position.y = clamp(position.y, half_size.y, viewport_size.y - half_size.y)
 
 
-func clamp_camera_and_zoom(viewport_size):
+func clamp_camera_and_zoom():
+	var viewport_size = get_viewport().get_size()
+	print(viewport_size)
+	print("la cam est : ", position)
 		# Clamp the zoom value to min and max limits
-	zoom.x = clamp(zoom.x, min_zoom.x, max_zoom.x)
-	zoom.y = clamp(zoom.y, min_zoom.y, max_zoom.y)
+	zoom_limit.x = clamp(zoom_limit.x, min_zoom.x, max_zoom.x)
+	zoom_limit.y = clamp(zoom_limit.y, min_zoom.y, max_zoom.y)
 
 	# Clamp the camera to min and max limits
-	position.x = clamp(position.x, viewport_size.x/2, viewport_size.x*(1 - 1/zoom.x)/2)	
-	position.y = clamp(position.y, 0, viewport_size.y*(1 - 1/zoom.y))
+	print("clamps ", position.x, " between ", viewport_size.x/(2*zoom.x) ," and ",viewport_size.x - viewport_size.x/(2*zoom.x))
+	position.x = clamp(position.x, viewport_size.x/(2*zoom.x), viewport_size.x*(1/zoom.x - 1/2/zoom.x))	
+	position.y = clamp(position.y, viewport_size.y/(2*zoom.y), viewport_size.y*(1/zoom.y - 1/2/zoom.y))
 	
 
 func show_combatant_status_main(comb: Dictionary) -> void:

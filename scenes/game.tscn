@@ -12,6 +12,10 @@
 [node name="Terrain" parent="." instance=ExtResource("1_huxbe")]
 
 [node name="Camera2D" type="Camera2D" parent="Terrain"]
+drag_left_margin = 0.0
+drag_top_margin = 0.0
+drag_right_margin = 0.0
+drag_bottom_margin = 0.0
 script = ExtResource("2_ncewc")
 
 [node name="Select" type="Sprite2D" parent="Terrain"]
