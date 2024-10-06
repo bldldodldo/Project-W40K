@@ -15,7 +15,7 @@ var controlled_combatant_exists = false
 var tile_map : TileMap
 var phase_ended = false
 
-var _selected_skill: String
+
 
 #var movement = 3:
 #	set = set_movement,
@@ -26,6 +26,7 @@ var _astargrid = AStarGrid2D.new()
 var _attack_target_position
 var _blocked_target_position
 var _skill_selected = false
+var _selected_skill: String
 
 func _unhandled_input(event):	
 	if event is InputEventMouseButton:
