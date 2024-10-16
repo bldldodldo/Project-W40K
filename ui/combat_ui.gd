@@ -35,7 +35,9 @@ func combatant_died(combatant):
 
 
 func add_combatant_status(comb: Dictionary):
-	if comb.side == 0:
+	if comb == {}:
+		pass
+	else:
 		var new_status = StatusIcon.instantiate()
 		$Status.add_child(new_status)
 		new_status.set_icon(comb.icon)
@@ -44,15 +46,23 @@ func add_combatant_status(comb: Dictionary):
 
 
 func show_combatant_status_main(comb: Dictionary):
-	if comb.side == 0:
-		$Actions/StatusIcon.set_icon(comb.icon)
-		$Actions/StatusIcon.set_health(comb.hp, comb.max_hp)
-	set_skill_list(comb.skill_list)
+	if comb == {}:
+		pass
+	else:
+		if comb.side == 0:
+			$Actions/StatusIcon.set_icon(comb.icon)
+			$Actions/StatusIcon.set_health(comb.hp, comb.max_hp)
+		set_skill_list(comb.skill_list)
 
 
 func _on_end_phase_button_pressed():
 	end_phase.emit()
 
+func _combatant_deselected():
+	_target_selection_finished()
+	set_skill_list([])
+	add_combatant_status({})
+	show_combatant_status_main({})
 
 func update_information(info: String):
 	$Actions/Information/Text.append_text(info)
@@ -63,6 +73,7 @@ func set_skill_list(skill_list: Array):
 	var comb = controller.controlled_combatant
 	for i in range(actions_grid_children.size()):
 		var action = actions_grid_children[i] as Button
+		clear_action_button_connections(action) #make sure that there was no previous connection
 		if comb == null:
 			action.disabled = true
 			continue

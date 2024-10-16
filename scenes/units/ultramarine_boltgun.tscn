@@ -1,13 +1,13 @@
 [gd_scene load_steps=12 format=3 uid="uid://b2susye62l1ym"]
 
-[ext_resource type="Texture2D" uid="uid://d3b0ej00o614m" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0512.PNG" id="1_bmgyt"]
-[ext_resource type="Texture2D" uid="uid://x5pljr0u60i6" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0504.PNG" id="1_g4nlp"]
-[ext_resource type="Texture2D" uid="uid://djp2ktrj8315h" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0510.PNG" id="2_j05pk"]
-[ext_resource type="Texture2D" uid="uid://dx6ib8u8u7faw" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0505.PNG" id="2_jsncy"]
-[ext_resource type="Texture2D" uid="uid://m05lslik4tbs" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0511.PNG" id="3_biipp"]
-[ext_resource type="Texture2D" uid="uid://c88dyy76kklqn" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0507.PNG" id="3_yng2f"]
-[ext_resource type="Texture2D" uid="uid://bla3j1i40giwm" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0508.PNG" id="4_eofnb"]
-[ext_resource type="Texture2D" uid="uid://blq44gcshorkj" path="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0509.PNG" id="4_h5fqn"]
+[ext_resource type="Texture2D" uid="uid://d3b0ej00o614m" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_upperlegs.PNG" id="1_38naq"]
+[ext_resource type="Texture2D" uid="uid://djp2ktrj8315h" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_left_lowerleg.PNG" id="2_g11ym"]
+[ext_resource type="Texture2D" uid="uid://m05lslik4tbs" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_right_lowerleg.PNG" id="3_ypevu"]
+[ext_resource type="Texture2D" uid="uid://blq44gcshorkj" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_torso.PNG" id="4_tdv4n"]
+[ext_resource type="Texture2D" uid="uid://bla3j1i40giwm" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_hands_boltgun.PNG" id="5_5vtlj"]
+[ext_resource type="Texture2D" uid="uid://dx6ib8u8u7faw" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_left_shoulder.PNG" id="6_wr24e"]
+[ext_resource type="Texture2D" uid="uid://c88dyy76kklqn" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_right_shoulder.PNG" id="7_xa4fa"]
+[ext_resource type="Texture2D" uid="uid://x5pljr0u60i6" path="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_head.PNG" id="8_acwyh"]
 
 [sub_resource type="Animation" id="Animation_irrvm"]
 length = 0.001
@@ -171,49 +171,49 @@ _data = {
 [node name="Node2D" type="Node2D"]
 
 [node name="upperlegs" type="Sprite2D" parent="."]
-texture = ExtResource("1_bmgyt")
+texture = ExtResource("1_38naq")
 
 [node name="left_lowerleg" type="Sprite2D" parent="."]
 light_mask = 2
 visibility_layer = 2
 z_index = 1
-texture = ExtResource("2_j05pk")
+texture = ExtResource("2_g11ym")
 
 [node name="right_lowerleg" type="Sprite2D" parent="."]
 light_mask = 2
 visibility_layer = 2
 z_index = 1
-texture = ExtResource("3_biipp")
+texture = ExtResource("3_ypevu")
 
 [node name="torso" type="Sprite2D" parent="."]
 light_mask = 2
 visibility_layer = 2
 z_index = 1
-texture = ExtResource("4_h5fqn")
+texture = ExtResource("4_tdv4n")
 
 [node name="hands" type="Sprite2D" parent="."]
 light_mask = 4
 visibility_layer = 4
 z_index = 2
-texture = ExtResource("4_eofnb")
+texture = ExtResource("5_5vtlj")
 
 [node name="left_shoulder" type="Sprite2D" parent="."]
 light_mask = 8
 visibility_layer = 8
 z_index = 3
-texture = ExtResource("2_jsncy")
+texture = ExtResource("6_wr24e")
 
 [node name="right_shoulder" type="Sprite2D" parent="."]
 light_mask = 8
 visibility_layer = 8
 z_index = 3
-texture = ExtResource("3_yng2f")
+texture = ExtResource("7_xa4fa")
 
 [node name="Head" type="Sprite2D" parent="."]
 light_mask = 4
 visibility_layer = 4
 z_index = 3
-texture = ExtResource("1_g4nlp")
+texture = ExtResource("8_acwyh")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

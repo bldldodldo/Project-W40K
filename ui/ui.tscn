@@ -43,6 +43,7 @@ mouse_filter = 1
 script = ExtResource("1_cy8ae")
 
 [node name="TurnQueue" type="PanelContainer" parent="."]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 400.0

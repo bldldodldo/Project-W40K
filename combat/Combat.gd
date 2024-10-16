@@ -54,21 +54,22 @@ func _ready():
 	emit_signal("register_combat", self)
 	randomize()
 	#ADD PLAYERS
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_1"), 0, Vector2i(6,0))
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_2"), 0, Vector2i(5,2))
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_3"), 0, Vector2i(6,4))
+	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_1"), 0, Vector2i(10,0))
+	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_2"), 0, Vector2i(9,2))
+	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_3"), 0, Vector2i(10,4))
 	
 	
 	#ADD ENEMIES
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 1"), 1, Vector2i(20,-6))
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 2"), 1, Vector2i(21,-4))
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 3"), 1, Vector2i(20,-2))
+	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_1"), 1, Vector2i(25,-4))
+	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_2"), 1, Vector2i(26,-2))
+	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_3"), 1, Vector2i(25,-0))
 	
 	#TURNS_UNTIL_THE_END
 	 
 	if current_combatant_alive != 0:
 		combat_start.emit()
-		
+	
+	controller.combatant_deselected.emit()
 	
 	#emit_signal("update_turn_queue", combatants, turn_queue)
 	
@@ -126,8 +127,8 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	var anim_player = combatant_scene.get_node("AnimationPlayer") # Store the reference to the AnimationPlayer for controlling animations
 	combatant["anim_player"] = anim_player
 	anim_player.play("idle")
-	#if side == 0:
-	#	combatant_scene.flip_h = true
+	if side == 1:
+		combatant_scene.scale.x = -1
 		
 	
 	

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d3b0ej00o614m"
-path="res://.godot/imported/IMG_0512.PNG-88fd5119e9b6b2e92e05a8d1ccda2421.ctex"
+path="res://.godot/imported/ultramarine_upperlegs.PNG-531764d57ee2c1f50ddab154712372cb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0512.PNG"
-dest_files=["res://.godot/imported/IMG_0512.PNG-88fd5119e9b6b2e92e05a8d1ccda2421.ctex"]
+source_file="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_upperlegs.PNG"
+dest_files=["res://.godot/imported/ultramarine_upperlegs.PNG-531764d57ee2c1f50ddab154712372cb.ctex"]
 
 [params]
 

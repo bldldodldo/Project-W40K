@@ -1,7 +1,13 @@
-[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://b8d0tvj5c73e4"]
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://b8d0tvj5c73e4"]
 
 [ext_resource type="Texture2D" uid="uid://c5xfjnqn7fa73" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Grass.png" id="1_6goey"]
+[ext_resource type="Texture2D" uid="uid://dh4mrxeasribh" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete.png" id="1_yi4jk"]
 [ext_resource type="Texture2D" uid="uid://br8flid3dtrvk" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Intersection 3 Way 2.png" id="3_q12cg"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hdu0d"]
+texture = ExtResource("1_yi4jk")
+texture_region_size = Vector2i(64, 44)
+0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d55dh"]
 texture = ExtResource("1_6goey")
@@ -21,3 +27,4 @@ custom_data_layer_0/name = "Blocks"
 custom_data_layer_0/type = 2
 sources/66 = SubResource("TileSetAtlasSource_d55dh")
 sources/67 = SubResource("TileSetAtlasSource_pv76c")
+sources/0 = SubResource("TileSetAtlasSource_hdu0d")

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bla3j1i40giwm"
-path="res://.godot/imported/IMG_0508.PNG-ae8fa374b80a67a00f2655e40ce66fe8.ctex"
+uid="uid://dh4mrxeasribh"
+path="res://.godot/imported/Concrete.png-a6448182b99c2d97b1cb9da241d0fdb2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0508.PNG"
-dest_files=["res://.godot/imported/IMG_0508.PNG-ae8fa374b80a67a00f2655e40ce66fe8.ctex"]
+source_file="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete.png"
+dest_files=["res://.godot/imported/Concrete.png-a6448182b99c2d97b1cb9da241d0fdb2.ctex"]
 
 [params]
 

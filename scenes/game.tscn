@@ -19,6 +19,7 @@ drag_bottom_margin = 0.0
 script = ExtResource("2_ncewc")
 
 [node name="Select" type="Sprite2D" parent="Terrain"]
+visible = false
 position = Vector2(272, 208)
 texture = ExtResource("2_icbvx")
 
@@ -39,6 +40,7 @@ combat = NodePath("../../VisualCombat")
 controller = NodePath("../../Controller")
 metadata/_edit_use_anchors_ = true
 
+[connection signal="combatant_deselected" from="Controller" to="CanvasLayer/UI" method="_combatant_deselected"]
 [connection signal="combatant_selected" from="Controller" to="CanvasLayer/UI" method="show_combatant_status_main"]
 [connection signal="movement_changed" from="Controller" to="CanvasLayer/UI" method="set_movement"]
 [connection signal="target_selection_finished" from="Controller" to="CanvasLayer/UI" method="_target_selection_finished"]

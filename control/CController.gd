@@ -7,6 +7,7 @@ signal finished_move
 signal target_selection_started()
 signal target_selection_finished()
 signal combatant_selected(comb: Dictionary)
+signal combatant_deselected()
 
 var controlled_combatant_exists = false
 @export var controlled_node: Node2D 
@@ -40,6 +41,7 @@ func _unhandled_input(event):
 				if _skill_selected and controlled_combatant_exists and controlled_combatant.arrived:
 					if is_target_valid(controlled_combatant, mouse_position_i):
 						controlled_combatant.next_action_type = _selected_skill.type
+						print(controlled_combatant.next_action_type)
 						controlled_combatant.selected_targets.append(mouse_position_i)
 						if controlled_combatant.selected_targets.size() == _selected_skill.number_of_target:
 							print("Target selected")
@@ -49,6 +51,8 @@ func _unhandled_input(event):
 						reset_selected_action(controlled_combatant)
 						_skill_selected = false
 						_selected_skill = null
+						target_selection_finished.emit()
+						queue_redraw()
 				elif comb != null and comb.alive and comb.side == 0:
 					set_controlled_combatant(comb)
 				elif comb == null and controlled_combatant_exists and controlled_combatant.arrived :
@@ -57,12 +61,16 @@ func _unhandled_input(event):
 						print("Action canceled for ", controlled_combatant.name)
 						controlled_combatant_exists = false
 						controlled_combatant = {}
+						combatant_deselected.emit()
+						queue_redraw()
 					else:
 						controlled_combatant.next_action_type = "Move"
 						controlled_combatant.selected_path = temp_path
 						print("New path selected for ", controlled_combatant.name)
 						controlled_combatant_exists = false
 						controlled_combatant = {}
+						combatant_deselected.emit()
+						queue_redraw()
 	
 	if event is InputEventMouseMotion:
 		if _arrived == true:
@@ -148,6 +156,9 @@ func set_controlled_combatant(combatant: Dictionary):
 	var movement = combatant.movement
 	controlled_combatant = combatant
 	controlled_combatant_exists = true
+	reset_selected_action(controlled_combatant)
+	_skill_selected = false
+	_selected_skill = null
 	print("Controlled_combatant set !")
 	combatant_selected.emit(controlled_combatant)
 	update_points_weight(combatant)
@@ -262,18 +273,20 @@ const tiles_to_check = [
 func end_phase():
 	if verifying_arrived():
 		controlled_combatant_exists = false
+		controlled_combatant = {}
+		combatant_deselected.emit()
 		for comb in combat.combatants:
 			if comb.next_action_type == "Move":
 				print(comb.name, " has type Move")
 				move_combatant(comb)
+			elif comb.next_action_type == "Attack":
+				if combat.phase == 1:
+					print("ERREUR : No Attack Allowed Phase 1")
+				else:
+					print(comb.name, " has type Attack")
+					attack_combatant(comb)
 		phase_ended = true
-			
-func wait(seconds):
-	var time_passed = 0
-	while time_passed < seconds:
-		time_passed += get_process_delta_time()  # Increment the time based on frame delta
-		await get_tree().process_frame  # Wait for the next frame
-	print("Waited for ", seconds, " seconds")
+		queue_redraw()
 
 func end_turn():
 	for comb in combat.combatants: 
@@ -288,6 +301,13 @@ func move_combatant(comb: Dictionary):
 		print(comb.name, " bouge de ", comb.movement," sur le chemin : ", comb.selected_path)
 		queue_redraw()
 	
+func attack_combatant(comb: Dictionary):
+	for _tile in comb.selected_targets:
+		var targeted_comb = get_combatant_at_position(_tile)
+		if targeted_comb == null:
+			print(comb.name, " attaque la case ", _tile, "qui est vide.")
+		else:
+			print(comb.name, " attaque ", targeted_comb.name)
 
 #func ai_move(target_position: Vector2i):
 #	var current_position = tile_map.local_to_map(controlled_node.position)
@@ -347,7 +367,8 @@ func target_selected(target_position):
 	#combat.call(_selected_skill.type, controlled_combatant, target)
 	_skill_selected = false
 	_selected_skill = null
-	print("Youpi")
+	controlled_combatant = {}
+	controlled_combatant_exists = false
 	target_selection_finished.emit()
 
 
@@ -370,14 +391,14 @@ func get_tile_cost_at_point(point, comb):
 
 func _draw():
 	for comb in combat.combatants:
-		if comb.arrived and _skill_selected == false and controlled_combatant == comb:
+		if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None":
 			var path_length = comb.movement_max
 			for i in range(1, _path.size()):
 				var point = tile_map.map_to_local(_path[i])
-				var draw_color = Color(0.7,0,0,0.7)
+				var draw_color = Color(0.7,0,0,0.5)
 				if path_length > 0:
 					if i <= comb.movement:
-						draw_color = Color(0, 1, 0.2, 0.7)
+						draw_color = Color(0, 1, 0.2, 0.5)
 					draw_texture(grid_tex, point - Vector2(32, 22), draw_color)
 				if i > 0:
 					path_length -= get_tile_cost_at_point(point, comb)
@@ -389,14 +410,28 @@ func _draw():
 		#elif comb.next_action_type == "Attack":
 			#if _selected_skill
 			
-			
-		elif comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
+		elif comb.arrived and _skill_selected and controlled_combatant == comb:
+			if _selected_skill.range_type == "Range":
+				for x in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
+					for y in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
+						if x!=0 or y!= 0:
+							var _tile = comb.position + Vector2i(x,y)
+							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range):
+								draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 22), Color(0, 0.2, 1, 0.5))
+				for targets in comb.selected_targets:
+					draw_texture(grid_tex, tile_map.map_to_local(targets) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
+				
+				#for tile in _selected_skill.
+		if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
 			if comb.next_action_type == "Move":
 				if (not phase_ended) and comb.selected_path != PackedVector2Array():
 					for i in range(1, comb.selected_path.size()):
 						var point = tile_map.map_to_local(comb.selected_path[i])
-						var draw_color = Color(0, 0.3, 0, 0.7)
+						var draw_color = Color(0, 0.3, 0, 0.5)
 						draw_texture(grid_tex, point - Vector2(32, 22), draw_color)
 						#if i > 0:
 							#path_length -= get_tile_cost_at_point(point, comb)
-					
+			elif comb.next_action_type == "Attack":
+				if (not phase_ended):
+					for targets in comb.selected_targets:
+						draw_texture(grid_tex, tile_map.map_to_local(targets) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))

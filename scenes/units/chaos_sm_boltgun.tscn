@@ -1,0 +1,221 @@
+[gd_scene load_steps=12 format=3 uid="uid://xjv4gyxo287h"]
+
+[ext_resource type="Texture2D" uid="uid://cuttfhsctqjqw" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_upperlegs.PNG" id="1_qf6y4"]
+[ext_resource type="Texture2D" uid="uid://c066n546uetj6" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_left_lowerleg.PNG" id="2_3svcd"]
+[ext_resource type="Texture2D" uid="uid://b2yalbn0rhnt3" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_right_lowerleg.PNG" id="3_q6wc1"]
+[ext_resource type="Texture2D" uid="uid://beptjewkrsy8k" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_torso.PNG" id="4_ykqw6"]
+[ext_resource type="Texture2D" uid="uid://c3xyia5mylech" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_hands_boltgun.PNG" id="5_x8808"]
+[ext_resource type="Texture2D" uid="uid://dxhqgmubtff10" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_left_shoulder.PNG" id="6_xvwug"]
+[ext_resource type="Texture2D" uid="uid://ctvkgm4jdgc4k" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_right_shoulder.PNG" id="7_ucwc6"]
+[ext_resource type="Texture2D" uid="uid://d3s4lmramystb" path="res://imagese/sprites_animation/forces_of_chaos/chaos_space_marines_boltgun/chaos_sm_head.PNG" id="8_mka18"]
+
+[sub_resource type="Animation" id="Animation_irrvm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Head:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("left_shoulder:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("right_shoulder:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("hands:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("upperlegs:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("torso:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_x0qgi"]
+resource_name = "idle"
+length = 1.5
+loop_mode = 1
+step = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Head:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 0.45, 1.5),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 1.5), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("left_shoulder:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 0.45, 1.5),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 1.5), Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("right_shoulder:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 0.45, 1.5),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 1.3), Vector2(0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("hands:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.49128),
+"transitions": PackedFloat32Array(1, 0.45, 1.5),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 2.5), Vector2(0, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("upperlegs:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 1.5, 1.5),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 2), Vector2(0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("torso:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 3), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_4hlky"]
+_data = {
+"RESET": SubResource("Animation_irrvm"),
+"idle": SubResource("Animation_x0qgi")
+}
+
+[node name="Node2D" type="Node2D"]
+
+[node name="upperlegs" type="Sprite2D" parent="."]
+texture = ExtResource("1_qf6y4")
+
+[node name="left_lowerleg" type="Sprite2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+z_index = 1
+texture = ExtResource("2_3svcd")
+
+[node name="right_lowerleg" type="Sprite2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+z_index = 1
+texture = ExtResource("3_q6wc1")
+
+[node name="torso" type="Sprite2D" parent="."]
+light_mask = 2
+visibility_layer = 2
+z_index = 1
+texture = ExtResource("4_ykqw6")
+
+[node name="hands" type="Sprite2D" parent="."]
+light_mask = 4
+visibility_layer = 4
+z_index = 2
+texture = ExtResource("5_x8808")
+
+[node name="left_shoulder" type="Sprite2D" parent="."]
+light_mask = 8
+visibility_layer = 8
+z_index = 3
+texture = ExtResource("6_xvwug")
+
+[node name="right_shoulder" type="Sprite2D" parent="."]
+light_mask = 8
+visibility_layer = 8
+z_index = 3
+texture = ExtResource("7_ucwc6")
+
+[node name="Head" type="Sprite2D" parent="."]
+light_mask = 4
+visibility_layer = 4
+z_index = 3
+texture = ExtResource("8_mka18")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_4hlky")
+}

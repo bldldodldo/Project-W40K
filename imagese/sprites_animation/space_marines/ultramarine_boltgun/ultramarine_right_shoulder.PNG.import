@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://djp2ktrj8315h"
-path="res://.godot/imported/IMG_0510.PNG-f51f36ee2b0cfadc33de79f137eee8f9.ctex"
+uid="uid://c88dyy76kklqn"
+path="res://.godot/imported/ultramarine_right_shoulder.PNG-afde0e49db24f2eef2327448b8cbfdd2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://imagese/sprites_animation/space_marines/ultramarine/IMG_0510.PNG"
-dest_files=["res://.godot/imported/IMG_0510.PNG-f51f36ee2b0cfadc33de79f137eee8f9.ctex"]
+source_file="res://imagese/sprites_animation/space_marines/ultramarine_boltgun/ultramarine_right_shoulder.PNG"
+dest_files=["res://.godot/imported/ultramarine_right_shoulder.PNG-afde0e49db24f2eef2327448b8cbfdd2.ctex"]
 
 [params]
 

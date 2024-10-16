@@ -24,7 +24,7 @@ func is_in_interval(value: float, min_val: float, max_val: float) -> bool:
 
 func _ready():
 	# Set initial zoom
-	zoom = Vector2(1, 1)
+	zoom = min_zoom
 	position = get_viewport().get_size()/2
 
 func _process(delta):
