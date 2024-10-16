@@ -48,20 +48,21 @@ var skills_lists = [
 	["attack_melee", "attack_ranged", "basic_magic"] #Ranged + Magic
 ]
 
+@onready var tile_map = get_node("../Terrain/TileMapLayer")
 
 func _ready():
 	emit_signal("register_combat", self)
 	randomize()
-
 	#ADD PLAYERS
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space Marine 1"), 0, Vector2i(5,6))
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space Marine 2"), 0, Vector2i(4,5))
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space Marine 3"), 0, Vector2i(4,7))
+	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_1"), 0, Vector2i(6,0))
+	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_2"), 0, Vector2i(5,2))
+	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_3"), 0, Vector2i(6,4))
+	
 	
 	#ADD ENEMIES
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 1"), 1, Vector2i(20,6))
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 2"), 1, Vector2i(19,7))
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 3"), 1, Vector2i(20,8))
+	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 1"), 1, Vector2i(20,-6))
+	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 2"), 1, Vector2i(21,-4))
+	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Goblin 3"), 1, Vector2i(20,-2))
 	
 	#TURNS_UNTIL_THE_END
 	 
@@ -86,11 +87,13 @@ func create_combatant(definition: CombatantDefinition, override_name = ""):
 		"skill_list" = skills_lists[definition.class_t].duplicate(),
 		"icon" = definition.icon,
 		"map_sprite" = definition.map_sprite,
+		"animation_resource" = definition.animation_resource,
+		"sprite_offset" = definition.sprite_offset,
 		"movement_max" = definition.movement,
 		"movement" = definition.movement,
 		"selected_path_id" = 1,
 		"selected_path" = [],
-		"selected_target" = [],
+		"selected_targets" = [],
 		"next_action_type" = "None",
 		"arrived" = true
 		}
@@ -100,6 +103,8 @@ func create_combatant(definition: CombatantDefinition, override_name = ""):
 		comb["skill_list"].append_array(definition.skills)
 	return comb
 
+
+
 func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant["position"] = position
 	combatant["side"] = side
@@ -107,16 +112,24 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatants.append(combatant)
 	current_combatant_alive += 1
 	groups[side].append(combatants.size() - 1)
-
-	var new_combatant_sprite = Sprite2D.new()
-	new_combatant_sprite.texture = combatant.map_sprite
-	$"../Terrain/TileMap".add_child(new_combatant_sprite)
-	new_combatant_sprite.position = Vector2(position * 32.0) + Vector2(16, 16)
-	new_combatant_sprite.z_index = 1
-	new_combatant_sprite.hframes = 2
-	if side == 0:
-		new_combatant_sprite.flip_h = true
-	combatant["sprite"] = new_combatant_sprite
+	print("j'ai add")
+	var combatant_scene = combatant.animation_resource.instantiate()	# Instantiate the character's animation scene
+	combatant_scene.name = combatant.name
+	add_child(combatant_scene)
+	#print for debug
+	#print("Node Name: ", combatant_scene.name)
+	#print("Node Path: ", combatant_scene.get_path())  # Get the node's path
+	#print("Scene Resource: ", combatant.animation_resource)
+	$"../Terrain/TileMapLayer".add_child(combatant_scene)
+	combatant_scene.position = Vector2(tile_map.map_to_local(position)) + combatant.sprite_offset
+	combatant_scene.z_index = 1
+	var anim_player = combatant_scene.get_node("AnimationPlayer") # Store the reference to the AnimationPlayer for controlling animations
+	combatant["anim_player"] = anim_player
+	anim_player.play("idle")
+	#if side == 0:
+	#	combatant_scene.flip_h = true
+		
+	
 	
 	emit_signal("combatant_added", combatant)
 
@@ -149,7 +162,10 @@ func attack(attacker: Dictionary, target: Dictionary, attack: String):
 		update_information.emit("Target too far to attack.\n")
 
 
-func attack_melee(attacker: Dictionary, target: Dictionary):
+func Attack(attacker: Dictionary, skill: Object, target: Dictionary):
+	attack(attacker, target, "attack_melee")
+	
+func Spell(attacker: Dictionary, skill: Object, target: Dictionary):
 	attack(attacker, target, "attack_melee")
 
 

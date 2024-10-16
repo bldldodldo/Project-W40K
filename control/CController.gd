@@ -12,7 +12,7 @@ var controlled_combatant_exists = false
 @export var controlled_node: Node2D 
 @export var combat: Combat
 @export var controlled_combatant: Dictionary
-var tile_map : TileMap
+var tile_map : TileMapLayer
 var phase_ended = false
 
 
@@ -26,7 +26,7 @@ var _astargrid = AStarGrid2D.new()
 var _attack_target_position
 var _blocked_target_position
 var _skill_selected = false
-var _selected_skill: String
+var _selected_skill: Object
 
 func _unhandled_input(event):	
 	if event is InputEventMouseButton:
@@ -37,15 +37,23 @@ func _unhandled_input(event):
 				var temp_path = find_path(mouse_position_i)
 				var comb = get_combatant_at_position(mouse_position_i)
 				var local_map = tile_map.map_to_local(mouse_position_i)
-				if _skill_selected == true and comb != null and comb.alive:
-					target_selected(comb)
+				if _skill_selected and controlled_combatant_exists and controlled_combatant.arrived:
+					if is_target_valid(controlled_combatant, mouse_position_i):
+						controlled_combatant.next_action_type = _selected_skill.type
+						controlled_combatant.selected_targets.append(mouse_position_i)
+						if controlled_combatant.selected_targets.size() == _selected_skill.number_of_target:
+							print("Target selected")
+							target_selected(mouse_position_i)
+					else:
+						print("Target out of range !")
+						reset_selected_action(controlled_combatant)
+						_skill_selected = false
+						_selected_skill = null
 				elif comb != null and comb.alive and comb.side == 0:
 					set_controlled_combatant(comb)
 				elif comb == null and controlled_combatant_exists and controlled_combatant.arrived :
-					print(temp_path.size())
 					if temp_path.size() - 1 > controlled_combatant.movement:
-						controlled_combatant.selected_path = []
-						controlled_combatant.next_action_type = "None"
+						reset_selected_action(controlled_combatant)
 						print("Action canceled for ", controlled_combatant.name)
 						controlled_combatant_exists = false
 						controlled_combatant = {}
@@ -91,19 +99,19 @@ var _blocking_spaces = [
 ]
 
 func _ready():
-	tile_map = get_node("../Terrain/TileMap")
-	_astargrid.region = Rect2i(0, 0, 36, 21)
-	_astargrid.cell_size = Vector2i(32, 32)
-	_astargrid.offset = Vector2(16, 16)
+	tile_map = get_node("../Terrain/TileMapLayer")
+	_astargrid.region = Rect2i(0, -20, 36, 36)
+	_astargrid.cell_size = Vector2i(1, 1)
+	#_astargrid.offset = Vector2(32, 16)
 	_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	_astargrid.update()
 	
 	#build blocking spaces arrays
-	for tile in tile_map.get_used_cells(0):
-		var tile_blocking = tile_map.get_cell_tile_data(0, tile)
+	for tile in tile_map.get_used_cells():
+		var tile_blocking = tile_map.get_cell_tile_data(tile)
 		for block in tile_blocking.get_custom_data("Blocks"):
-			_blocking_spaces[block].append(tile)
+			_blocking_spaces[block].append(tile)	
 
 func combat_start():
 	combat.phase = 3
@@ -137,7 +145,6 @@ func combatant_died(combatant):
 
 
 func set_controlled_combatant(combatant: Dictionary):
-	controlled_node = combatant.sprite
 	var movement = combatant.movement
 	controlled_combatant = combatant
 	controlled_combatant_exists = true
@@ -172,26 +179,27 @@ var _next_position
 
 var _position_id = 0
 
-var move_speed = 96
+var move_speed = 300
 
 var _previous_position : Vector2i
 
 func _process(delta):
 	for comb in combat.combatants:
 		if comb.arrived == false:
-			_next_position = comb.selected_path[comb.selected_path_id]
-			var new_position: Vector2i = tile_map.local_to_map(_next_position)
+			var new_position: Vector2i = comb.selected_path[comb.selected_path_id]
+			_next_position = tile_map.map_to_local(new_position) + comb.sprite_offset
 			var _next_position_comb = get_combatant_at_position(new_position)
 			#verifying that, if two characters are about to bump into each other, they are not going in opposite directions. 
-			if (_next_position_comb == null or (_next_position_comb.arrived == false and _next_position_comb.sprite.position.direction_to(_next_position_comb.selected_path[_next_position_comb.selected_path_id]) != -1*comb.sprite.position.direction_to(_next_position))):
-				comb.sprite.position += comb.sprite.position.direction_to(_next_position) * delta * move_speed
-				if comb.sprite.position.distance_to(_next_position) < 1 :
+			if (_next_position_comb == null): #or (_next_position_comb.arrived == false and _next_position_comb.sprite.position.direction_to(_next_position_comb.selected_path[_next_position_comb.selected_path_id]) != -1*comb.sprite.position.direction_to(_next_position))):
+				var _comb_visual_node = get_node("/root/Game/VisualCombat/" + comb.name)
+				_comb_visual_node.position += _comb_visual_node.position.direction_to(_next_position) * delta * move_speed
+				if _comb_visual_node.position.distance_to(_next_position) < 1 :
 		#			_astargrid.set_point_solid(_previous_position, false)
 					print(comb.name, " at position ", comb.position, " goes to ", new_position, " occupied by ", get_combatant_at_position(_next_position))
 					_occupied_spaces.erase(comb.previous_position)
 					_astargrid.set_point_weight_scale(comb.previous_position, 1)
 					var tile_cost = get_tile_cost(comb.previous_position, comb)
-					comb.sprite.position = _next_position
+					_comb_visual_node.position = _next_position
 					comb.position = new_position
 					comb.previous_position = new_position
 		#			_astargrid.set_point_solid(new_position, true)
@@ -204,12 +212,10 @@ func _process(delta):
 					else:
 						finished_move.emit()
 						comb.arrived = true
-						comb.next_action_type == "None"
-						comb.selected_path = []
+						reset_selected_action(comb)
 			else:
 				comb.arrived = true
-				comb.next_action_type == "None"
-				comb.selected_path = []
+				reset_selected_action(comb)
 				
 	if phase_ended: 
 		if verifying_arrived():
@@ -292,14 +298,8 @@ func move_combatant(comb: Dictionary):
 
 func find_path(tile_position: Vector2i):
 	if controlled_combatant_exists:
-		var current_position = tile_map.local_to_map(controlled_node.position)
-	#	print(current_position)
-	#	print(tile_position)
-	#	var distance = get_distance(current_position, tile_position)
-	#	if distance > movement:
-	#		return
+		var current_position = controlled_combatant.position
 		if _astargrid.get_point_weight_scale(tile_position) > 999999:
-	#	if _occupied_spaces.has(tile_position):
 			var dir : Vector2i
 			if current_position.x > tile_position.x:
 				dir = Vector2i.RIGHT
@@ -313,31 +313,48 @@ func find_path(tile_position: Vector2i):
 		_path = _astargrid.get_point_path(current_position, tile_position)
 		queue_redraw()
 		return _path
-#	print(_path)
+
+func reset_selected_action(combatant: Dictionary):
+	combatant.selected_path_id = 1
+	combatant.selected_path = []
+	combatant.selected_targets = []
+	combatant.next_action_type = "None"
 
 
 
-
-
-func set_selected_skill(skill: String):
-	_selected_skill = skill
+func set_selected_skill(skill_key: String):
+	_selected_skill = SkillDatabase.skills[skill_key]
 
 
 func begin_target_selection():
 	_skill_selected = true
 	target_selection_started.emit()
 
+func is_target_valid(comb: Dictionary, mouse_pos_i):
+	if _selected_skill.range_type == "Range":
+		return is_in_range(comb.position, mouse_pos_i, _selected_skill.min_range, _selected_skill.max_range)
+	elif _selected_skill.range_type == "List":
+		return is_in_list(comb.position, mouse_pos_i, _selected_skill.range_list)
+	#check if the coord match the allowed coordinates for that given skill
 
-func target_selected(target: Dictionary):
-	combat.call(_selected_skill, controlled_combatant, target)
+func is_in_range(position1, position2, min_range, max_range):
+	return (get_distance(position1, position2) >= min_range and get_distance(position1, position2) <= max_range)
+
+func is_in_list(position1: Vector2i, position2: Vector2i, range_list):
+	return (position2 - position1) in range_list
+
+func target_selected(target_position):
+	#combat.call(_selected_skill.type, controlled_combatant, target)
 	_skill_selected = false
+	_selected_skill = null
+	print("Youpi")
 	target_selection_finished.emit()
 
 
 const grid_tex = preload("res://imagese/grid_marker.png")
 
 func get_tile_cost(tile, comb):
-	var tile_data = tile_map.get_cell_tile_data(0, tile)
+	var tile_data = tile_map.get_cell_tile_data(tile)
 	if comb.movement_class == 0:
 		return int(tile_data.get_custom_data("Cost"))
 	else:
@@ -345,7 +362,7 @@ func get_tile_cost(tile, comb):
 
 func get_tile_cost_at_point(point, comb):
 	var tile = tile_map.local_to_map(point)
-	var tile_data = tile_map.get_cell_tile_data(0, tile)
+	var tile_data = tile_map.get_cell_tile_data(tile)
 	if comb.movement_class == 0:
 		return int(tile_data.get_custom_data("Cost"))
 	else:
@@ -353,22 +370,22 @@ func get_tile_cost_at_point(point, comb):
 
 func _draw():
 	for comb in combat.combatants:
-		if comb.arrived == true and controlled_combatant == comb:
+		if comb.arrived and _skill_selected == false and controlled_combatant == comb:
 			var path_length = comb.movement_max
 			for i in range(1, _path.size()):
-				var point = _path[i]
-				var draw_color = Color.RED
+				var point = tile_map.map_to_local(_path[i])
+				var draw_color = Color(0.7,0,0,0.7)
 				if path_length > 0:
 					if i <= comb.movement:
-						draw_color = Color.ROYAL_BLUE
-					draw_texture(grid_tex, point - Vector2(16, 16), draw_color)
+						draw_color = Color(0, 1, 0.2, 0.7)
+					draw_texture(grid_tex, point - Vector2(32, 22), draw_color)
 				if i > 0:
 					path_length -= get_tile_cost_at_point(point, comb)
 				
 			if _attack_target_position != null:
-				draw_texture(grid_tex, _attack_target_position - Vector2(16, 16), Color.CRIMSON)
+				draw_texture(grid_tex, _attack_target_position - Vector2(32, 22), Color.CRIMSON)
 			if _blocked_target_position != null:
-				draw_texture(grid_tex, _blocked_target_position - Vector2(16, 16))
+				draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
 		#elif comb.next_action_type == "Attack":
 			#if _selected_skill
 			
@@ -377,9 +394,9 @@ func _draw():
 			if comb.next_action_type == "Move":
 				if (not phase_ended) and comb.selected_path != PackedVector2Array():
 					for i in range(1, comb.selected_path.size()):
-						var point = comb.selected_path[i]
-						var draw_color = Color.WHITE
-						draw_texture(grid_tex, point - Vector2(16, 16), draw_color)
+						var point = tile_map.map_to_local(comb.selected_path[i])
+						var draw_color = Color(0, 0.3, 0, 0.7)
+						draw_texture(grid_tex, point - Vector2(32, 22), draw_color)
 						#if i > 0:
 							#path_length -= get_tile_cost_at_point(point, comb)
 					

@@ -13,5 +13,7 @@ class_name CombatantDefinition
 @export_group("Visual")
 @export var icon: Texture2D
 @export var map_sprite: Texture2D
+@export var animation_resource: PackedScene #holds a scene with AnimationPlayer
+@export var sprite_offset: Vector2
 @export_group("Skills")
 @export var skills: Array[String]

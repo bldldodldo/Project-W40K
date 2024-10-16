@@ -74,9 +74,10 @@ func set_skill_list(skill_list: Array):
 			action.icon = skill.icon
 			action.tooltip_text = skill.name
 			action.pressed.connect(func():
-				comb.next_action_type = skill.type
-				controller.set_selected_skill(skill_key)
-				controller.begin_target_selection()
+				if combat.phase == 2 or combat.phase == 3:
+					comb.next_action_type = skill.type
+					controller.set_selected_skill(skill_key)
+					controller.begin_target_selection()
 				)
 		else:
 			action.icon = null

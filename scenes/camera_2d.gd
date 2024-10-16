@@ -28,6 +28,7 @@ func _ready():
 	position = get_viewport().get_size()/2
 
 func _process(delta):
+	
 	clamp_camera_and_zoom()
 	if is_moving : 
 		position.x = lerp(position.x, move_limit.x, move_speed*delta)
