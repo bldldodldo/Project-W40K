@@ -8,9 +8,8 @@ class_name SkillDefinition
 @export var max_range: int #used if range_type = "Range"
 @export var range_list: Array #used if range_type = "List"
 @export var hit_zone: Array #used for AoE spells
-@export var number_of_target: int #used for multiple targets attacks or spells (riffle?)
-@export var min_damage: int
-@export var max_damage: int
-@export var min_prob: int
-@export var max_prob: int
+@export var number_of_target: int = 1 #used for multiple targets attacks or spells (riffle?)
+@export var damage: int = 1 #between 0 and 5+
+@export var prob: int = 1 #between 0 and 1
+@export var armor_penetration: int = 0 #strong ! mostly 0. = brut damages -1 = 1 more dmg
 @export var icon: Texture2D

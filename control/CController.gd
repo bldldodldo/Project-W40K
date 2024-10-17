@@ -308,6 +308,27 @@ func attack_combatant(comb: Dictionary):
 			print(comb.name, " attaque la case ", _tile, "qui est vide.")
 		else:
 			print(comb.name, " attaque ", targeted_comb.name)
+			attack_compute(comb, targeted_comb)
+
+func attack_compute(comb, targeted_comb):
+	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+	if _skill_used.hit_zone == []:
+		var _hp_loss = (comb.strength * _skill_used.damage)/targeted_comb.toughness
+		_hp_loss += comb.armor_penetration
+		_hp_loss -= targeted_comb.armor_save
+		targeted_comb.hp -= _hp_loss
+		if targeted_comb.hp <= 0:
+			targeted_comb.hp = 0
+			comb_died(targeted_comb)
+		print(targeted_comb.name, " lost ", _hp_loss, " and now has ", targeted_comb.hp, " hp.")
+
+func comb_died(comb: Dictionary):
+	print(comb.name, " died AH LOOSER!")
+	get_node("/root/Game/VisualCombat/" + comb.name).queue_free()
+	var	comb_id = combat.combatants.find(comb)
+	if comb_id != -1:
+		combat.groups[comb.side].erase(comb_id)
+		combat.current_combatant_alive -= 1
 
 #func ai_move(target_position: Vector2i):
 #	var current_position = tile_map.local_to_map(controlled_node.position)
@@ -337,6 +358,7 @@ func find_path(tile_position: Vector2i):
 func reset_selected_action(combatant: Dictionary):
 	combatant.selected_path_id = 1
 	combatant.selected_path = []
+	combatant.selected_skill_id = null
 	combatant.selected_targets = []
 	combatant.next_action_type = "None"
 
@@ -344,6 +366,7 @@ func reset_selected_action(combatant: Dictionary):
 
 func set_selected_skill(skill_key: String):
 	_selected_skill = SkillDatabase.skills[skill_key]
+	controlled_combatant.selected_skill_id = skill_key
 
 
 func begin_target_selection():
