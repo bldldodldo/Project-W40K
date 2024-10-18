@@ -41,7 +41,6 @@ func _unhandled_input(event):
 				if _skill_selected and controlled_combatant_exists and controlled_combatant.arrived:
 					if is_target_valid(controlled_combatant, mouse_position_i):
 						controlled_combatant.next_action_type = _selected_skill.type
-						print(controlled_combatant.next_action_type)
 						controlled_combatant.selected_targets.append(mouse_position_i)
 						if controlled_combatant.selected_targets.size() == _selected_skill.number_of_target:
 							print("Target selected")
@@ -242,7 +241,35 @@ func verifying_arrived():
 			
 			
 
+func get_main_vec_comp(position1, position2):
+	var _diff = position2 - position1
+	if abs(_diff.x) > abs(_diff.y):
+		return "x"
+	elif abs(_diff.x) < abs(_diff.y):
+		return "y"
+	else:
+		return "="
 
+func get_vec_dir(position1, position2):
+	var _diff = position2 - position1
+	if _diff.x == 0 and _diff.y == 0:
+		return "self"
+	elif _diff.x == 0 and _diff.y >= 0:
+		return "top"
+	elif _diff.x == 0 and _diff.y <= 0:
+		return "bottom"
+	elif _diff.x >= 0 and _diff.y == 0:
+		return "right"
+	elif _diff.x <= 0 and _diff.y == 0:
+		return "left"
+	elif _diff.x >= 0 and _diff.y >= 0:
+		return "bottom_right"
+	elif _diff.x <= 0 and _diff.y >= 0:
+		return "bottom_left"
+	elif _diff.x >= 0 and _diff.y <= 0:
+		return "top_right"
+	elif _diff.x <= 0 and _diff.y <= 0:
+		return "top_left"
 #func set_movement(value):
 #	movement = value
 #	movement_changed.emit(value)
@@ -302,6 +329,7 @@ func move_combatant(comb: Dictionary):
 		queue_redraw()
 	
 func attack_combatant(comb: Dictionary):
+	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 	for _tile in comb.selected_targets:
 		var targeted_comb = get_combatant_at_position(_tile)
 		if targeted_comb == null:
@@ -309,18 +337,41 @@ func attack_combatant(comb: Dictionary):
 		else:
 			print(comb.name, " attaque ", targeted_comb.name)
 			attack_compute(comb, targeted_comb)
+		for _suppl_offset in _skill_used.hit_zone:
+			var _new_tile = hit_zone_compute(comb, _tile, _suppl_offset)
+			targeted_comb = get_combatant_at_position(_new_tile)
+			if targeted_comb == null:
+				print(comb.name, " attaque la case ", _tile+_suppl_offset, "qui est vide.")
+			else:
+				print(comb.name, " attaque ", targeted_comb.name)
+				attack_compute(comb, targeted_comb)
+
+func hit_zone_compute(comb, _tile, _suppl_offset):
+	var _new_tile: Vector2i
+	var _dir = get_main_vec_comp(comb.position, _tile)
+	if  _dir == "x":
+		_new_tile = _tile + Vector2i(_suppl_offset.y, _suppl_offset.x)
+	elif _dir == "y":
+		_new_tile = _tile + _suppl_offset
+	else:
+		if get_vec_dir(comb.position, _tile) == "bottom_right" or get_vec_dir(comb.position, _tile) == "top_left":
+			_new_tile.x = _tile.x - _suppl_offset.x + _suppl_offset.y
+			_new_tile.y = _tile.y + _suppl_offset.x + _suppl_offset.y
+		else:
+			_new_tile.x = _tile.x + _suppl_offset.x - _suppl_offset.y
+			_new_tile.y = _tile.y + _suppl_offset.x + _suppl_offset.y
+	return _new_tile
 
 func attack_compute(comb, targeted_comb):
 	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
-	if _skill_used.hit_zone == []:
-		var _hp_loss = (comb.strength * _skill_used.damage)/targeted_comb.toughness
-		_hp_loss += comb.armor_penetration
-		_hp_loss -= targeted_comb.armor_save
-		targeted_comb.hp -= _hp_loss
-		if targeted_comb.hp <= 0:
-			targeted_comb.hp = 0
-			comb_died(targeted_comb)
-		print(targeted_comb.name, " lost ", _hp_loss, " and now has ", targeted_comb.hp, " hp.")
+	var _hp_loss = (comb.strength * _skill_used.damage)/targeted_comb.toughness
+	_hp_loss += comb.armor_penetration
+	_hp_loss -= targeted_comb.armor_save
+	targeted_comb.hp -= _hp_loss
+	if targeted_comb.hp <= 0:
+		targeted_comb.hp = 0
+		comb_died(targeted_comb)
+	print(targeted_comb.name, " lost ", _hp_loss, " and now has ", targeted_comb.hp, " hp.")
 
 func comb_died(comb: Dictionary):
 	print(comb.name, " died AH LOOSER!")
@@ -441,9 +492,12 @@ func _draw():
 							var _tile = comb.position + Vector2i(x,y)
 							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range):
 								draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 22), Color(0, 0.2, 1, 0.5))
-				for targets in comb.selected_targets:
-					draw_texture(grid_tex, tile_map.map_to_local(targets) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
-				
+				for target in comb.selected_targets:
+					draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
+					var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+					for _suppl_offset in _skill_used.hit_zone:
+						var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
+						draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
 				#for tile in _selected_skill.
 		if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
 			if comb.next_action_type == "Move":
@@ -456,5 +510,9 @@ func _draw():
 							#path_length -= get_tile_cost_at_point(point, comb)
 			elif comb.next_action_type == "Attack":
 				if (not phase_ended):
-					for targets in comb.selected_targets:
-						draw_texture(grid_tex, tile_map.map_to_local(targets) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
+					for target in comb.selected_targets:
+						draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
+						var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+						for _suppl_offset in _skill_used.hit_zone:
+							var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
+							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
