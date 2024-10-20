@@ -85,10 +85,22 @@ func set_skill_list(skill_list: Array):
 			action.icon = skill.icon
 			action.tooltip_text = skill.name
 			action.pressed.connect(func():
-				if combat.phase == 2 or combat.phase == 3:
-					comb.next_action_type = skill.type
-					controller.set_selected_skill(skill_key)
-					controller.begin_target_selection()
+				if combat.phase == 1:
+					print("no attack nor spell in phase 1")
+				else:
+					if skill.type == "Attack" and comb.number_attacks <= 0:
+						print("No more attack availables this turn")
+					elif skill.type == "Attack" and comb.number_attacks > 0:
+						comb.next_action_type = skill.type
+						controller.set_selected_skill(skill_key)
+						controller.begin_target_selection()
+					elif skill.type == "Spell" and combat.phase == 3:
+						print("no Spell in phase 3")
+					elif skill.type == "Spell":
+						comb.next_action_type = skill.type
+						controller.set_selected_skill(skill_key)
+						controller.begin_target_selection()
+				
 				)
 		else:
 			action.icon = null

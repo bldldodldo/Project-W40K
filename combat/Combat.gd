@@ -15,6 +15,7 @@ signal end_turn(combatants: Array)
 
 var combatants = []
 var phase = 3
+var turn = 0
 
 enum Group
 {
@@ -36,12 +37,16 @@ var groups = [
 
 var current_combatant = 0
 var current_combatant_alive = 0
-var turn_order = ["Phase 1", "Phase 2", "Phase 3"]
-var turn = turn_order[0]
 
 @export var game_ui : Control
 @export var controller : CController
 
+
+var army_list = [
+	"Ultramarine",
+	"Black_Legion",
+	"Tyranid"
+]
 var skills_lists = [
 	["attack_melee"], #Melee
 	["attack_melee", "attack_ranged"], #Ranged
@@ -85,23 +90,28 @@ func create_combatant(definition: CombatantDefinition, override_name = ""):
 		"class" = definition.class_t,
 		"alive" = true,
 		"movement_class" = definition.class_m,
-		"skill_list" = skills_lists[definition.class_t].duplicate(),
+		"army" = army_list[definition.class_t],
+		"skill_list" = [], #definition.skills,
+		"number_attacks_max" = definition.number_attacks_max,
+		"number_attacks" = definition.number_attacks_max,
 		"icon" = definition.icon,
 		"map_sprite" = definition.map_sprite,
 		"animation_resource" = definition.animation_resource,
 		"sprite_offset" = definition.sprite_offset,
 		"movement_max" = definition.movement,
-		"strength" = definition.strength,
-		"toughness" = definition.toughness,
-		"armor_penetration" = definition.armor_penetration,
-		"armor_save" = definition.armor_save,
 		"movement" = definition.movement,
+		"strength" = definition.strength,
+		"psy_power" = definition.psy_power,
+		"toughness" = definition.toughness,
+		"armor_save" = definition.armor_save,
+		"crit_chance" = definition.crit_chance,
 		"selected_path_id" = 1,
 		"selected_path" = [],
 		"selected_skill_id" = null,
 		"selected_targets" = [],
 		"next_action_type" = "None",
-		"arrived" = true
+		"arrived" = true,
+		"statuses" = []
 		}
 	if override_name != "":
 		comb.name = override_name
