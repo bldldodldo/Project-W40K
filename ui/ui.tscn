@@ -70,19 +70,19 @@ offset_bottom = 631.0
 
 [node name="StatusIcon" parent="Actions" instance=ExtResource("4_mn0g0")]
 layout_mode = 2
-offset_left = -38.0
-offset_top = 10.0
-offset_right = 74.0
-offset_bottom = 122.0
+offset_left = 142.0
+offset_top = 4.0
+offset_right = 254.0
+offset_bottom = 116.0
 
 [node name="Icon" parent="Actions/StatusIcon" index="0"]
 material = SubResource("ShaderMaterial_1qt58")
 
 [node name="ActionsPanel" type="PanelContainer" parent="Actions"]
 layout_mode = 0
-offset_left = 125.0
+offset_left = -194.0
 offset_top = 13.0
-offset_right = 448.0
+offset_right = 129.0
 offset_bottom = 66.0
 
 [node name="ActionsGrid" type="GridContainer" parent="Actions/ActionsPanel"]
@@ -136,10 +136,10 @@ expand_icon = true
 
 [node name="Movement" type="Label" parent="Actions"]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 89.0
-offset_right = 120.0
-offset_bottom = 115.0
+offset_left = -190.0
+offset_top = 76.0
+offset_right = -150.0
+offset_bottom = 102.0
 tooltip_text = "Movement"
 mouse_filter = 1
 theme_override_colors/font_color = Color(0.960784, 0.898039, 0.231373, 1)
@@ -150,10 +150,10 @@ vertical_alignment = 1
 
 [node name="EndPhaseButton" type="Button" parent="Actions"]
 layout_mode = 0
-offset_left = 454.0
-offset_top = 78.0
-offset_right = 532.0
-offset_bottom = 109.0
+offset_left = 42.0
+offset_top = 79.0
+offset_right = 122.0
+offset_bottom = 110.0
 focus_mode = 0
 theme_override_colors/font_disabled_color = Color(0.364706, 0.364706, 0.364706, 1)
 theme_override_styles/disabled = SubResource("StyleBoxFlat_um0nj")
@@ -164,8 +164,8 @@ text = "End Phase"
 
 [node name="Information" type="PanelContainer" parent="Actions"]
 layout_mode = 0
-offset_left = 546.0
-offset_top = 21.0
+offset_left = 597.0
+offset_top = -170.0
 offset_right = 794.0
 offset_bottom = 106.0
 
@@ -191,6 +191,24 @@ theme_override_constants/margin_right = 50
 [node name="Label" type="Label" parent="Actions/SelectTargetMessage/MarginContainer"]
 layout_mode = 2
 text = "Select Target"
+
+[node name="Turn_Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 194.0
+offset_top = 589.0
+offset_right = 234.0
+offset_bottom = 612.0
+text = "ahah
+"
+
+[node name="Phase_Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 194.0
+offset_top = 618.0
+offset_right = 234.0
+offset_bottom = 641.0
+text = "lol
+"
 
 [connection signal="pressed" from="Actions/EndPhaseButton" to="." method="_on_end_phase_button_pressed"]
 

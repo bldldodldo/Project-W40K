@@ -8,6 +8,9 @@ signal target_selection_started()
 signal target_selection_finished()
 signal combatant_selected(comb: Dictionary)
 signal combatant_deselected()
+signal signal_end_phase()
+signal signal_end_turn()
+signal combatant_lost_hp(comb: Dictionary)
 
 var controlled_combatant_exists = false
 @export var controlled_node: Node2D 
@@ -15,15 +18,7 @@ var controlled_combatant_exists = false
 @export var controlled_combatant: Dictionary
 var tile_map : TileMapLayer
 var phase_ended = false
-
-
-
-#var movement = 3:
-#	set = set_movement,
-#	get = get_movement
-
 var _astargrid = AStarGrid2D.new()
-#var current_combatant = 0
 var _attack_target_position
 var _blocked_target_position
 var _skill_selected = false
@@ -137,6 +132,7 @@ func new_phase_init():
 		comb.next_action_type = "None"
 		comb.next_move = []
 		comb.selected_path = []
+	signal_end_phase.emit()
 
 func combatant_added(combatant):
 #	_astargrid.set_point_solid(combatant.position, true)
@@ -331,7 +327,7 @@ func end_turn():
 			if status.turn_to_go <= 0:
 				if status.time == 0:
 					comb[status.stat] -= status.effect
-				(comb.statuses).remove(status)
+				(comb.statuses).erase(status)
 				print("fin d'effet !")
 			elif status.delay <= 0:
 				if status.time == 1:
@@ -343,7 +339,6 @@ func end_turn():
 			else:
 				status.delay -= 1
 				print("effet en delay")
-			
 	combat.turn += 1
 	print("turn ", combat.turn)
 
@@ -424,6 +419,7 @@ func attack_compute(comb, targeted_comb):
 		_hp_loss -= _skill_used.armor_penetration
 		_hp_loss += targeted_comb.armor_save
 		targeted_comb.hp -= _hp_loss
+		combatant_lost_hp.emit(targeted_comb)
 		if targeted_comb.hp <= 0:
 			targeted_comb.hp = 0
 			comb_died(targeted_comb)
@@ -438,14 +434,16 @@ func spell_compute(comb, targeted_comb):
 		if _skill_used.damage != 0:
 			var _hp_loss = (comb.psy_power * _skill_used.damage)/targeted_comb.toughness
 			targeted_comb.hp -= _hp_loss
+			combatant_lost_hp.emit(targeted_comb)
 			print(targeted_comb.name, " lost ", _hp_loss, " and now has ", targeted_comb.hp, " hp.")
 		if targeted_comb.hp <= 0:
 			targeted_comb.hp = 0
 			comb_died(targeted_comb)
 		for status in _skill_used.statuses:
 			status.turn_to_go = status.turn_total
-			(targeted_comb.statuses).append(status)
-			print(targeted_comb.name, " has now status ", status.name)
+			var status_copy = status.duplicate(true)
+			(targeted_comb.statuses).append(status_copy)
+			print(targeted_comb.name, " has now status ", status_copy.name)
 	else:
 		print("spell failed")
 	_skill_used.end_cd_turn = combat.turn + _skill_used.cd
@@ -566,39 +564,39 @@ func _draw():
 		elif comb.arrived and _skill_selected and controlled_combatant == comb:
 			var mouse_position = get_global_mouse_position()
 			var mouse_position_i = tile_map.local_to_map(mouse_position)
-			draw_texture(grid_tex, tile_map.map_to_local(mouse_position_i) - Vector2(32, 22), Color(0.4, 0.4, 0, 0.6))
+			draw_texture(grid_tex, tile_map.map_to_local(mouse_position_i) - Vector2(32, 22), Color(0, 1, 1, 0.9))
 			var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 			if is_in_range(comb.position, mouse_position_i, _selected_skill.min_range, _selected_skill.max_range):
 				for _suppl_offset in _skill_used.hit_zone:
 					var _new_tile = hit_zone_compute(comb, mouse_position_i, _suppl_offset)
-					draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0.4, 0.4, 0, 0.6))
+					draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0, 1, 1, 0.9))
 			if _selected_skill.range_type == "Range":
 				for x in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
 					for y in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
 						var _tile = comb.position + Vector2i(x,y)
 						if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range):
-							draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 22), Color(1, 1, 0, 0.6))
+							draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 22), Color(0, 0.5, 0.5, 0.4))
 				for target in comb.selected_targets:
-					draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 22), Color(1, 1, 0, 0.6))
+					draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 22), Color(0, 0.5, 0.5, 0.8))
 					#var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 					for _suppl_offset in _skill_used.hit_zone:
 						var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-						draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0, 0.1, 0.5, 0.5))
+						draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0, 0.5, 0.5, 0.6))
 				#for tile in _selected_skill.
 		if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
 			if comb.next_action_type == "Move":
 				if (not phase_ended) and comb.selected_path != PackedVector2Array():
 					for i in range(1, comb.selected_path.size()):
 						var point = tile_map.map_to_local(comb.selected_path[i])
-						var draw_color = Color(0, 0.3, 0, 0.5)
+						var draw_color = Color(0, 0.5, 0, 0.5)
 						draw_texture(grid_tex, point - Vector2(32, 22), draw_color)
 						#if i > 0:
 							#path_length -= get_tile_cost_at_point(point, comb)
 			elif comb.next_action_type == "Attack" or "Spell":
 				if (not phase_ended):
 					for target in comb.selected_targets:
-						draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 22), Color(1, 1, 0, 0.6))
+						draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 22), Color(0, 0.5, 1, 0.6))
 						var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 						for _suppl_offset in _skill_used.hit_zone:
 							var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(1, 1, 0, 0.6))
+							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 22), Color(0, 0.5, 1, 0.6))

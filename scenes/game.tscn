@@ -41,8 +41,12 @@ controller = NodePath("../../Controller")
 metadata/_edit_use_anchors_ = true
 
 [connection signal="combatant_deselected" from="Controller" to="CanvasLayer/UI" method="_combatant_deselected"]
+[connection signal="combatant_lost_hp" from="Controller" to="VisualCombat" method="update_hp_display"]
 [connection signal="combatant_selected" from="Controller" to="CanvasLayer/UI" method="show_combatant_status_main"]
 [connection signal="movement_changed" from="Controller" to="CanvasLayer/UI" method="set_movement"]
+[connection signal="signal_end_phase" from="Controller" to="CanvasLayer/UI" method="end_phase_ui_update"]
+[connection signal="signal_end_phase" from="Controller" to="CanvasLayer/UI" method="update_combatants"]
+[connection signal="signal_end_turn" from="Controller" to="CanvasLayer/UI" method="end_phase_ui_update"]
 [connection signal="target_selection_finished" from="Controller" to="CanvasLayer/UI" method="_target_selection_finished"]
 [connection signal="target_selection_started" from="Controller" to="CanvasLayer/UI" method="_target_selection_started"]
 [connection signal="combat_start" from="VisualCombat" to="Controller" method="combat_start"]

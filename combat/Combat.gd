@@ -132,10 +132,6 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	var combatant_scene = combatant.animation_resource.instantiate()	# Instantiate the character's animation scene
 	combatant_scene.name = combatant.name
 	add_child(combatant_scene)
-	#print for debug
-	#print("Node Name: ", combatant_scene.name)
-	#print("Node Path: ", combatant_scene.get_path())  # Get the node's path
-	#print("Scene Resource: ", combatant.animation_resource)
 	$"../Terrain/TileMapLayer".add_child(combatant_scene)
 	combatant_scene.position = Vector2(tile_map.map_to_local(position)) + combatant.sprite_offset
 	combatant_scene.z_index = 1
@@ -144,10 +140,57 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	anim_player.play("idle")
 	if side == 1:
 		combatant_scene.scale.x = -1
-		
-	
-	
+	create_hp_display(combatant_scene, combatant)
 	emit_signal("combatant_added", combatant)
+
+# Function to create and update HP display
+func create_hp_display(combatant_scene: Node2D, combatant: Dictionary):
+	# Create an HBoxContainer to hold the HP hearts
+	var hp_container = VBoxContainer.new()
+	hp_container.rotation_degrees = 180
+	hp_container.name = "HPContainer"
+	hp_container.position = Vector2(-30, 30)  # Adjust position based on sprite size
+	hp_container.anchor_left = 150  # Center the HP bar horizontally
+	hp_container.anchor_top = 0
+	combatant_scene.add_child(hp_container)
+
+	# Get the max HP from the combatant and set the current HP
+	var max_hp = combatant.max_hp  # Assuming combatant has max_hp value
+	var current_hp = combatant.hp  # Assuming combatant has hp value
+
+	# Add heart icons to the container (full and empty hearts)
+	for i in range(max_hp):
+		var heart_texture = TextureRect.new()
+		if i < current_hp:
+			# Full heart
+			heart_texture.texture = preload("res://imagese/icon/full_hp_icon.PNG")
+		else:
+			# Empty heart
+			heart_texture.texture = preload("res://imagese/icon/empty_hp_icon.PNG")
+		hp_container.add_child(heart_texture)
+	
+	# Save the HP container reference in the combatant dictionary for later updates
+	combatant["hp_container"] = hp_container
+
+
+# Function to update HP display when HP changes
+func update_hp_display(combatant: Dictionary):
+	var hp_container = combatant["hp_container"]
+	var current_hp = combatant.hp
+	var max_hp = combatant.max_hp
+	# Clear the current HP display
+	for child in hp_container.get_children():
+		child.queue_free()
+	# Re-add heart icons based on the new HP values
+	for i in range(max_hp):
+		var heart_texture = TextureRect.new()
+		if i < current_hp:
+			# Full heart
+			heart_texture.texture = preload("res://imagese/icon/full_hp_icon.PNG")
+		else:
+			# Empty heart
+			heart_texture.texture = preload("res://imagese/icon/empty_hp_icon.PNG")
+		hp_container.add_child(heart_texture)
 
 
 func get_distance(attacker: Dictionary, target: Dictionary):

@@ -49,14 +49,23 @@ func show_combatant_status_main(comb: Dictionary):
 	if comb == {}:
 		pass
 	else:
-		if comb.side == 0:
-			$Actions/StatusIcon.set_icon(comb.icon)
-			$Actions/StatusIcon.set_health(comb.hp, comb.max_hp)
+		$Actions/StatusIcon.set_icon(comb.icon)
+		$Actions/StatusIcon.set_health(comb.hp, comb.max_hp)
+		# Call to show stats in the Information panel
+		show_combatant_stats(comb)
+
+		# Show the combatant's skill list
 		set_skill_list(comb.skill_list)
 
 
 func _on_end_phase_button_pressed():
 	end_phase.emit()
+
+func end_phase_ui_update():
+	var turn_label = $Turn_Label  
+	var phase_label = $Phase_Label
+	turn_label.text = "Turn: " + str(combat.turn)
+	phase_label.text = "Phase: " + str(combat.phase)
 
 func _combatant_deselected():
 	_target_selection_finished()
@@ -65,7 +74,36 @@ func _combatant_deselected():
 	show_combatant_status_main({})
 
 func update_information(info: String):
+	# Clear previous information and display the new info
+	$Actions/Information/Text.clear() 
 	$Actions/Information/Text.append_text(info)
+
+func show_combatant_stats(comb: Dictionary):
+	# Clear previous information
+	$Actions/Information/Text.clear()
+	
+	# Make sure the combatant exists
+	if comb == {}:
+		return
+
+	# Format the combatant's stats
+	var info = ""
+	info += "HP: " + str(comb.hp) + " / " + str(comb.max_hp) + "\n"
+	info += "M: " + str(comb.movement) + " / " + str(comb.movement_max) + "\n"
+	info += "S: " + str(comb.strength) + "\n"
+	info += "PP: " + str(comb.psy_power) + "\n"
+	info += "T: " + str(comb.toughness) + "\n"
+	info += "AS: " + str(comb.armor_save) + "\n"
+	info += "C: " + str(comb.crit_chance) + "%\n"
+	info += "NA: " + str(comb.number_attacks_max) + "\n"
+
+	# Add status effects (if any)
+	info += "Statuses:\n"
+	for status in comb.statuses:
+		info += "- " + status.name
+
+	# Update the Information panel with the formatted info
+	update_information(info)
 
 
 func set_skill_list(skill_list: Array):
@@ -83,6 +121,11 @@ func set_skill_list(skill_list: Array):
 			var skill_key = skill_list[i]
 			var skill = SkillDatabase.skills[skill_key]
 			action.icon = skill.icon
+			action.modulate = Color(1,1,1,1)
+			
+			if (skill.type == "Attack" and (comb.number_attacks <= 0 or combat.phase == 1)) or (skill.type == "Spell" and (combat.phase == 3 or combat.phase == 1)):
+				action.modulate = Color(1, 0, 0, 1)  # Semi-transparent red tint
+			
 			action.tooltip_text = skill.name
 			action.pressed.connect(func():
 				if combat.phase == 1:
@@ -114,17 +157,11 @@ func clear_action_button_connections(action: Button):
 		action.pressed.disconnect(connection.callable)
 
 
-func update_combatants(combatants: Array):
-	for comb in combatants:
-		if comb.side == 0:
-			var status = $Status.find_child(comb.name, false, false)
-			if status != null:
-				status.set_health(comb.hp, comb.max_hp)
-		var turn_queue_icon = $TurnQueue/Queue.get_node(comb.name)
-		if turn_queue_icon != null:
-			turn_queue_icon.set_hp(comb.hp)
-			turn_queue_icon.set_side(comb.side)
-			turn_queue_icon.set_turn_taken(comb.turn_taken)
+func update_combatants():
+	for comb in combat.combatants:
+		var status = $Status.find_child(comb.name, false, false)
+		if status != null:
+			status.set_health(comb.hp, comb.max_hp)
 
 
 func set_movement(movement):
@@ -137,3 +174,7 @@ func _target_selection_finished():
 
 func _target_selection_started():
 	$Actions/SelectTargetMessage.visible = true
+
+
+func _on_controller_signal_end_phase() -> void:
+	pass # Replace with function body.

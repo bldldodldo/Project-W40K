@@ -87,3 +87,7 @@ func clamp_camera_and_zoom():
 
 func show_combatant_status_main(comb: Dictionary) -> void:
 	pass # Replace with function body.
+
+
+func end_phase_ui_update() -> void:
+	pass # Replace with function body.
