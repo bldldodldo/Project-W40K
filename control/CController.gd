@@ -18,11 +18,17 @@ var controlled_combatant_exists = false
 @export var controlled_combatant: Dictionary
 var tile_map : TileMapLayer
 var phase_ended = false
+var move_ended = false
+var attack_ended = false
+var spell_ended = false
 var _astargrid = AStarGrid2D.new()
 var _attack_target_position
 var _blocked_target_position
 var _skill_selected = false
 var _selected_skill: Object
+
+
+
 
 func _unhandled_input(event):	
 	if event is InputEventMouseButton:
@@ -31,7 +37,11 @@ func _unhandled_input(event):
 				var mouse_position = get_global_mouse_position()
 				var mouse_position_i = tile_map.local_to_map(mouse_position)
 				var temp_path = find_path(mouse_position_i)
-				var comb = get_combatant_at_position(mouse_position_i)
+				var comb = {}
+				if controlled_combatant == {}:
+					comb = get_combatant_from_node((closest_node(check_mouse_over_sprites()))) #get_combatant_at_position(mouse_position_i)
+				else:
+					comb = get_combatant_at_position(mouse_position_i)
 				var local_map = tile_map.map_to_local(mouse_position_i)
 				if _skill_selected and controlled_combatant_exists and controlled_combatant.arrived:
 					if is_target_valid(controlled_combatant, mouse_position_i):
@@ -84,7 +94,12 @@ func _unhandled_input(event):
 			else:
 				_attack_target_position = null
 				_blocked_target_position = null
-
+func get_combatant_from_node(target_node: Node2D):
+	if target_node != null:
+		for comb in combat.combatants:
+			if comb.name == target_node.name and comb.alive:
+				return comb
+	return null
 
 func get_combatant_at_position(target_position: Vector2i):
 	for comb in combat.combatants:
@@ -99,6 +114,45 @@ var _blocking_spaces = [
 	[],#Flying
 	[]#Mounted
 ]
+func closest_node(array: Array):
+	var res = null
+	if array != []:
+		res = array[-1]
+	return res
+
+func get_bounding_box_for_sprites2(node: Node2D) -> Rect2:
+	var global_rect = Rect2()  # Initialize the global rectangle
+	var first_sprite = true
+	for child in node.get_children():
+		if child is Sprite2D:
+			var texture_size = child.texture.get_size() * child.scale
+			var sprite_top_left = child.global_position - (texture_size/2)
+			var sprite_rect = Rect2(sprite_top_left, texture_size)
+			if first_sprite:
+				global_rect = sprite_rect  # Initialize the global rect with the first sprite
+				first_sprite = false
+			else:
+				global_rect = global_rect.merge(sprite_rect)  # Merge with the existing bounding box
+	return global_rect
+
+
+# Function to check if the mouse is over a Node2D based on its Sprite2D children
+func is_mouse_over_sprite(node: Node2D) -> bool:
+	var mouse_position = get_global_mouse_position()
+	var bounding_box = get_bounding_box_for_sprites2(node)
+	var box_position = bounding_box["position"]
+	var box_size = bounding_box["size"]
+	return mouse_position.x >= box_position.x and mouse_position.x <= box_position.x + box_size.x and \
+		   mouse_position.y >= box_position.y and mouse_position.y <= box_position.y + box_size.y
+
+# Function to iterate over children of the "combat" node and check if the mouse is over any Node2D
+func check_mouse_over_sprites():
+	var _concerned_nodes = []
+	for node in combat.get_children():
+		if node is Node2D and is_mouse_over_sprite(node):
+			print("Mouse is over sprite: ", node.name)
+			_concerned_nodes.append(node)
+	return _concerned_nodes
 
 func _ready():
 	tile_map = get_node("../Terrain/TileMapLayer")
@@ -114,7 +168,7 @@ func _ready():
 		var tile_blocking = tile_map.get_cell_tile_data(tile)
 		for block in tile_blocking.get_custom_data("Blocks"):
 			_blocking_spaces[block].append(tile)	
-
+	
 func combat_start():
 	combat.phase = 3
 	new_phase_init()
@@ -132,6 +186,7 @@ func new_phase_init():
 		comb.next_action_type = "None"
 		comb.next_move = []
 		comb.selected_path = []
+	queue_redraw()
 	signal_end_phase.emit()
 
 func combatant_added(combatant):
@@ -223,9 +278,16 @@ func _process(delta):
 				reset_selected_action(comb)
 				
 	if phase_ended: 
-		if verifying_arrived():
+		if verifying_arrived() and verifying_moved() and verifying_attacked() and verifying_spelled() :
 			phase_ended = false
+			move_ended = false
+			attack_ended = false
+			spell_ended = false
 			new_phase_init()
+		elif verifying_arrived() and verifying_moved() and verifying_attacked():
+			end_phase()
+		elif verifying_arrived() and verifying_moved():
+			end_phase()
 
 func verifying_arrived():
 	var _verifying_arrived = true
@@ -233,8 +295,27 @@ func verifying_arrived():
 		if not comb.arrived:
 			_verifying_arrived = false
 	return _verifying_arrived
-			
-			
+
+func verifying_moved():
+	var _verifying_moved = true
+	for comb in combat.combatants:
+		if comb.next_action_type == "Move":
+			_verifying_moved = false
+	return _verifying_moved
+
+func verifying_attacked():
+	var _verifying_attacked = true
+	for comb in combat.combatants:
+		if comb.next_action_type == "Attack":
+			_verifying_attacked = false
+	return _verifying_attacked
+	
+func verifying_spelled():
+	var _verifying_spelled = true
+	for comb in combat.combatants:
+		if comb.next_action_type == "Spell":
+			_verifying_spelled = false
+	return _verifying_spelled
 
 func get_main_vec_comp(position1, position2):
 	var _diff = position2 - position1
@@ -303,19 +384,19 @@ func end_phase():
 			if comb.next_action_type == "Move":
 				print(comb.name, " has type Move")
 				move_combatant(comb)
-			elif comb.next_action_type == "Attack":
+			elif comb.next_action_type == "Attack" and verifying_moved():
 				if combat.phase == 1:
 					print("ERREUR : No Attack Allowed Phase 1")
 				else:
 					print(comb.name, " has type Attack")
 					attack_combatant(comb)
-			elif comb.next_action_type == "Spell":
+			elif comb.next_action_type == "Spell" and verifying_attacked():
 				if combat.phase == 2:
 					print(comb.name, " has type Spell")
 					spell_combatant(comb)
 				else:
 					print("ERREUR : No Spell allowed in Phase 1 or Phase 3")
-		phase_ended = true
+		phase_ended = true	
 		queue_redraw()
 
 func end_turn():
@@ -370,6 +451,7 @@ func attack_combatant(comb: Dictionary):
 				print(comb.name, " tries to attack ", targeted_comb.name)
 				attack_compute(comb, targeted_comb)
 	comb.number_attacks -= 1
+	reset_selected_action(comb)
 	
 func spell_combatant(comb: Dictionary):
 	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
@@ -388,6 +470,7 @@ func spell_combatant(comb: Dictionary):
 			else:
 				print(comb.name, " tries to spellzzz ", targeted_comb.name)
 				spell_compute(comb, targeted_comb)
+	reset_selected_action(comb)
 
 func hit_zone_compute(comb, _tile, _suppl_offset):
 	var _new_tile: Vector2i
@@ -542,6 +625,14 @@ func get_tile_cost_at_point(point, comb):
 		return 1
 
 func _draw():
+	
+	for child in combat.get_children():
+		# Calculate the bounding box for sprites in combat
+		var bounding_box = get_bounding_box_for_sprites2(child)
+
+		# Draw the bounding box
+		draw_rect(bounding_box, Color(1, 0, 0, 0.5), false)  # Red rectangle with 50% opacity
+		
 	for comb in combat.combatants:
 		if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None":
 			var path_length = comb.movement_max

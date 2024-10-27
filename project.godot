@@ -23,6 +23,7 @@ StatusDatabse="*res://databases/status_databse.tscn"
 
 [display]
 
+window/stretch/mode="canvas_items"
 mouse_cursor/custom_image="res://imagese/cursor.png"
 mouse_cursor/tooltip_position_offset=Vector2(64, 10)
 

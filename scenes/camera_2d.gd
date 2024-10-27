@@ -3,6 +3,7 @@ extends Camera2D
 # Zoom speed
 var zoom_speed = 5
 var move_speed = 5
+var move_speed_scroll = 1000
 
 var is_zooming = false
 var is_dezooming = false
@@ -19,6 +20,24 @@ var move_margin = 0.5
 var move_step = 2
 var position_pile = []
 
+
+# New function to handle keyboard movement
+func handle_keyboard_movement(delta):
+	var move_vector = Vector2.ZERO
+
+	# Move the camera based on arrow key input
+	if Input.is_action_pressed("ui_up"):
+		move_vector.y -= move_speed_scroll * delta
+	if Input.is_action_pressed("ui_down"):
+		move_vector.y += move_speed_scroll * delta
+	if Input.is_action_pressed("ui_left"):
+		move_vector.x -= move_speed_scroll * delta
+	if Input.is_action_pressed("ui_right"):
+		move_vector.x += move_speed_scroll * delta
+
+	# Update the camera position
+	position += move_vector
+
 func is_in_interval(value: float, min_val: float, max_val: float) -> bool:
 	return value >= min_val and value <= max_val
 
@@ -30,6 +49,8 @@ func _ready():
 func _process(delta):
 	
 	clamp_camera_and_zoom()
+	if (not is_moving) and (not is_zooming) and (not is_dezooming):
+		handle_keyboard_movement(delta)
 	if is_moving : 
 		position.x = lerp(position.x, move_limit.x, move_speed*delta)
 		position.y = lerp(position.y, move_limit.y, move_speed*delta)
@@ -77,12 +98,12 @@ func clamp_camera_and_zoom():
 		# Clamp the zoom value to min and max limits
 	zoom_limit.x = clamp(zoom_limit.x, min_zoom.x, max_zoom.x)
 	zoom_limit.y = clamp(zoom_limit.y, min_zoom.y, max_zoom.y)
-	if Vector2i(position) != Vector2i(get_viewport().get_size()/2) and is_in_interval(zoom.x, min_zoom.x - zoom_margin, min_zoom.x + zoom_margin) and is_in_interval(zoom.y, min_zoom.y - zoom_margin, min_zoom.y + zoom_margin):
-		zoom = min_zoom
-		position = Vector2(get_viewport().get_size()/2)
+	#if Vector2i(position) != Vector2i(get_viewport().get_size()/2) and is_in_interval(zoom.x, min_zoom.x - zoom_margin, min_zoom.x + zoom_margin) and is_in_interval(zoom.y, min_zoom.y - zoom_margin, min_zoom.y + zoom_margin):
+		#zoom = min_zoom
+		#position = Vector2(get_viewport().get_size()/2)
 	# Clamp the camera to min and max limits
-	position.x = clamp(position.x, viewport_size.x/(2*zoom.x), viewport_size.x*(1 - 1/(2*zoom.x)))	
-	position.y = clamp(position.y, viewport_size.y/(2*zoom.y), viewport_size.y*(1 - 1/(2*zoom.y)))
+	#position.x = clamp(position.x, viewport_size.x/(2*zoom.x), viewport_size.x*(1 - 1/(2*zoom.x)))	
+	#position.y = clamp(position.y, viewport_size.y/(2*zoom.y), viewport_size.y*(1 - 1/(2*zoom.y)))
 	
 
 func show_combatant_status_main(comb: Dictionary) -> void:
