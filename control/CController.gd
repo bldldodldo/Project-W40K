@@ -57,9 +57,9 @@ func _unhandled_input(event):
 						_selected_skill = null
 						target_selection_finished.emit()
 						queue_redraw()
-				elif comb != null and comb.alive and comb.side == 0:
+				elif controlled_combatant == {} and comb != null and comb.alive and comb.side == 0:
 					set_controlled_combatant(comb)
-				elif comb == null and controlled_combatant_exists and controlled_combatant.arrived :
+				elif controlled_combatant_exists and controlled_combatant.arrived :
 					if temp_path.size() - 1 > controlled_combatant.movement:
 						reset_selected_action(controlled_combatant)
 						print("Action canceled for ", controlled_combatant.name)
@@ -197,7 +197,7 @@ func combatant_added(combatant):
 
 func combatant_died(combatant):
 #	_astargrid.set_point_solid(combatant.position, false)
-	_astargrid.set_point_weight_scale(combatant.position, 1)
+	#_astargrid.set_point_weight_scale(combatant.position, 1)
 	_occupied_spaces.erase(combatant.position)
 
 
@@ -213,19 +213,20 @@ func set_controlled_combatant(combatant: Dictionary):
 	update_points_weight(combatant)
 
 func update_points_weight(comb: Dictionary):
+	pass
 	#Update occupied spaces for flying units
-	for point in _occupied_spaces:
-		if comb.movement_class == 1:
-			_astargrid.set_point_weight_scale(point, 1)
-		else:
-			_astargrid.set_point_weight_scale(point, INF)
+	#for point in _occupied_spaces:
+		#if comb.movement_class == 1:
+			#_astargrid.set_point_weight_scale(point, 1)
+		#else:
+			#_astargrid.set_point_weight_scale(point, INF)
 	#Update point weights for blocking spaces
-	for class_m in range(_blocking_spaces.size()):
-		for space in _blocking_spaces[class_m]:
-			if controlled_combatant.movement_class == class_m:
-				_astargrid.set_point_weight_scale(space, INF)
-			else:
-				_astargrid.set_point_weight_scale(space, 1)
+	#for class_m in range(_blocking_spaces.size()):
+		#for space in _blocking_spaces[class_m]:
+			#if controlled_combatant.movement_class == class_m:
+			#	_astargrid.set_point_weight_scale(space, INF)
+			#else:
+			#	_astargrid.set_point_weight_scale(space, 1)
 
 func get_distance(point1: Vector2i, point2: Vector2i):
 	return absi(point1.x - point2.x) + absi(point1.y - point2.y)
@@ -246,36 +247,24 @@ var _previous_position : Vector2i
 func _process(delta):
 	for comb in combat.combatants:
 		if comb.arrived == false:
-			var new_position: Vector2i = comb.selected_path[comb.selected_path_id]
-			_next_position = tile_map.map_to_local(new_position) + comb.sprite_offset
-			var _next_position_comb = get_combatant_at_position(new_position)
-			#verifying that, if two characters are about to bump into each other, they are not going in opposite directions. 
-			if (_next_position_comb == null): #or (_next_position_comb.arrived == false and _next_position_comb.sprite.position.direction_to(_next_position_comb.selected_path[_next_position_comb.selected_path_id]) != -1*comb.sprite.position.direction_to(_next_position))):
-				var _comb_visual_node = get_node("/root/Game/VisualCombat/" + comb.name)
-				_comb_visual_node.position += _comb_visual_node.position.direction_to(_next_position) * delta * move_speed
-				if _comb_visual_node.position.distance_to(_next_position) < 1 :
-		#			_astargrid.set_point_solid(_previous_position, false)
-					print(comb.name, " at position ", comb.position, " goes to ", new_position, " occupied by ", get_combatant_at_position(_next_position))
-					_occupied_spaces.erase(comb.previous_position)
-					_astargrid.set_point_weight_scale(comb.previous_position, 1)
-					var tile_cost = get_tile_cost(comb.previous_position, comb)
-					_comb_visual_node.position = _next_position
-					comb.position = new_position
-					comb.previous_position = new_position
-		#			_astargrid.set_point_solid(new_position, true)
-					_occupied_spaces.append(new_position)
-					update_points_weight(comb)
+			var _comb_visual_node = get_node("/root/Game/VisualCombat/" + comb.name)
+			_comb_visual_node.position += _comb_visual_node.position.direction_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) * delta * comb.move_speed
+			if _comb_visual_node.position.distance_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) < 5 :
+				if comb.selected_path_id >= comb.selected_path.size() or comb.movement <= 0:
+					compute_finish_move(comb, _comb_visual_node)
+				else:
+					var new_position = comb.selected_path[comb.selected_path_id]
+					_next_position = tile_map.map_to_local(new_position)
+					var _next_position_comb = get_combatant_at_position(new_position)
 					var next_tile_cost = get_tile_cost(new_position, comb)
-					comb.movement -= tile_cost
-					if comb.selected_path_id < comb.selected_path.size() - 1 and comb.movement > 0 and next_tile_cost <= comb.movement:
+					if next_tile_cost <= comb.movement and (_next_position_comb == null or (_next_position_comb.is_transparent and not _next_position_comb.arrived)):
+						comb.position = tile_map.local_to_map(_next_position)
 						comb.selected_path_id += 1
+						comb.movement -= next_tile_cost
+						print("-1 de mov")
 					else:
-						finished_move.emit()
-						comb.arrived = true
-						reset_selected_action(comb)
-			else:
-				comb.arrived = true
-				reset_selected_action(comb)
+						compute_finish_move(comb, _comb_visual_node)
+
 				
 	if phase_ended: 
 		if verifying_arrived() and verifying_moved() and verifying_attacked() and verifying_spelled() :
@@ -288,6 +277,13 @@ func _process(delta):
 			end_phase()
 		elif verifying_arrived() and verifying_moved():
 			end_phase()
+
+func compute_finish_move(comb: Dictionary, _comb_visual_node):
+	finished_move.emit()
+	comb.arrived = true
+	reset_selected_action(comb)
+	_comb_visual_node.position = tile_map.map_to_local(comb.position) + comb.sprite_offset
+	print("fin de movement!")
 
 func verifying_arrived():
 	var _verifying_arrived = true
@@ -404,22 +400,22 @@ func end_turn():
 		comb.movement = comb.movement_max
 		comb.number_attacks = comb.number_attacks_max
 		for status in comb.statuses:
-			print(comb.statuses)
+			print(comb.name, " has ", status.name)
 			if status.turn_to_go <= 0:
 				if status.time == 0:
 					comb[status.stat] -= status.effect
 				(comb.statuses).erase(status)
-				print("fin d'effet !")
+				print("end of effect !")
 			elif status.delay <= 0:
 				if status.time == 1:
 					comb[status.stat] += status.effect
 				elif status.turn_to_go == status.turn_total:
 					comb[status.stat] += status.effect
-					print("début d'effet ! ", comb.name, " now has ", comb[status.stat])
+					print("effect starts ! ", comb.name, " now has ", comb[status.stat])
 				status.turn_to_go -= 1
 			else:
 				status.delay -= 1
-				print("effet en delay")
+				print("effect in casting time")
 	combat.turn += 1
 	print("turn ", combat.turn)
 
@@ -550,7 +546,7 @@ func comb_died(comb: Dictionary):
 func find_path(tile_position: Vector2i):
 	if controlled_combatant_exists:
 		var current_position = controlled_combatant.position
-		if _astargrid.get_point_weight_scale(tile_position) > 999999:
+		if _astargrid.get_point_weight_scale(tile_position) > 999999 and (get_combatant_at_position(tile_position) == null):
 			var dir : Vector2i
 			if current_position.x > tile_position.x:
 				dir = Vector2i.RIGHT
@@ -647,8 +643,8 @@ func _draw():
 					path_length -= get_tile_cost_at_point(point, comb)
 			if _attack_target_position != null:
 				draw_texture(grid_tex, _attack_target_position - Vector2(32, 22), Color.CRIMSON)
-			if _blocked_target_position != null:
-				draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
+			#if _blocked_target_position != null:
+				#draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
 		#elif comb.next_action_type == "Attack":
 			#if _selected_skill
 			

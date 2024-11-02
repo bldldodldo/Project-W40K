@@ -6,6 +6,7 @@ class_name CombatantDefinition
 @export_group("Class")
 @export_enum("Ultramarine", "Black_Legion", "Tyranid") var class_t = 0
 @export_enum("Ground", "Flying", "Vehicle") var class_m = 0
+@export var is_transparent = true #to know if units can corss throught it or not
 @export_group("Stats")
 @export_range(1, 2, 1, "or_greater") var max_hp = 1
 @export_range(1, 3, 1, "or_greater") var movement = 3
@@ -15,6 +16,8 @@ class_name CombatantDefinition
 @export_range(1, 5, 1, "or_greater") var toughness = 1
 @export_range(0, 5, 1, "or_greater") var armor_save = 0
 @export_range(0, 50, 5) var crit_chance = 0
+@export_range(0,44000,100) var weight = 0
+@export_range(0, 500, 5) var move_speed = 200
 @export_group("Visual")
 @export var icon: Texture2D
 @export var map_sprite: Texture2D
