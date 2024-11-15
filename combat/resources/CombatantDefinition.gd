@@ -5,7 +5,7 @@ class_name CombatantDefinition
 @export var name = ""
 @export_group("Class")
 @export_enum("Ultramarine", "Black_Legion", "Tyranid") var class_t = 0
-@export_enum("Ground", "Flying", "Vehicle") var class_m = 0
+@export var movement_class: String
 @export var is_transparent = true #to know if units can corss throught it or not
 @export_group("Stats")
 @export_range(1, 2, 1, "or_greater") var max_hp = 1
