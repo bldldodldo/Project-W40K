@@ -16,6 +16,7 @@ tile_size = Vector2i(64, 32)
 sources/5 = SubResource("TileSetAtlasSource_5auub")
 
 [node name="Terrain" type="Node2D"]
+y_sort_enabled = true
 texture_filter = 1
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
@@ -23,5 +24,6 @@ tile_map_data = PackedByteArray("AAAAAAAAQgAAAAAAAAAAAAEAQgAAAAAAAAAAAAIAQgAAAAA
 tile_set = ExtResource("117_tk0fr")
 
 [node name="WallMapLayer" type="TileMapLayer" parent="."]
+y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAQAAIABQAAAAAAAAAQAAEABQAAAAAAAAAQAAAABQAAAAAAAAAQAP//BQAAAAAAAAAQAP7/BQAAAAAAAAAQAP3/BQAAAAAAAAAQAPz/BQAAAAAAAAAQAPv/BQAAAAAAAAAQAAMABQAAAAAAAAAQAAQABQAAAAAAAAA=")
 tile_set = SubResource("TileSet_pjwp8")

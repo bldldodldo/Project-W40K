@@ -53,7 +53,7 @@ var skills_lists = [
 	["attack_melee", "attack_ranged", "basic_magic"] #Ranged + Magic
 ]
 
-@onready var tile_map = get_node("../Terrain/TileMapLayer")
+@onready var tile_map = get_node("../TileMapLayer")
 
 func _ready():
 	emit_signal("register_combat", self)
@@ -134,10 +134,11 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	print("j'ai add")
 	var combatant_scene = combatant.animation_resource.instantiate()	# Instantiate the character's animation scene
 	combatant_scene.name = combatant.name
+	combatant_scene.y_sort_enabled = true
 	add_child(combatant_scene)
-	$"../Terrain/TileMapLayer".add_child(combatant_scene)
+	#$"../Terrain/TileMapLayer".add_child(combatant_scene)
+	#print($"../Terrain/TileMapLayer")
 	combatant_scene.position = Vector2(tile_map.map_to_local(position)) + combatant.sprite_offset
-	combatant_scene.z_index = 1
 	var anim_player = combatant_scene.get_node("AnimationPlayer") # Store the reference to the AnimationPlayer for controlling animations
 	combatant["anim_player"] = anim_player
 	anim_player.play("idle")
@@ -152,7 +153,7 @@ func create_hp_display(combatant_scene: Node2D, combatant: Dictionary):
 	var hp_container = VBoxContainer.new()
 	hp_container.rotation_degrees = 180
 	hp_container.name = "HPContainer"
-	hp_container.position = Vector2(-30, 30)  # Adjust position based on sprite size
+	hp_container.position = Vector2(-30, 0)  # Adjust position based on sprite size
 	hp_container.anchor_left = 150  # Center the HP bar horizontally
 	hp_container.anchor_top = 0
 	combatant_scene.add_child(hp_container)

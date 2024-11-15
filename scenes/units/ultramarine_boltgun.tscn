@@ -172,48 +172,47 @@ _data = {
 
 [node name="upperlegs" type="Sprite2D" parent="."]
 texture = ExtResource("1_38naq")
+offset = Vector2(0, -32)
 
 [node name="left_lowerleg" type="Sprite2D" parent="."]
 light_mask = 2
 visibility_layer = 2
-z_index = 1
 texture = ExtResource("2_g11ym")
+offset = Vector2(0, -32)
 
 [node name="right_lowerleg" type="Sprite2D" parent="."]
-light_mask = 2
-visibility_layer = 2
-z_index = 1
 texture = ExtResource("3_ypevu")
+offset = Vector2(0, -32)
 
 [node name="torso" type="Sprite2D" parent="."]
 light_mask = 2
 visibility_layer = 2
-z_index = 1
 texture = ExtResource("4_tdv4n")
+offset = Vector2(0, -32)
 
 [node name="hands" type="Sprite2D" parent="."]
 light_mask = 4
 visibility_layer = 4
-z_index = 2
 texture = ExtResource("5_5vtlj")
+offset = Vector2(0, -32)
 
 [node name="left_shoulder" type="Sprite2D" parent="."]
 light_mask = 8
 visibility_layer = 8
-z_index = 3
 texture = ExtResource("6_wr24e")
+offset = Vector2(0, -32)
 
 [node name="right_shoulder" type="Sprite2D" parent="."]
 light_mask = 8
 visibility_layer = 8
-z_index = 3
 texture = ExtResource("7_xa4fa")
+offset = Vector2(0, -32)
 
 [node name="Head" type="Sprite2D" parent="."]
 light_mask = 4
 visibility_layer = 4
-z_index = 3
 texture = ExtResource("8_acwyh")
+offset = Vector2(0, -32)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -127,7 +127,7 @@ func get_bounding_box_for_sprites2(node: Node2D) -> Rect2:
 	for child in node.get_children():
 		if child is Sprite2D:
 			var texture_size = child.texture.get_size() * child.scale
-			var sprite_top_left = child.global_position - (texture_size/2)
+			var sprite_top_left = child.global_position - Vector2(texture_size.x/2, texture_size.y)
 			var sprite_rect = Rect2(sprite_top_left, texture_size)
 			if first_sprite:
 				global_rect = sprite_rect  # Initialize the global rect with the first sprite
@@ -252,7 +252,7 @@ var _previous_position : Vector2i
 func _process(delta):
 	for comb in combat.combatants:
 		if comb.arrived == false:
-			var _comb_visual_node = get_node("/root/Game/VisualCombat/" + comb.name)
+			var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
 			_comb_visual_node.position += _comb_visual_node.position.direction_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) * delta * comb.move_speed
 			if _comb_visual_node.position.distance_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) < 5 :
 				if comb.selected_path_id >= comb.selected_path.size() or comb.movement <= 0:
@@ -535,7 +535,7 @@ func spell_compute(comb, targeted_comb):
 		
 func comb_died(comb: Dictionary):
 	print(comb.name, " died AH LOOSER!")
-	get_node("/root/Game/VisualCombat/" + comb.name).queue_free()
+	get_node("/root/Game/Terrain/VisualCombat/" + comb.name).queue_free()
 	var	comb_id = combat.combatants.find(comb)
 	if comb_id != -1:
 		combat.groups[comb.side].erase(comb_id)
