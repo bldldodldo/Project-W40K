@@ -23,8 +23,8 @@ var move_ended = false
 var attack_ended = false
 var spell_ended = false
 var _astargrid = AStarGrid2D.new()
-var _attack_target_position
-var _blocked_target_position
+var _mouse_target_position
+#var _blocked_target_position
 var _skill_selected = false
 var _selected_skill: Object
 
@@ -60,8 +60,8 @@ func _unhandled_input(event):
 						queue_redraw()
 				elif controlled_combatant == {} and comb != null and comb.alive and comb.side == 0:
 					set_controlled_combatant(comb)
-				elif controlled_combatant_exists and controlled_combatant.arrived :
-					if temp_path.size() - 1 > controlled_combatant.movement:
+				elif controlled_combatant_exists and controlled_combatant.arrived  :
+					if temp_path.size() - 1 > controlled_combatant.movement or _astargrid.get_point_weight_scale(mouse_position_i) > 99999:
 						reset_selected_action(controlled_combatant)
 						print("Action canceled for ", controlled_combatant.name)
 						controlled_combatant_exists = false
@@ -84,16 +84,18 @@ func _unhandled_input(event):
 			find_path(mouse_position_i)
 			var comb = get_combatant_at_position(mouse_position_i)
 			var local_map = tile_map.map_to_local(mouse_position_i)
-			if comb != null:
-				if comb.side == 1 and comb.alive:
-					_attack_target_position = local_map
+			if comb != null or _astargrid.get_point_weight_scale(mouse_position_i) > 99999:
+				if comb == null or (comb.side == 1 and comb.alive):
+					_mouse_target_position = local_map
 				else:
-					_attack_target_position = null
-					_blocked_target_position = local_map
+					_mouse_target_position = null
+					#_blocked_target_position = local_map
+			else:
+				_mouse_target_position = null
 			#elif controlled_combatant_exists and mouse_position_i in _blocking_spaces[controlled_combatant.movement_class]:
 			#	_blocked_target_position = local_map
 			#else:
-			#	_attack_target_position = null
+			#	_mouse_target_position = null
 			#	_blocked_target_position = null
 func get_combatant_from_node(target_node: Node2D):
 	if target_node != null:
@@ -538,6 +540,7 @@ func comb_died(comb: Dictionary):
 	get_node("/root/Game/Terrain/VisualCombat/" + comb.name).queue_free()
 	var	comb_id = combat.combatants.find(comb)
 	if comb_id != -1:
+		combat.combatants.pop_at(comb_id)
 		combat.groups[comb.side].erase(comb_id)
 		combat.current_combatant_alive -= 1
 
@@ -556,14 +559,14 @@ func update_tile_weights_from_obstacles():  # Reference to your ObstaclesTileMap
 func find_path(tile_position: Vector2i):
 	if controlled_combatant_exists:
 		var current_position = controlled_combatant.position
-		if _astargrid.get_point_weight_scale(tile_position) > 999999 and (get_combatant_at_position(tile_position) == null):
+		if _astargrid.get_point_weight_scale(tile_position) > 99999 and (get_combatant_at_position(tile_position) == null):
 			var dir : Vector2i
 			if current_position.x > tile_position.x:
 				dir = Vector2i.RIGHT
-			if current_position.y > tile_position.y:
-				dir = Vector2i.DOWN
 			if tile_position.x > current_position.x:
 				dir = Vector2i.LEFT
+			if current_position.y > tile_position.y:
+				dir = Vector2i.DOWN
 			if tile_position.y > current_position.y:
 				dir = Vector2i.UP
 			tile_position += dir
@@ -632,7 +635,6 @@ func get_tile_cost_at_point(point, comb):
 	return get_tile_cost(tile, comb)
 
 func _draw():
-	
 	for child in combat.get_children():
 		# Calculate the bounding box for sprites in combat
 		var bounding_box = get_bounding_box_for_sprites2(child)
@@ -647,13 +649,13 @@ func _draw():
 				var point = tile_map.map_to_local(_path[i])
 				var draw_color = Color(0.7,0,0,0.5)
 				if path_length > 0:
-					if i <= comb.movement:
+					if i <= comb.movement and _astargrid.get_point_weight_scale(_path[i]) < 1000:
 						draw_color = Color(0, 1, 0.2, 0.5)
 					draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
 				if i > 0:
 					path_length -= get_tile_cost_at_point(point, comb)
-			if _attack_target_position != null:
-				draw_texture(grid_tex, _attack_target_position - Vector2(32, 16), Color.CRIMSON)
+			if _mouse_target_position != null:
+				draw_texture(grid_tex, _mouse_target_position - Vector2(32, 16), Color(0.7,0,0,0.5))
 			#if _blocked_target_position != null:
 				#draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
 		#elif comb.next_action_type == "Attack":
