@@ -3,7 +3,7 @@ extends Camera2D
 # Zoom speed
 var zoom_speed = 5
 var move_speed = 5
-var move_speed_scroll = 1000
+
 
 var is_zooming = false
 var is_dezooming = false
@@ -19,24 +19,42 @@ var move_limit = Vector2(1, 1)
 var move_margin = 0.5
 var move_step = 2
 var position_pile = []
+var scroll_margin = 50
+var scroll_move_speed = 1000
 
 
 # New function to handle keyboard movement
 func handle_keyboard_movement(delta):
 	var move_vector = Vector2.ZERO
-
 	# Move the camera based on arrow key input
 	if Input.is_action_pressed("ui_up"):
-		move_vector.y -= move_speed_scroll * delta
+		move_vector.y -= scroll_move_speed * delta
 	if Input.is_action_pressed("ui_down"):
-		move_vector.y += move_speed_scroll * delta
+		move_vector.y += scroll_move_speed * delta
 	if Input.is_action_pressed("ui_left"):
-		move_vector.x -= move_speed_scroll * delta
+		move_vector.x -= scroll_move_speed * delta
 	if Input.is_action_pressed("ui_right"):
-		move_vector.x += move_speed_scroll * delta
-
+		move_vector.x += scroll_move_speed * delta
 	# Update the camera position
 	position += move_vector
+
+func handle_mouse_movement(delta):
+	var viewport_size = get_viewport().get_size()
+	var mouse_pos = get_viewport().get_mouse_position()
+	var move_vector = Vector2.ZERO
+	# Check if the mouse is near the edges of the viewport
+	if mouse_pos.x <= scroll_margin:  # Left edge
+		move_vector.x -= scroll_move_speed * delta
+	elif mouse_pos.x >= viewport_size.x - scroll_margin:  # Right edge
+		move_vector.x += scroll_move_speed * delta
+
+	if mouse_pos.y <= scroll_margin:  # Top edge
+		move_vector.y -= scroll_move_speed * delta
+	elif mouse_pos.y >= viewport_size.y - scroll_margin:  # Bottom edge
+		move_vector.y += scroll_move_speed * delta
+	# Update the camera position
+	position += move_vector
+
 
 func is_in_interval(value: float, min_val: float, max_val: float) -> bool:
 	return value >= min_val and value <= max_val
@@ -51,6 +69,7 @@ func _process(delta):
 	clamp_camera_and_zoom()
 	if (not is_moving) and (not is_zooming) and (not is_dezooming):
 		handle_keyboard_movement(delta)
+		handle_mouse_movement(delta)
 	if is_moving : 
 		position.x = lerp(position.x, move_limit.x, move_speed*delta)
 		position.y = lerp(position.y, move_limit.y, move_speed*delta)
