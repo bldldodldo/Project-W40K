@@ -7,6 +7,7 @@ class_name SkillDefinition
 @export var min_range: int #used if range_type = "Range"
 @export var max_range: int #used if range_type = "Range"
 @export var range_list: Array #used if range_type = "List"
+@export var sight: bool #is true if you need a line of sight to use it (only for "Range" type of spells)
 @export var hit_zone: Array #used for AoE spells
 @export var number_of_target: int = 1 #used for multiple targets attacks or spells (riffle?)
 @export var damage: int = 1 #between 0 and 5+

@@ -22,7 +22,8 @@ var phase_ended = false
 var move_ended = false
 var attack_ended = false
 var spell_ended = false
-var _astargrid = AStarGrid2D.new()
+var movement_astargrid = AStarGrid2D.new()
+var sight_astargrid = AStarGrid2D.new()
 var _mouse_target_position
 #var _blocked_target_position
 var _skill_selected = false
@@ -39,6 +40,7 @@ func _unhandled_input(event):
 				var mouse_position_i = tile_map.local_to_map(mouse_position)
 				var temp_path = find_path(mouse_position_i)
 				var comb = {}
+				
 				if controlled_combatant == {}:
 					comb = get_combatant_from_node((closest_node(check_mouse_over_sprites()))) #get_combatant_at_position(mouse_position_i)
 				else:
@@ -61,7 +63,7 @@ func _unhandled_input(event):
 				elif controlled_combatant == {} and comb != null and comb.alive and comb.side == 0:
 					set_controlled_combatant(comb)
 				elif controlled_combatant_exists and controlled_combatant.arrived  :
-					if temp_path.size() - 1 > controlled_combatant.movement or _astargrid.get_point_weight_scale(mouse_position_i) > 99999:
+					if temp_path.size() - 1 > controlled_combatant.movement or movement_astargrid.get_point_weight_scale(mouse_position_i) > 99999:
 						reset_selected_action(controlled_combatant)
 						print("Action canceled for ", controlled_combatant.name)
 						controlled_combatant_exists = false
@@ -84,7 +86,7 @@ func _unhandled_input(event):
 			find_path(mouse_position_i)
 			var comb = get_combatant_at_position(mouse_position_i)
 			var local_map = tile_map.map_to_local(mouse_position_i)
-			if comb != null or _astargrid.get_point_weight_scale(mouse_position_i) > 99999:
+			if comb != null or movement_astargrid.get_point_weight_scale(mouse_position_i) > 99999:
 				if comb == null or (comb.side == 1 and comb.alive):
 					_mouse_target_position = local_map
 				else:
@@ -160,14 +162,19 @@ func check_mouse_over_sprites():
 func _ready():
 	tile_map = get_node("../Terrain/TileMapLayer")
 	obstacle_map = get_node("../Terrain/WallMapLayer")
-	_astargrid.region = Rect2i(0, -20, 36, 36)
-	_astargrid.cell_size = Vector2i(1, 1)
-	#_astargrid.offset = Vector2(32, 16)
-	_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
-	_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-	_astargrid.update()
+	movement_astargrid.region = Rect2i(0, -20, 36, 36)
+	movement_astargrid.cell_size = Vector2i(1, 1)
+	movement_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+	movement_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	movement_astargrid.update()
 	# Define the function to update weights from obstacles
 	update_tile_weights_from_obstacles()
+	
+	sight_astargrid.region = Rect2i(0, -20, 36, 36)
+	sight_astargrid.cell_size = Vector2i(1, 1)
+	sight_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+	sight_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	sight_astargrid.update()
 	
 	
 	#build blocking spaces arrays
@@ -197,14 +204,14 @@ func new_phase_init():
 	signal_end_phase.emit()
 
 func combatant_added(combatant):
-#	_astargrid.set_point_solid(combatant.position, true)
-#	_astargrid.set_point_weight_scale(combatant.position, INF)
+#	movement_astargrid.set_point_solid(combatant.position, true)
+#	movement_astargrid.set_point_weight_scale(combatant.position, INF)
 	_occupied_spaces.append(combatant.position)
 
 
 func combatant_died(combatant):
-#	_astargrid.set_point_solid(combatant.position, false)
-	#_astargrid.set_point_weight_scale(combatant.position, 1)
+#	movement_astargrid.set_point_solid(combatant.position, false)
+	#movement_astargrid.set_point_weight_scale(combatant.position, 1)
 	_occupied_spaces.erase(combatant.position)
 
 
@@ -553,13 +560,13 @@ func comb_died(comb: Dictionary):
 # Define the function to update weights from obstacles
 func update_tile_weights_from_obstacles():  # Reference to your ObstaclesTileMap
 	for tile_pos in obstacle_map.get_used_cells():
-		_astargrid.set_point_weight_scale(tile_pos, 999999)  # Impassable weight
+		movement_astargrid.set_point_weight_scale(tile_pos, 999999)  # Impassable weight
 
 
 func find_path(tile_position: Vector2i):
 	if controlled_combatant_exists:
 		var current_position = controlled_combatant.position
-		if _astargrid.get_point_weight_scale(tile_position) > 99999 and (get_combatant_at_position(tile_position) == null):
+		if movement_astargrid.get_point_weight_scale(tile_position) > 99999 and (get_combatant_at_position(tile_position) == null):
 			var dir : Vector2i
 			if current_position.x > tile_position.x:
 				dir = Vector2i.RIGHT
@@ -570,9 +577,44 @@ func find_path(tile_position: Vector2i):
 			if tile_position.y > current_position.y:
 				dir = Vector2i.UP
 			tile_position += dir
-		_path = _astargrid.get_point_path(current_position, tile_position)
+		_path = movement_astargrid.get_point_path(current_position, tile_position)
 		queue_redraw()
 		return _path
+
+func compute_sight(position1: Vector2i, position2: Vector2i) -> bool:
+	# Bresenham's line algorithm for 2D grids
+	var x0 = position1.x
+	var y0 = position1.y
+	var x1 = position2.x
+	var y1 = position2.y
+	var dx = abs(x1 - x0)
+	var dy = abs(y1 - y0)
+	var sx = 1
+	if x0 > x1:
+		sx = -1
+	var sy = 1
+	if y0 > y1:
+		sy = -1
+	var err = dx - dy
+	while true:
+		# Check if the cell is occupied
+		if obstacle_map.get_cell_source_id(Vector2i(x0,y0)) != -1:  # Adjust for your specific layer settings
+			var cell_data = obstacle_map.get_cell_tile_data(Vector2i(x0, y0))
+			if cell_data == null or not cell_data.get_custom_data("see_throught"):
+				return false # An occupied cell is in the way
+		# Break if we've reached the end cell
+		if x0 == x1 and y0 == y1:
+			break
+		# Move to the next cell
+		var e2 = 2 * err
+		if e2 > -dy:
+			err -= dy
+			x0 += sx
+		if e2 < dx:
+			err += dx
+			y0 += sy
+	return true  # No occupied cells in the way
+
 
 func reset_selected_action(combatant: Dictionary):
 	combatant.selected_path_id = 1
@@ -595,13 +637,13 @@ func begin_target_selection():
 
 func is_target_valid(comb: Dictionary, mouse_pos_i):
 	if _selected_skill.range_type == "Range":
-		return is_in_range(comb.position, mouse_pos_i, _selected_skill.min_range, _selected_skill.max_range)
+		return is_in_range(comb.position, mouse_pos_i, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight)
 	elif _selected_skill.range_type == "List":
 		return is_in_list(comb.position, mouse_pos_i, _selected_skill.range_list)
 	#check if the coord match the allowed coordinates for that given skill
 
-func is_in_range(position1, position2, min_range, max_range):
-	return (get_distance(position1, position2) >= min_range and get_distance(position1, position2) <= max_range)
+func is_in_range(position1, position2, min_range, max_range, sight: bool):
+	return (get_distance(position1, position2) >= min_range and get_distance(position1, position2) <= max_range and compute_sight(position1, position2))
 
 func is_in_list(position1: Vector2i, position2: Vector2i, range_list):
 	return (position2 - position1) in range_list
@@ -649,7 +691,7 @@ func _draw():
 				var point = tile_map.map_to_local(_path[i])
 				var draw_color = Color(0.7,0,0,0.5)
 				if path_length > 0:
-					if i <= comb.movement and _astargrid.get_point_weight_scale(_path[i]) < 1000:
+					if i <= comb.movement and movement_astargrid.get_point_weight_scale(_path[i]) < 1000:
 						draw_color = Color(0, 1, 0.2, 0.5)
 					draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
 				if i > 0:
@@ -666,7 +708,7 @@ func _draw():
 			var mouse_position_i = tile_map.local_to_map(mouse_position)
 			draw_texture(grid_tex, tile_map.map_to_local(mouse_position_i) - Vector2(32, 16), Color(0, 1, 1, 0.9))
 			var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
-			if is_in_range(comb.position, mouse_position_i, _selected_skill.min_range, _selected_skill.max_range):
+			if is_in_range(comb.position, mouse_position_i, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
 				for _suppl_offset in _skill_used.hit_zone:
 					var _new_tile = hit_zone_compute(comb, mouse_position_i, _suppl_offset)
 					draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 1, 1, 0.9))
@@ -674,7 +716,7 @@ func _draw():
 				for x in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
 					for y in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
 						var _tile = comb.position + Vector2i(x,y)
-						if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range):
+						if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
 							draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 16), Color(0, 0.5, 0.5, 0.4))
 				for target in comb.selected_targets:
 					draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 0.5, 0.8))
