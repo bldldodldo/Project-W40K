@@ -193,7 +193,7 @@ func get_bounding_box_for_sprites2(node: Node2D) -> Rect2:
 	for child in node.get_children():
 		if child is Sprite2D:
 			var texture_size = child.texture.get_size() * child.scale
-			var sprite_top_left = child.global_position - Vector2(texture_size.x/2, texture_size.y)
+			var sprite_top_left = child.global_position - Vector2(texture_size.x/2, texture_size.y/2)
 			var sprite_rect = Rect2(sprite_top_left, texture_size)
 			if first_sprite:
 				global_rect = sprite_rect  # Initialize the global rect with the first sprite
@@ -753,6 +753,23 @@ func get_tile_cost_at_point(point, comb):
 	var tile = tile_map.local_to_map(point)
 	return get_tile_cost(tile, comb)
 
+func apply_outline(comb, color: Color, size: float = 4.0):
+	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
+	var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
+	print(String(_comb_visual_node.get_path()) + "/Sprite2D")
+	if not sprite.material:
+		sprite.material = ShaderMaterial.new()
+	var material = sprite.material as ShaderMaterial
+	material.shader = preload("res://shaders/character_outline.gdshader")  # Path to your shader
+	material.set_shader_parameter("outline_color", color)
+	material.set_shader_parameter("outline_size", size)
+
+func remove_outline(comb):
+	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
+	var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
+	if sprite.material:
+		sprite.material = null  # Remove the ShaderMaterial
+
 func _draw():
 	if is_drawing_path and drawn_path.size() > 0:
 		# Draw the path as a series of connected lines
@@ -831,3 +848,7 @@ func _draw():
 						for _suppl_offset in _skill_used.hit_zone:
 							var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
 							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 1, 0.6))
+		if comb.next_action_type == "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
+			apply_outline(comb, Color(0,1,0,1),150)
+		else:
+			remove_outline(comb)

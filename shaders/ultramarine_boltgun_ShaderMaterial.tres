@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c3bqo7rpp2ivl"]
+
+[ext_resource type="Shader" path="res://shaders/character_outline.gdshader" id="1_6sknj"]
+
+[resource]
+shader = ExtResource("1_6sknj")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/thickness = 1.0
+shader_parameter/tolerance = 0.0
+shader_parameter/diagonals = true
+shader_parameter/rounded = true
