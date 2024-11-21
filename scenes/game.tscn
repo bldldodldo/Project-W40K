@@ -11,12 +11,13 @@
 
 [node name="Terrain" parent="." instance=ExtResource("1_huxbe")]
 
-[node name="Camera2D" type="Camera2D" parent="Terrain"]
+[node name="Camera2D" type="Camera2D" parent="Terrain" node_paths=PackedStringArray("controller")]
 drag_left_margin = 0.0
 drag_top_margin = 0.0
 drag_right_margin = 0.0
 drag_bottom_margin = 0.0
 script = ExtResource("2_ncewc")
+controller = NodePath("../../Controller")
 
 [node name="Select" type="Sprite2D" parent="Terrain"]
 visible = false
@@ -29,11 +30,12 @@ script = ExtResource("4_cujqt")
 game_ui = NodePath("../../CanvasLayer/UI")
 controller = NodePath("../../Controller")
 
-[node name="Controller" type="Node2D" parent="." node_paths=PackedStringArray("combat")]
+[node name="Controller" type="Node2D" parent="." node_paths=PackedStringArray("combat", "UI_node")]
 y_sort_enabled = true
 texture_filter = 1
 script = ExtResource("3_dbxfm")
 combat = NodePath("../Terrain/VisualCombat")
+UI_node = NodePath("../CanvasLayer/UI")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

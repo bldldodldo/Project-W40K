@@ -16,6 +16,8 @@ var controlled_combatant_exists = false
 @export var controlled_node: Node2D 
 @export var combat: Combat
 @export var controlled_combatant: Dictionary
+@export var UI_node: Control
+
 var tile_map : TileMapLayer
 var obstacle_map : TileMapLayer
 var phase_ended = false
@@ -23,17 +25,67 @@ var move_ended = false
 var attack_ended = false
 var spell_ended = false
 var movement_astargrid = AStarGrid2D.new()
+var movement_astargrid_region = Rect2i(-50, -50, 100, 100)
 var sight_astargrid = AStarGrid2D.new()
 var _mouse_target_position
 #var _blocked_target_position
 var _skill_selected = false
 var _selected_skill: Object
 
+var is_drawing_path = false #used to handle the custom path feature
+var drawn_path = PackedVector2Array() #used to store the custom path
+
+
 
 
 
 func _unhandled_input(event):	
+	if event is InputEventKey and event.pressed:
+		if Input.is_action_just_pressed("select_cancel"):
+			controlled_combatant_exists = false
+			controlled_combatant = {}
+			combatant_deselected.emit()
+			queue_redraw()
+		elif Input.is_action_just_pressed("key_end_turn"):
+			UI_node.end_phase.emit()
+		else:
+			for i in range(9):  # Handles keys 1 through 9 (and 0 as 10, optional)
+				var action_name = "select_unit_" + str(i + 1)
+				if Input.is_action_just_pressed(action_name):
+					if i < combat.groups[0].size():
+						var _comb_name = combat.groups[0][i]
+						for comb in combat.combatants:
+							if comb.name == _comb_name:
+								set_controlled_combatant(comb)
+								#now getting the mouse position to redras correctly the movement path (to not have to wait for the mouse the be moved)
+								var mouse_position = get_global_mouse_position()
+								var mouse_position_i = tile_map.local_to_map(mouse_position)
+								find_path(mouse_position_i)
+			
 	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.is_pressed():
+				# Start drawing a custom path
+				if controlled_combatant_exists and controlled_combatant.arrived:
+					is_drawing_path = true
+					drawn_path = PackedVector2Array()  # Reset the drawn path
+			elif event.is_released():
+				# Finish drawing the path
+				if is_drawing_path and controlled_combatant_exists:
+					is_drawing_path = false
+					if is_path_valid(drawn_path):
+						controlled_combatant.next_action_type = "Move"
+						controlled_combatant.selected_path = drawn_path
+						print("Custom path selected for ", controlled_combatant.name, " and it's : ", controlled_combatant.selected_path)
+						controlled_combatant_exists = false
+						controlled_combatant = {}
+						combatant_deselected.emit()
+						queue_redraw()
+					else:
+						print("Invalid custom path!")
+						reset_selected_action(controlled_combatant)
+						queue_redraw()
+						
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.is_released():
 				var mouse_position = get_global_mouse_position()
@@ -63,7 +115,7 @@ func _unhandled_input(event):
 				elif controlled_combatant == {} and comb != null and comb.alive and comb.side == 0:
 					set_controlled_combatant(comb)
 				elif controlled_combatant_exists and controlled_combatant.arrived  :
-					if temp_path.size() - 1 > controlled_combatant.movement or movement_astargrid.get_point_weight_scale(mouse_position_i) > 99999:
+					if not is_path_valid(temp_path):
 						reset_selected_action(controlled_combatant)
 						print("Action canceled for ", controlled_combatant.name)
 						controlled_combatant_exists = false
@@ -80,6 +132,16 @@ func _unhandled_input(event):
 						queue_redraw()
 	
 	if event is InputEventMouseMotion:
+		if is_drawing_path and controlled_combatant_exists:
+			var mouse_position = get_global_mouse_position()
+			var mouse_position_i = tile_map.local_to_map(mouse_position)
+			# Add unique points to the drawn path
+			if drawn_path == PackedVector2Array():
+				drawn_path = find_path(mouse_position_i)
+				print("hey : ", drawn_path)
+				print(controlled_combatant.position)
+			elif Vector2(mouse_position_i) != drawn_path[-1]:
+				drawn_path.append(mouse_position_i)
 		if _arrived == true:
 			var mouse_position = get_global_mouse_position()
 			var mouse_position_i = tile_map.local_to_map(mouse_position)
@@ -159,10 +221,25 @@ func check_mouse_over_sprites():
 			_concerned_nodes.append(node)
 	return _concerned_nodes
 
+func is_path_valid(path):
+	# Ensure the path is valid (e.g., within movement range, not blocked)
+	if path == PackedVector2Array() or path.size() - 1 > controlled_combatant.movement:
+		return false
+	var _previous_point = path[0]
+	for point in path:
+		if movement_astargrid.get_point_weight_scale(point) > 99999:
+			return false
+		elif (_previous_point - point).length() > 1:
+			return false
+		_previous_point = point
+	return true
+
+
+
 func _ready():
 	tile_map = get_node("../Terrain/TileMapLayer")
 	obstacle_map = get_node("../Terrain/WallMapLayer")
-	movement_astargrid.region = Rect2i(0, -20, 36, 36)
+	movement_astargrid.region = movement_astargrid_region
 	movement_astargrid.cell_size = Vector2i(1, 1)
 	movement_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	movement_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
@@ -170,7 +247,7 @@ func _ready():
 	# Define the function to update weights from obstacles
 	update_tile_weights_from_obstacles()
 	
-	sight_astargrid.region = Rect2i(0, -20, 36, 36)
+	sight_astargrid.region = Rect2i(-50, -50, 100, 100)
 	sight_astargrid.cell_size = Vector2i(1, 1)
 	sight_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	sight_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
@@ -677,6 +754,18 @@ func get_tile_cost_at_point(point, comb):
 	return get_tile_cost(tile, comb)
 
 func _draw():
+	if is_drawing_path and drawn_path.size() > 0:
+		# Draw the path as a series of connected lines
+		var last_position = tile_map.map_to_local(controlled_combatant.position)  # Start at the combatant's position
+		for i in range(drawn_path.size()):
+			if i <= controlled_combatant.movement:
+				var local_position = tile_map.map_to_local(drawn_path[i])
+				draw_line(last_position, local_position, Color(0, 0.8, 0, 0.7), 2)
+				last_position = local_position
+			elif i == controlled_combatant.movement+1:
+				var local_position = tile_map.map_to_local(drawn_path[i])
+				draw_line(last_position, local_position, Color(0.5, 0, 0, 1), 2)
+				last_position = local_position
 	for child in combat.get_children():
 		# Calculate the bounding box for sprites in combat
 		var bounding_box = get_bounding_box_for_sprites2(child)
@@ -685,7 +774,7 @@ func _draw():
 		draw_rect(bounding_box, Color(1, 0, 0, 0.5), false)  # Red rectangle with 50% opacity
 		
 	for comb in combat.combatants:
-		if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None":
+		if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None" and not is_drawing_path:
 			var path_length = comb.movement_max
 			for i in range(1, _path.size()):
 				var point = tile_map.map_to_local(_path[i])

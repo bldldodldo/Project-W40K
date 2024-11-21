@@ -130,7 +130,7 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant["previous_position"] = position
 	combatants.append(combatant)
 	current_combatant_alive += 1
-	groups[side].append(combatants.size() - 1)
+	groups[side].append(combatant.name)
 	print("j'ai add")
 	var combatant_scene = combatant.animation_resource.instantiate()	# Instantiate the character's animation scene
 	combatant_scene.name = combatant.name

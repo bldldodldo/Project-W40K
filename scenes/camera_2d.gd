@@ -1,8 +1,10 @@
 extends Camera2D
 
+@export var controller: CController
+
 # Zoom speed
-var zoom_speed = 5
-var move_speed = 5
+var zoom_speed = 10
+var move_speed = 10
 
 
 var is_zooming = false
@@ -15,12 +17,14 @@ var max_zoom = Vector2(5, 5)   # Default view (prevent zooming out beyond this)
 var zoom_limit = Vector2(1, 1)
 var zoom_margin = 0.001
 var zoom_step = 0.2
-var move_limit = Vector2(1, 1)
+var move_origin = Vector2(540, 300)
+var move_limit = Vector2(0,0)
 var move_margin = 0.5
 var move_step = 2
 var position_pile = []
-var scroll_margin = 50
-var scroll_move_speed = 1000
+var scroll_margin = 10
+var scroll_move_speed = 2000
+var original_viewport_size
 
 
 # New function to handle keyboard movement
@@ -45,12 +49,12 @@ func handle_mouse_movement(delta):
 	# Check if the mouse is near the edges of the viewport
 	if mouse_pos.x <= scroll_margin:  # Left edge
 		move_vector.x -= scroll_move_speed * delta
-	elif mouse_pos.x >= viewport_size.x - scroll_margin:  # Right edge
+	elif mouse_pos.x >= original_viewport_size.x - scroll_margin:  # Right edge
 		move_vector.x += scroll_move_speed * delta
 
 	if mouse_pos.y <= scroll_margin:  # Top edge
 		move_vector.y -= scroll_move_speed * delta
-	elif mouse_pos.y >= viewport_size.y - scroll_margin:  # Bottom edge
+	elif mouse_pos.y >= original_viewport_size.y - scroll_margin:  # Bottom edge
 		move_vector.y += scroll_move_speed * delta
 	# Update the camera position
 	position += move_vector
@@ -63,6 +67,8 @@ func _ready():
 	# Set initial zoom
 	zoom = min_zoom
 	position = get_viewport().get_size()/2
+	original_viewport_size = get_viewport().get_size()
+	
 
 func _process(delta):
 	
@@ -89,13 +95,24 @@ func _process(delta):
 			is_dezooming = false
 			zoom = zoom_limit
 	
+	if Input.is_action_just_pressed("ui_space"):
+		if controller.controlled_combatant != {}:
+			var tile_map = get_node("../TileMapLayer")
+			position = tile_map.map_to_local((controller.controlled_combatant).position)
+		else:
+			position = move_origin
+	
 	if Input.is_action_just_pressed("ui_zoom_in") and zoom != max_zoom:
 		var mouse_pos_float = Vector2(get_global_mouse_position())
 		var viewport_size_float = Vector2(get_viewport().get_size())
 		
 		var _future_pos = Vector2(1,1)
-		_future_pos.x = clamp(mouse_pos_float.x, viewport_size_float.x/(2*zoom.x), viewport_size_float.x*(1 - 1/(2*zoom.x)))
-		_future_pos.y = clamp(mouse_pos_float.y, viewport_size_float.y/(2*zoom.y), viewport_size_float.y*(1 - 1/(2*zoom.y)))
+		#_future_pos.x = clamp(mouse_pos_float.x, mouse_pos_float.x + viewport_size_float.x/(2*zoom.x), mouse_pos_float.x + viewport_size_float.x*(1 - 1/(2*zoom.x)))
+		#_future_pos.y = clamp(mouse_pos_float.y, mouse_pos_float.y + viewport_size_float.y/(2*zoom.y), mouse_pos_float.y + viewport_size_float.y*(1 - 1/(2*zoom.y)))
+		_future_pos.x = clamp(mouse_pos_float.x, mouse_pos_float.x - viewport_size_float.x/(2*zoom.x), mouse_pos_float.x + viewport_size_float.x/(2*zoom.x))
+		_future_pos.y = clamp(mouse_pos_float.y, mouse_pos_float.y - viewport_size_float.y/(2*zoom.y), mouse_pos_float.y + viewport_size_float.y/(2*zoom.y))
+		
+		
 		
 		zoom_limit += Vector2(zoom_step, zoom_step)  # Zoom in
 		is_zooming = true
@@ -108,7 +125,9 @@ func _process(delta):
 		var mouse_pos = get_global_mouse_position()
 		var viewport_size = Vector2(get_viewport().get_size())
 		zoom_limit -= Vector2(2*zoom_step, 2*zoom_step)  # Zoom out
-		move_limit = (Vector2(get_viewport().get_size()/2) + position)/2
+		#move_limit = (Vector2(get_viewport().get_size()/2) + position)/2
+		#print(move_origin)
+		#move_limit = move_origin
 
 
 
@@ -121,9 +140,10 @@ func clamp_camera_and_zoom():
 		#zoom = min_zoom
 		#position = Vector2(get_viewport().get_size()/2)
 	# Clamp the camera to min and max limits
-	#position.x = clamp(position.x, viewport_size.x/(2*zoom.x), viewport_size.x*(1 - 1/(2*zoom.x)))	
-	#position.y = clamp(position.y, viewport_size.y/(2*zoom.y), viewport_size.y*(1 - 1/(2*zoom.y)))
-	
+	#var tile_map = get_node("../TileMapLayer")
+	#position.x = clamp(position.x, tile_map.map_to_local(controller.movement_astargrid_region.position).x, tile_map.map_to_local(controller.movement_astargrid_region.position + controller.movement_astargrid_region.size).x)
+	#position.y = clamp(position.y, tile_map.map_to_local(controller.movement_astargrid_region.position).y, tile_map.map_to_local(controller.movement_astargrid_region.position + controller.movement_astargrid_region.size).y)
+
 
 func show_combatant_status_main(comb: Dictionary) -> void:
 	pass # Replace with function body.
