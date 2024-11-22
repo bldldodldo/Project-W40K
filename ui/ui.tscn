@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://ddgx1hll377nx"]
+[gd_scene load_steps=14 format=3 uid="uid://ddgx1hll377nx"]
 
 [ext_resource type="Script" path="res://ui/combat_ui.gd" id="1_cy8ae"]
 [ext_resource type="Shader" path="res://ui/GrayscaleIcon.gdshader" id="3_pilcd"]
 [ext_resource type="PackedScene" uid="uid://d0hcis8q3seqg" path="res://ui/status_icon.tscn" id="4_mn0g0"]
 [ext_resource type="Texture2D" uid="uid://b5bhqfskef7lb" path="res://imagese/icon/melee_attack.png" id="6_puss2"]
 [ext_resource type="Texture2D" uid="uid://bonh4ibo7lwda" path="res://imagese/icon/ranged_attack.png" id="7_i51fj"]
+[ext_resource type="Material" uid="uid://cbfshcwnlh4n4" path="res://shaders/end_button_ShaderMaterial.tres" id="7_prf7u"]
 [ext_resource type="Texture2D" uid="uid://wxkh5qyiy8c1" path="res://imagese/icon/basic_magic.png" id="8_do1mp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1qt58"]
@@ -27,9 +28,7 @@ bg_color = Color(0.243137, 0.243137, 0.243137, 1)
 shadow_size = 10
 shadow_offset = Vector2(0, -5)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pdlup"]
-bg_color = Color(0.360784, 0.360784, 0.360784, 1)
-shadow_size = 10
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5f3j3"]
 
 [node name="UI" type="Control"]
 texture_filter = 1
@@ -149,18 +148,32 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="EndPhaseButton" type="Button" parent="Actions"]
+modulate = Color(0, 0, 0, 1)
+visibility_layer = 8
+material = ExtResource("7_prf7u")
+clip_contents = true
 layout_mode = 0
-offset_left = 42.0
-offset_top = 79.0
-offset_right = 122.0
-offset_bottom = 110.0
+offset_left = 25.0
+offset_top = 77.0
+offset_right = 136.0
+offset_bottom = 117.0
 focus_mode = 0
-theme_override_colors/font_disabled_color = Color(0.364706, 0.364706, 0.364706, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
 theme_override_styles/disabled = SubResource("StyleBoxFlat_um0nj")
 theme_override_styles/hover = SubResource("StyleBoxFlat_3dsm8")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_do5rw")
-theme_override_styles/normal = SubResource("StyleBoxFlat_pdlup")
+theme_override_styles/normal = SubResource("StyleBoxFlat_5f3j3")
 text = "End Phase"
+
+[node name="Label" type="Label" parent="Actions/EndPhaseButton"]
+z_index = 1
+layout_mode = 0
+offset_left = 16.0
+offset_top = 7.0
+offset_right = 99.0
+offset_bottom = 30.0
+text = "end_phase
+"
 
 [node name="Information" type="PanelContainer" parent="Actions"]
 layout_mode = 0

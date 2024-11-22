@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cbfshcwnlh4n4"]
+
+[ext_resource type="Shader" path="res://shaders/end_turn_button.gdshader" id="1_q0skr"]
+
+[resource]
+shader = ExtResource("1_q0skr")
+shader_parameter/color_factor = null
+shader_parameter/target_color = Color(0, 1, 0, 1)

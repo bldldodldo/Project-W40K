@@ -22,8 +22,8 @@ var move_limit = Vector2(0,0)
 var move_margin = 0.5
 var move_step = 2
 var position_pile = []
-var scroll_margin = 10
-var scroll_move_speed = 2000
+var scroll_margin = 3
+var scroll_move_speed = 1500
 var original_viewport_size
 
 

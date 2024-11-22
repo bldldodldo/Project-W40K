@@ -145,6 +145,7 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	if side == 1:
 		combatant_scene.scale.x = -1
 	create_hp_display(combatant_scene, combatant)
+	combatant_scene.z_index = 2
 	emit_signal("combatant_added", combatant)
 
 # Function to create and update HP display

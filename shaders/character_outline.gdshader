@@ -1,7 +1,7 @@
 shader_type canvas_item;
 
 // Outline color.
-uniform vec4 color: source_color = vec4(1.0);
+uniform vec4 color: source_color = vec4(0.1,0.1,0.6,1);
 // Outline thickness.
 uniform float thickness: hint_range(0.0, 100.0) = 1.0;
 // Used to compensate for alpha values.
@@ -57,7 +57,7 @@ void fragment() {
 		float edge = TEXTURE_PIXEL_SIZE.x * thickness * 2.0;
 		uv = uv + uv * edge;
 		uv += vec2(0.5);
-		
+
 		// Apply outline.
 		vec4 newColor = texture(TEXTURE, uv);
 		if (newColor.a == 0.0 || border(uv)) {
