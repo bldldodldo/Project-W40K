@@ -26,3 +26,4 @@ libraries = {
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_glvev")
+offset = Vector2(0, -32)

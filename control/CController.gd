@@ -65,6 +65,8 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.is_pressed():
+				set_computer_actions()
+				print("fini!")
 				# Start drawing a custom path
 				if controlled_combatant_exists and controlled_combatant.arrived:
 					is_drawing_path = true
@@ -76,7 +78,7 @@ func _unhandled_input(event):
 					if is_path_valid(drawn_path):
 						controlled_combatant.next_action_type = "Move"
 						controlled_combatant.selected_path = drawn_path
-						print("Custom path selected for ", controlled_combatant.name, " and it's : ", controlled_combatant.selected_path)
+						print("Custom path selected for ", controlled_combatant.name)
 						controlled_combatant_exists = false
 						controlled_combatant = {}
 						combatant_deselected.emit()
@@ -244,7 +246,6 @@ func _ready():
 	movement_astargrid.update()
 	# Define the function to update weights from obstacles
 	update_tile_weights_from_obstacles()
-	
 	sight_astargrid.region = Rect2i(-50, -50, 100, 100)
 	sight_astargrid.cell_size = Vector2i(1, 1)
 	sight_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
@@ -256,7 +257,7 @@ func _ready():
 	for tile in tile_map.get_used_cells():
 		var tile_blocking = tile_map.get_cell_tile_data(tile)
 		for block in tile_blocking.get_custom_data("Blocks"):
-			_blocking_spaces[block].append(tile)	
+			_blocking_spaces[block].append(tile)
 	
 func combat_start():
 	combat.phase = 3
@@ -277,6 +278,7 @@ func new_phase_init():
 		comb.selected_path = []
 	queue_redraw()
 	signal_end_phase.emit()
+	
 
 func combatant_added(combatant):
 #	movement_astargrid.set_point_solid(combatant.position, true)
@@ -478,7 +480,11 @@ func end_phase():
 		for comb in combat.combatants:
 			if comb.next_action_type == "Move":
 				print(comb.name, " has type Move")
-				move_combatant(comb)
+				if comb.selected_path == PackedVector2Array():
+					print("Error! ", comb.name, " has an empty path. ")
+					comb.next_action_type == "None"
+				else:
+					move_combatant(comb)
 			elif comb.next_action_type == "Attack" and verifying_moved():
 				if combat.phase == 1:
 					print("ERREUR : No Attack Allowed Phase 1")
@@ -789,6 +795,93 @@ func end_button_color_switch(color_to_use: Color):
 	else:
 		print("EndPhaseButton does not have a ShaderMaterial.")	
 
+
+func set_computer_actions():
+	for comb in combat.combatants:
+		if combat.phase == 1:
+			set_computer_unit_movement(comb)
+		elif combat.phase == 2:
+			var _random_value = randf()
+			if _random_value <= 0.4:
+				set_computer_unit_spell(comb)
+			elif _random_value > 0.4 and _random_value <= 0.8 or comb.movement == 0:
+				set_computer_unit_attack(comb)
+			else:
+				set_computer_unit_movement(comb)
+		else:
+			if comb.number_attacks != 0:
+				var _random_value = randf()
+				if _random_value <= 0.90:
+					set_computer_unit_attack(comb)
+				else:
+					set_computer_unit_movement(comb)
+			else:
+				set_computer_unit_movement(comb)
+
+func set_computer_unit_movement(comb):
+	var _index = randi() % combat.groups[0].size()
+	var _computer_targeted_comb = {}
+	for _temp_comb in combat.combatants:
+		if _temp_comb.name == combat.groups[0][_index]:
+			_computer_targeted_comb = _temp_comb
+	print(comb.position, _computer_targeted_comb.position)
+	var _path = movement_astargrid.get_point_path(comb.position, _computer_targeted_comb.position)
+	print(_path)
+	comb.next_action_type = "Move"
+	var _number_of_movements_to_have = randi() % (comb.movement) +2 #+1 once for the list index change and +1 for the % thing
+	print(_number_of_movements_to_have)
+	comb.selected_path = _path.slice(0,_number_of_movements_to_have)
+	print("Path selected for ", comb.name, " and it's ", comb.selected_path)
+
+func set_computer_unit_spell(comb):
+	for _skill_key in comb.skill_list:
+		var _skill_used = SkillDatabase.skills[(_skill_key)]
+		if _skill_used.type == "Spell":
+			comb.next_action_type = "Spell"
+			comb.selected_skill_id = _skill_key
+			if _skill_used.range_type == "Range":
+				while comb.selected_targets.size() < _skill_used.number_of_target:
+					print("Range")
+					for x in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
+						for y in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
+							var _tile = comb.position + Vector2i(x,y)
+							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+								var _random_value = randf()
+								if _random_value > 0.99:
+									print("computer_added_a_new_tile! (range)")
+									comb.selected_targets.append(_tile)
+			elif _skill_used.range_type == "Range":
+				while comb.selected_targets.size() < _skill_used.number_of_target:
+					for _tile in _selected_skill.range_list:
+						var _random_value = randf()
+						if _random_value > 0.99:
+							print("computer_added_a_new_tile! (list)")
+							comb.selected_targets.append(_tile)
+							
+func set_computer_unit_attack(comb):
+	for _skill_key in comb.skill_list:
+		var _skill_used = SkillDatabase.skills[(_skill_key)]
+		if _skill_used.type == "Attack":
+			comb.next_action_type = "Attack"
+			comb.selected_skill_id = _skill_key
+			if _skill_used.range_type == "Range":
+				while comb.selected_targets.size() < _skill_used.number_of_target:
+					for x in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
+						for y in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
+							var _tile = comb.position + Vector2i(x,y)
+							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+								var _random_value = randf()
+								if _random_value > 0.99:
+									print("computer_added_a_new_tile! (range)")
+									comb.selected_targets.append(_tile)
+			elif _skill_used.range_type == "Range":
+				while comb.selected_targets.size() < _skill_used.number_of_target:
+					for _tile in _selected_skill.range_list:
+						var _random_value = randf()
+						if _random_value > 0.99:
+							print("computer_added_a_new_tile! (list)")
+							comb.selected_targets.append(_tile)
+
 func _draw():
 	if is_drawing_path and drawn_path.size() > 0:
 		# Draw the path as a series of connected lines
@@ -855,7 +948,7 @@ func _draw():
 				if (not phase_ended) and comb.selected_path != PackedVector2Array():
 					for i in range(1, comb.selected_path.size()):
 						var point = tile_map.map_to_local(comb.selected_path[i])
-						var draw_color = Color(0, 0.5, 0, 1)
+						var draw_color = Color(0, 0.8, 0, 1)
 						draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
 						#if i > 0:
 							#path_length -= get_tile_cost_at_point(point, comb)
