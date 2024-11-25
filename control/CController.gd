@@ -752,7 +752,7 @@ func target_selected(target_position):
 const grid_tex = preload("res://imagese/grid_marker.png")
 
 func get_tile_cost(tile, comb):
-	if comb.movement_class != "fly":
+	if comb.movement_class != "Fly":
 		for obstacle_tile in obstacle_map.get_used_cells():
 			if (Vector2i(tile) == obstacle_tile):
 				var res = 999999
@@ -798,25 +798,26 @@ func end_button_color_switch(color_to_use: Color):
 
 func set_computer_actions():
 	for comb in combat.combatants:
-		if combat.phase == 1:
-			set_computer_unit_movement(comb)
-		elif combat.phase == 2:
-			var _random_value = randf()
-			if _random_value <= 0.4:
-				set_computer_unit_spell(comb)
-			elif _random_value > 0.4 and _random_value <= 0.8 or comb.movement == 0:
-				set_computer_unit_attack(comb)
-			else:
+		if comb.side == 1:
+			if combat.phase == 1:
 				set_computer_unit_movement(comb)
-		else:
-			if comb.number_attacks != 0:
+			elif combat.phase == 2:
 				var _random_value = randf()
-				if _random_value <= 0.90:
+				if _random_value <= 0.4:
+					set_computer_unit_spell(comb)
+				elif _random_value > 0.4 and _random_value <= 0.8 or comb.movement == 0:
 					set_computer_unit_attack(comb)
 				else:
 					set_computer_unit_movement(comb)
 			else:
-				set_computer_unit_movement(comb)
+				if comb.number_attacks != 0:
+					var _random_value = randf()
+					if _random_value <= 0.90:
+						set_computer_unit_attack(comb)
+					else:
+						set_computer_unit_movement(comb)
+				else:
+					set_computer_unit_movement(comb)
 
 func set_computer_unit_movement(comb):
 	var _index = randi() % combat.groups[0].size()
@@ -824,14 +825,15 @@ func set_computer_unit_movement(comb):
 	for _temp_comb in combat.combatants:
 		if _temp_comb.name == combat.groups[0][_index]:
 			_computer_targeted_comb = _temp_comb
-	print(comb.position, _computer_targeted_comb.position)
 	var _path = movement_astargrid.get_point_path(comb.position, _computer_targeted_comb.position)
-	print(_path)
-	comb.next_action_type = "Move"
-	var _number_of_movements_to_have = randi() % (comb.movement) +2 #+1 once for the list index change and +1 for the % thing
-	print(_number_of_movements_to_have)
-	comb.selected_path = _path.slice(0,_number_of_movements_to_have)
-	print("Path selected for ", comb.name, " and it's ", comb.selected_path)
+	if _path.size() <= 1:
+		print("ATTENTION PK CA FAIT CA LA : ", _path)
+	else:
+		comb.next_action_type = "Move"
+		var _number_of_movements_to_have = randi() % (comb.movement) +2 #+1 once for the list index change and +1 for the % thing
+		print(_number_of_movements_to_have)
+		comb.selected_path = _path.slice(0,_number_of_movements_to_have)
+		print("Path selected for ", comb.name, " and it's ", comb.selected_path)
 
 func set_computer_unit_spell(comb):
 	for _skill_key in comb.skill_list:
@@ -845,7 +847,7 @@ func set_computer_unit_spell(comb):
 					for x in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
 						for y in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
 							var _tile = comb.position + Vector2i(x,y)
-							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+							if is_in_range(comb.position, _tile, _skill_used.min_range, _skill_used.max_range, _skill_used.sight):
 								var _random_value = randf()
 								if _random_value > 0.99:
 									print("computer_added_a_new_tile! (range)")
@@ -869,7 +871,7 @@ func set_computer_unit_attack(comb):
 					for x in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
 						for y in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
 							var _tile = comb.position + Vector2i(x,y)
-							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+							if is_in_range(comb.position, _tile, _skill_used.min_range, _skill_used.max_range, _skill_used.sight):
 								var _random_value = randf()
 								if _random_value > 0.99:
 									print("computer_added_a_new_tile! (range)")

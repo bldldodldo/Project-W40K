@@ -1,0 +1,41 @@
+[gd_scene load_steps=7 format=3 uid="uid://cgfddyu8ignvv"]
+
+[ext_resource type="Shader" path="res://shaders/character_outline.gdshader" id="1_lpn0f"]
+[ext_resource type="Texture2D" uid="uid://3cblviwqehfr" path="res://imagese/sprites/space_marines/ultramarines/ultramarine_intercessor_boltpistol_chainsword.png" id="2_wx5pw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_81e6f"]
+shader = ExtResource("1_lpn0f")
+shader_parameter/color = Color(0.1, 0.1, 0.6, 1)
+shader_parameter/thickness = 1.0
+shader_parameter/tolerance = 0.0
+shader_parameter/diagonals = true
+shader_parameter/rounded = true
+
+[sub_resource type="Animation" id="Animation_irrvm"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_x0qgi"]
+resource_name = "idle"
+length = 1.5
+loop_mode = 1
+step = 0.25
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_4hlky"]
+_data = {
+"RESET": SubResource("Animation_irrvm"),
+"idle": SubResource("Animation_x0qgi")
+}
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+y_sort_enabled = true
+material = SubResource("ShaderMaterial_81e6f")
+texture = ExtResource("2_wx5pw")
+centered = false
+offset = Vector2(-34, -72)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_4hlky")
+}

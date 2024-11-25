@@ -1,31 +1,14 @@
-[gd_scene load_steps=13 format=3 uid="uid://csoe2cma4kbg6"]
+[gd_scene load_steps=18 format=3 uid="uid://csoe2cma4kbg6"]
 
 [ext_resource type="Script" path="res://databases/skill_database.gd" id="1_bnr7k"]
+[ext_resource type="Texture2D" uid="uid://sge6hufulmtg" path="res://imagese/icon/skills/icon_boltgun.png" id="2_eks4o"]
 [ext_resource type="Script" path="res://combat/resources/SkillDefinition.gd" id="2_twktv"]
-[ext_resource type="Texture2D" uid="uid://b5bhqfskef7lb" path="res://imagese/icon/melee_attack.png" id="2_wuynl"]
 [ext_resource type="Script" path="res://combat/resources/StatusDefinition.gd" id="4_ksji5"]
-[ext_resource type="Texture2D" uid="uid://bxwo27ww0uv75" path="res://imagese/icon/knife.PNG" id="5_bg0ha"]
-[ext_resource type="Texture2D" uid="uid://cycna0mvcvqk5" path="res://imagese/icon/boltgun.PNG" id="6_shifs"]
-[ext_resource type="Texture2D" uid="uid://wxkh5qyiy8c1" path="res://imagese/icon/basic_magic.png" id="7_1grej"]
-
-[sub_resource type="Resource" id="Resource_lgmlb"]
-script = ExtResource("2_twktv")
-name = "Attack (Melee)"
-type = "Attack"
-range_type = "Range"
-min_range = 1
-max_range = 8
-range_list = []
-sight = false
-hit_zone = [Vector2i(1, 0), Vector2i(-1, 0)]
-number_of_target = 1
-damage = 1
-prob = 0.5
-armor_penetration = 0
-end_cd_turn = 0
-cd = 0
-statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("2_wuynl")
+[ext_resource type="Texture2D" uid="uid://do06ga6lnypqk" path="res://imagese/icon/skills/icon_knife.png" id="5_5oa18"]
+[ext_resource type="Texture2D" uid="uid://q8au4mqmvktl" path="res://imagese/icon/skills/icon_ultramarine_squad.png" id="6_8tgph"]
+[ext_resource type="Texture2D" uid="uid://35vnbavrsnta" path="res://imagese/icon/skills/icon_boltpistol.png" id="7_43m71"]
+[ext_resource type="Texture2D" uid="uid://b8goxacdiqark" path="res://imagese/icon/skills/icon_chainsword.png" id="8_ea5h8"]
+[ext_resource type="Texture2D" uid="uid://cgbqssjsbm4ac" path="res://imagese/icon/skills/icon_ultramarine_assault.png" id="9_0pnso"]
 
 [sub_resource type="Resource" id="Resource_j7xro"]
 script = ExtResource("2_twktv")
@@ -33,18 +16,18 @@ name = "Boltgun"
 type = "Attack"
 range_type = "Range"
 min_range = 3
-max_range = 10
+max_range = 8
 range_list = []
 sight = true
 hit_zone = []
 number_of_target = 3
 damage = 1
-prob = 0.9
+prob = 0.95
 armor_penetration = 0
 end_cd_turn = 0
 cd = 0
 statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("6_shifs")
+icon = ExtResource("2_eks4o")
 
 [sub_resource type="Resource" id="Resource_tbcku"]
 script = ExtResource("2_twktv")
@@ -63,17 +46,17 @@ armor_penetration = -1
 end_cd_turn = 0
 cd = 0
 statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("5_bg0ha")
+icon = ExtResource("5_5oa18")
 
 [sub_resource type="Resource" id="Resource_b3yxp"]
 script = ExtResource("4_ksji5")
 name = "Ultramarine Squad Boost"
 time = 0
 stat = "strength"
-effect = 10
-turn_total = 5
-turn_to_go = 5
-delay = 2
+effect = 2
+turn_total = 2
+turn_to_go = 2
+delay = 0
 
 [sub_resource type="Resource" id="Resource_wbc7t"]
 script = ExtResource("2_twktv")
@@ -92,13 +75,82 @@ armor_penetration = 0
 end_cd_turn = 0
 cd = 2
 statuses = Array[ExtResource("4_ksji5")]([SubResource("Resource_b3yxp")])
-icon = ExtResource("7_1grej")
+icon = ExtResource("6_8tgph")
+
+[sub_resource type="Resource" id="Resource_uhaki"]
+script = ExtResource("2_twktv")
+name = "Boltpistol"
+type = "Attack"
+range_type = "Range"
+min_range = 2
+max_range = 5
+range_list = []
+sight = true
+hit_zone = []
+number_of_target = 2
+damage = 1
+prob = 0.9
+armor_penetration = 0
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("7_43m71")
+
+[sub_resource type="Resource" id="Resource_xuvhm"]
+script = ExtResource("2_twktv")
+name = "Chainsword"
+type = "Attack"
+range_type = "Range"
+min_range = 1
+max_range = 2
+range_list = []
+sight = true
+hit_zone = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1)]
+number_of_target = 1
+damage = 1
+prob = 1.0
+armor_penetration = 1
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("8_ea5h8")
+
+[sub_resource type="Resource" id="Resource_55j8b"]
+script = ExtResource("4_ksji5")
+name = "ultramarine_assault"
+time = 0
+stat = "movement_max"
+effect = 5
+turn_total = 1
+turn_to_go = 0
+delay = 0
+
+[sub_resource type="Resource" id="Resource_id7ej"]
+script = ExtResource("2_twktv")
+name = "Ultramarine Assault"
+type = "Spell"
+range_type = "Range"
+min_range = 0
+max_range = 0
+range_list = []
+sight = false
+hit_zone = []
+number_of_target = 1
+damage = 0
+prob = 1.0
+armor_penetration = 0
+end_cd_turn = 0
+cd = 2
+statuses = Array[ExtResource("4_ksji5")]([SubResource("Resource_55j8b")])
+icon = ExtResource("9_0pnso")
 
 [node name="SkillDatabase" type="Node"]
 script = ExtResource("1_bnr7k")
 skills = {
-"attack_melee": SubResource("Resource_lgmlb"),
 "boltgun": SubResource("Resource_j7xro"),
+"boltpistol": SubResource("Resource_uhaki"),
+"chainsword": SubResource("Resource_xuvhm"),
 "knife": SubResource("Resource_tbcku"),
+"ultramarine_assault": SubResource("Resource_id7ej"),
 "ultramarine_squad": SubResource("Resource_wbc7t")
 }

@@ -59,15 +59,15 @@ func _ready():
 	emit_signal("register_combat", self)
 	randomize()
 	#ADD PLAYERS
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_1"), 0, Vector2i(10,0))
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_2"), 0, Vector2i(9,2))
-	add_combatant(create_combatant(CombatantDatabase.combatants["steve"], "Space_Marine_3"), 0, Vector2i(10,4))
+	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltgun"], "Space_Marine_1"), 0, Vector2i(10,0))
+	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_2"), 0, Vector2i(9,2))
+	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_3"), 0, Vector2i(10,4))
 	
 	
 	#ADD ENEMIES
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_1"), 1, Vector2i(25,-4))
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_2"), 1, Vector2i(26,-2))
-	add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_3"), 1, Vector2i(25,-0))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_1"), 1, Vector2i(25,-4))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_2"), 1, Vector2i(26,-2))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_3"), 1, Vector2i(25,-0))
 	
 	#TURNS_UNTIL_THE_END
 	 
@@ -88,14 +88,13 @@ func create_combatant(definition: CombatantDefinition, override_name = ""):
 		"max_hp" = definition.max_hp,
 		"hp" = definition.max_hp,
 		"class" = definition.class_t,
-		"alive" = true,
 		"movement_class" = definition.movement_class,
+		"alive" = true,
 		"army" = army_list[definition.class_t],
 		"skill_list" = [], #definition.skills,
 		"number_attacks_max" = definition.number_attacks_max,
 		"number_attacks" = definition.number_attacks_max,
 		"icon" = definition.icon,
-		"map_sprite" = definition.map_sprite,
 		"animation_resource" = definition.animation_resource,
 		"sprite_offset" = definition.sprite_offset,
 		"movement_max" = definition.movement,

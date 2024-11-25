@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://b2susye62l1ym"]
 
-[ext_resource type="Texture2D" uid="uid://ceoeu8xlo4fnw" path="res://imagese/sprites/space_marines/ultramarines/ultramarine_intercessor_boltrifle.png" id="1_6esr7"]
-[ext_resource type="Shader" path="res://shaders/character_outline.gdshader" id="1_bscl3"]
+[ext_resource type="Shader" path="res://shaders/character_outline.gdshader" id="1_j2ix0"]
+[ext_resource type="Texture2D" uid="uid://ceoeu8xlo4fnw" path="res://imagese/sprites/space_marines/ultramarines/ultramarine_intercessor_boltrifle.png" id="2_wlpjd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_81e6f"]
-shader = ExtResource("1_bscl3")
+shader = ExtResource("1_j2ix0")
 shader_parameter/color = Color(0.1, 0.1, 0.6, 1)
 shader_parameter/thickness = 1.0
 shader_parameter/tolerance = 0.0
@@ -31,7 +31,7 @@ _data = {
 [node name="Sprite2D" type="Sprite2D" parent="."]
 y_sort_enabled = true
 material = SubResource("ShaderMaterial_81e6f")
-texture = ExtResource("1_6esr7")
+texture = ExtResource("2_wlpjd")
 centered = false
 offset = Vector2(-32, -64)
 
