@@ -65,13 +65,14 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.is_pressed():
-				set_computer_actions()
-				print("fini!")
 				# Start drawing a custom path
 				if controlled_combatant_exists and controlled_combatant.arrived:
+					#var mouse_position = get_global_mouse_position()
+					#var mouse_position_i = tile_map.local_to_map(mouse_position)
+					#print(mouse_position_i, " and ", get_vec_dir(controlled_combatant.position, mouse_position_i))
 					is_drawing_path = true
 					drawn_path = PackedVector2Array()  # Reset the drawn path
-			elif event.is_released():
+			elif event.is_released(): 
 				# Finish drawing the path
 				if is_drawing_path and controlled_combatant_exists:
 					is_drawing_path = false
@@ -276,8 +277,11 @@ func new_phase_init():
 		comb.next_action_type = "None"
 		comb.next_move = []
 		comb.selected_path = []
+		print(comb.movement)
 	queue_redraw()
 	signal_end_phase.emit()
+	set_computer_actions()
+	print("fini!")
 	
 
 func combatant_added(combatant):
@@ -414,25 +418,14 @@ func verifying_spelled():
 			_verifying_spelled = false
 	return _verifying_spelled
 
-func get_main_vec_comp(position1, position2):
-	var _diff = position2 - position1
-	if _diff == Vector2i(0,0):
-		return "0"
-	elif abs(_diff.x) > abs(_diff.y):
-		return "x"
-	elif abs(_diff.x) < abs(_diff.y):
-		return "y"
-	else:
-		return "="
-
 func get_vec_dir(position1, position2):
 	var _diff = position2 - position1
 	if _diff.x == 0 and _diff.y == 0:
 		return "self"
 	elif _diff.x == 0 and _diff.y >= 0:
-		return "top"
-	elif _diff.x == 0 and _diff.y <= 0:
 		return "bottom"
+	elif _diff.x == 0 and _diff.y <= 0:
+		return "top"
 	elif _diff.x >= 0 and _diff.y == 0:
 		return "right"
 	elif _diff.x <= 0 and _diff.y == 0:
@@ -575,20 +568,38 @@ func spell_combatant(comb: Dictionary):
 
 func hit_zone_compute(comb, _tile, _suppl_offset):
 	var _new_tile: Vector2i
-	var _dir = get_main_vec_comp(comb.position, _tile)
-	if _dir == "0":
-		_new_tile = _tile + _suppl_offset
-	elif  _dir == "x":
-		_new_tile = _tile + Vector2i(_suppl_offset.y, _suppl_offset.x)
-	elif _dir == "y":
-		_new_tile = _tile + _suppl_offset
+	var _dir = get_vec_dir(comb.position, _tile)
+	if _dir == "self":
+		_new_tile.x = _tile.x + _suppl_offset.x
+		_new_tile.y = _tile.y + _suppl_offset.y
+	elif _dir == "right":
+		_new_tile.x = _tile.x + _suppl_offset.y
+		_new_tile.y = _tile.y + _suppl_offset.x
+	elif _dir == "left":
+		_new_tile.x = _tile.x - _suppl_offset.y
+		_new_tile.y = _tile.y - _suppl_offset.x
+	elif _dir == "top":
+		_new_tile.x = _tile.x + _suppl_offset.x
+		_new_tile.y = _tile.y - _suppl_offset.y
+	elif _dir == "bottom":
+		_new_tile.x = _tile.x - _suppl_offset.x
+		_new_tile.y = _tile.y + _suppl_offset.y
+		#_new_tile.x = 
+	elif _dir == "top_right":
+		_new_tile.x = _tile.x + _suppl_offset.y + _suppl_offset.x
+		_new_tile.y = _tile.y - _suppl_offset.y + _suppl_offset.x
+	elif _dir == "bottom_right":
+		_new_tile.x = _tile.x + _suppl_offset.y - _suppl_offset.x
+		_new_tile.y = _tile.y + _suppl_offset.y + _suppl_offset.x
+	elif _dir == "bottom_left":
+		_new_tile.x = _tile.x - _suppl_offset.y - _suppl_offset.x
+		_new_tile.y = _tile.y + _suppl_offset.y - _suppl_offset.x
+	elif _dir == "top_left":
+		_new_tile.x = _tile.x - _suppl_offset.y + _suppl_offset.x
+		_new_tile.y = _tile.y - _suppl_offset.y - _suppl_offset.x
 	else:
-		if get_vec_dir(comb.position, _tile) == "bottom_right" or get_vec_dir(comb.position, _tile) == "top_left":
-			_new_tile.x = _tile.x - _suppl_offset.x + _suppl_offset.y
-			_new_tile.y = _tile.y + _suppl_offset.x + _suppl_offset.y
-		else:
-			_new_tile.x = _tile.x + _suppl_offset.x - _suppl_offset.y
-			_new_tile.y = _tile.y + _suppl_offset.x + _suppl_offset.y
+		print("WTF ALERT ERRROR BUG")
+		pass
 	return _new_tile
 
 func attack_compute(comb, targeted_comb):
@@ -820,21 +831,24 @@ func set_computer_actions():
 					set_computer_unit_movement(comb)
 
 func set_computer_unit_movement(comb):
-	var _index = randi() % combat.groups[0].size()
 	var _computer_targeted_comb = {}
-	for _temp_comb in combat.combatants:
-		if _temp_comb.name == combat.groups[0][_index]:
-			_computer_targeted_comb = _temp_comb
-	var _path = movement_astargrid.get_point_path(comb.position, _computer_targeted_comb.position)
-	if _path.size() <= 1:
-		print("ATTENTION PK CA FAIT CA LA : ", _path)
+	while _computer_targeted_comb == {}:
+		var _index = randi() % combat.groups[0].size()
+		for _temp_comb in combat.combatants:
+			if _temp_comb.name == combat.groups[0][_index]:
+				_computer_targeted_comb = _temp_comb
+	if _computer_targeted_comb != {} and comb.movement != 0:
+		var _path = movement_astargrid.get_point_path(comb.position, _computer_targeted_comb.position)
+		if _path.size() <= 1:
+			print("ATTENTION PK CA FAIT CA LA : ", _path)
+		else:
+			comb.next_action_type = "Move"
+			var _number_of_movements_to_have = randi() % (comb.movement) +2 #+1 once for the list index change and +1 for the % thing
+			print(_number_of_movements_to_have)
+			comb.selected_path = _path.slice(0,_number_of_movements_to_have)
+			print("Path selected for ", comb.name, " and it's ", comb.selected_path)
 	else:
-		comb.next_action_type = "Move"
-		var _number_of_movements_to_have = randi() % (comb.movement) +2 #+1 once for the list index change and +1 for the % thing
-		print(_number_of_movements_to_have)
-		comb.selected_path = _path.slice(0,_number_of_movements_to_have)
-		print("Path selected for ", comb.name, " and it's ", comb.selected_path)
-
+		print("ERROR : NO TARGET FOUND OR TRYING TO MOVE WITH 0 MOVEMENT")
 func set_computer_unit_spell(comb):
 	for _skill_key in comb.skill_list:
 		var _skill_used = SkillDatabase.skills[(_skill_key)]

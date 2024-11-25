@@ -1,39 +1,16 @@
-[gd_scene load_steps=13 format=3 uid="uid://sgve77vtu623"]
+[gd_scene load_steps=16 format=3 uid="uid://sgve77vtu623"]
 
 [ext_resource type="Script" path="res://databases/combatant_database.gd" id="1_5ebs0"]
 [ext_resource type="Script" path="res://combat/resources/CombatantDefinition.gd" id="2_rggep"]
-[ext_resource type="Texture2D" uid="uid://mha8vbqb2djl" path="res://imagese/chars.png" id="3_vw1bw"]
 [ext_resource type="Script" path="res://combat/resources/StatusDefinition.gd" id="4_20ea5"]
 [ext_resource type="PackedScene" uid="uid://b2susye62l1ym" path="res://scenes/units/ultramarine_intercessor_boltgun.tscn" id="5_k7kum"]
 [ext_resource type="Texture2D" uid="uid://dpgmg5ql4ptm7" path="res://imagese/icon/units/icon_ultramarine_boltgun.png" id="6_n7joq"]
 [ext_resource type="PackedScene" uid="uid://cgfddyu8ignvv" path="res://scenes/units/ultramarine_intercessor_boltpistol_chainsword.tscn" id="7_c1lhg"]
 [ext_resource type="Texture2D" uid="uid://dt5ssy10kogh2" path="res://imagese/icon/units/icon_ultramarine_assault.png" id="7_g5aji"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_kwsrb"]
-atlas = ExtResource("3_vw1bw")
-region = Rect2(0, 0, 32, 32)
-
-[sub_resource type="Resource" id="Resource_tkpbb"]
-script = ExtResource("2_rggep")
-name = "Steve"
-class_t = 0
-movement_class = ""
-is_transparent = false
-max_hp = 3
-movement = 10
-strength = 3
-psy_power = 1
-toughness = 3
-armor_save = 0
-crit_chance = 50
-weight = 0
-move_speed = 300
-icon = SubResource("AtlasTexture_kwsrb")
-animation_resource = ExtResource("5_k7kum")
-sprite_offset = Vector2(3, 0)
-skills = Array[String](["boltgun", "knife", "ultramarine_squad"])
-number_attacks_max = 1
-statuses = Array[ExtResource("4_20ea5")]([])
+[ext_resource type="PackedScene" uid="uid://dsbqpyeeeuwmn" path="res://scenes/units/tyranids_hormagaunt.tscn" id="8_xnysm"]
+[ext_resource type="Texture2D" uid="uid://ctec27l0l32cw" path="res://imagese/icon/units/icon_tyranids_hormagaunt.png" id="9_x7b8e"]
+[ext_resource type="PackedScene" uid="uid://fqa4q0kehuq4" path="res://scenes/units/tyranids_lictor.tscn" id="10_7lywx"]
+[ext_resource type="Texture2D" uid="uid://dy008bpjeqio5" path="res://imagese/icon/units/icon_tyranids_lictor.png" id="11_yxcy0"]
 
 [sub_resource type="Resource" id="Resource_kfxn0"]
 script = ExtResource("2_rggep")
@@ -49,7 +26,7 @@ toughness = 3
 armor_save = 0
 crit_chance = 5
 weight = 1000
-move_speed = 320
+move_speed = 250
 icon = ExtResource("6_n7joq")
 animation_resource = ExtResource("5_k7kum")
 sprite_offset = Vector2(3, 0)
@@ -71,7 +48,7 @@ toughness = 2
 armor_save = 0
 crit_chance = 15
 weight = 800
-move_speed = 370
+move_speed = 300
 icon = ExtResource("7_g5aji")
 animation_resource = ExtResource("7_c1lhg")
 sprite_offset = Vector2(3, 0)
@@ -79,10 +56,55 @@ skills = Array[String](["boltpistol", "chainsword", "ultramarine_assault"])
 number_attacks_max = 1
 statuses = Array[ExtResource("4_20ea5")]([])
 
+[sub_resource type="Resource" id="Resource_j7o5b"]
+script = ExtResource("2_rggep")
+name = "Tyranids Hormagaunt"
+class_t = 2
+movement_class = "Ground"
+is_transparent = true
+max_hp = 2
+movement = 10
+strength = 1
+psy_power = 1
+toughness = 2
+armor_save = 1
+crit_chance = 5
+weight = 200
+move_speed = 450
+icon = ExtResource("9_x7b8e")
+animation_resource = ExtResource("8_xnysm")
+sprite_offset = Vector2(3, 0)
+skills = Array[String](["slash"])
+number_attacks_max = 2
+statuses = Array[ExtResource("4_20ea5")]([])
+
+[sub_resource type="Resource" id="Resource_p4u7i"]
+script = ExtResource("2_rggep")
+name = "Tyranids Lictor"
+class_t = 2
+movement_class = "Ground"
+is_transparent = true
+max_hp = 6
+movement = 8
+strength = 4
+psy_power = 1
+toughness = 2
+armor_save = 0
+crit_chance = 30
+weight = 1000
+move_speed = 200
+icon = ExtResource("11_yxcy0")
+animation_resource = ExtResource("10_7lywx")
+sprite_offset = Vector2(0, 0)
+skills = Array[String](["assassination"])
+number_attacks_max = 1
+statuses = Array[ExtResource("4_20ea5")]([])
+
 [node name="CombatantDatabase" type="Node"]
 script = ExtResource("1_5ebs0")
 combatants = {
-"steve": SubResource("Resource_tkpbb"),
+"tyranids_hormagaunt": SubResource("Resource_j7o5b"),
+"tyranids_lictor": SubResource("Resource_p4u7i"),
 "ultramarine_intercessor_boltgun": SubResource("Resource_kfxn0"),
 "ultramarine_intercessor_boltpistol_chainsword": SubResource("Resource_1hvx6")
 }

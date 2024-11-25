@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://csoe2cma4kbg6"]
+[gd_scene load_steps=24 format=3 uid="uid://csoe2cma4kbg6"]
 
 [ext_resource type="Script" path="res://databases/skill_database.gd" id="1_bnr7k"]
 [ext_resource type="Texture2D" uid="uid://sge6hufulmtg" path="res://imagese/icon/skills/icon_boltgun.png" id="2_eks4o"]
@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://35vnbavrsnta" path="res://imagese/icon/skills/icon_boltpistol.png" id="7_43m71"]
 [ext_resource type="Texture2D" uid="uid://b8goxacdiqark" path="res://imagese/icon/skills/icon_chainsword.png" id="8_ea5h8"]
 [ext_resource type="Texture2D" uid="uid://cgbqssjsbm4ac" path="res://imagese/icon/skills/icon_ultramarine_assault.png" id="9_0pnso"]
+[ext_resource type="Texture2D" uid="uid://c51hlf3phcae7" path="res://imagese/icon/skills/icon_slash.png" id="10_0pwdu"]
+[ext_resource type="Texture2D" uid="uid://213ahbn7nteh" path="res://imagese/icon/skills/icon_assassination.png" id="11_g5xy2"]
 
 [sub_resource type="Resource" id="Resource_j7xro"]
 script = ExtResource("2_twktv")
@@ -22,12 +24,50 @@ sight = true
 hit_zone = []
 number_of_target = 3
 damage = 1
-prob = 0.95
+prob = 0.25
 armor_penetration = 0
 end_cd_turn = 0
 cd = 0
 statuses = Array[ExtResource("4_ksji5")]([])
 icon = ExtResource("2_eks4o")
+
+[sub_resource type="Resource" id="Resource_uhaki"]
+script = ExtResource("2_twktv")
+name = "Boltpistol"
+type = "Attack"
+range_type = "Range"
+min_range = 2
+max_range = 5
+range_list = []
+sight = true
+hit_zone = []
+number_of_target = 2
+damage = 1
+prob = 0.9
+armor_penetration = 0
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("7_43m71")
+
+[sub_resource type="Resource" id="Resource_xuvhm"]
+script = ExtResource("2_twktv")
+name = "Chainsword"
+type = "Attack"
+range_type = "Range"
+min_range = 1
+max_range = 1
+range_list = []
+sight = true
+hit_zone = [Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1)]
+number_of_target = 1
+damage = 2
+prob = 1.0
+armor_penetration = 1
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("8_ea5h8")
 
 [sub_resource type="Resource" id="Resource_tbcku"]
 script = ExtResource("2_twktv")
@@ -47,6 +87,45 @@ end_cd_turn = 0
 cd = 0
 statuses = Array[ExtResource("4_ksji5")]([])
 icon = ExtResource("5_5oa18")
+
+[sub_resource type="Resource" id="Resource_55j8b"]
+script = ExtResource("4_ksji5")
+name = "ultramarine_assault_movement_max"
+time = 0
+stat = "movement_max"
+effect = 5
+turn_total = 1
+turn_to_go = 0
+delay = 0
+
+[sub_resource type="Resource" id="Resource_e4et0"]
+script = ExtResource("4_ksji5")
+name = "ultramarine_assault_movement"
+time = 0
+stat = "movement"
+effect = 5
+turn_total = 1
+turn_to_go = 0
+delay = 0
+
+[sub_resource type="Resource" id="Resource_id7ej"]
+script = ExtResource("2_twktv")
+name = "Ultramarine Assault"
+type = "Spell"
+range_type = "Range"
+min_range = 0
+max_range = 0
+range_list = []
+sight = false
+hit_zone = []
+number_of_target = 1
+damage = 0
+prob = 1.0
+armor_penetration = 0
+end_cd_turn = 0
+cd = 2
+statuses = Array[ExtResource("4_ksji5")]([SubResource("Resource_55j8b"), SubResource("Resource_e4et0")])
+icon = ExtResource("9_0pnso")
 
 [sub_resource type="Resource" id="Resource_b3yxp"]
 script = ExtResource("4_ksji5")
@@ -77,80 +156,72 @@ cd = 2
 statuses = Array[ExtResource("4_ksji5")]([SubResource("Resource_b3yxp")])
 icon = ExtResource("6_8tgph")
 
-[sub_resource type="Resource" id="Resource_uhaki"]
+[sub_resource type="Resource" id="Resource_aw08y"]
 script = ExtResource("2_twktv")
-name = "Boltpistol"
-type = "Attack"
-range_type = "Range"
-min_range = 2
-max_range = 5
-range_list = []
-sight = true
-hit_zone = []
-number_of_target = 2
-damage = 1
-prob = 0.9
-armor_penetration = 0
-end_cd_turn = 0
-cd = 0
-statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("7_43m71")
-
-[sub_resource type="Resource" id="Resource_xuvhm"]
-script = ExtResource("2_twktv")
-name = "Chainsword"
+name = "Slash"
 type = "Attack"
 range_type = "Range"
 min_range = 1
-max_range = 2
+max_range = 1
 range_list = []
 sight = true
-hit_zone = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1)]
+hit_zone = []
 number_of_target = 1
 damage = 1
 prob = 1.0
-armor_penetration = 1
+armor_penetration = -1
 end_cd_turn = 0
 cd = 0
 statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("8_ea5h8")
+icon = ExtResource("10_0pwdu")
 
-[sub_resource type="Resource" id="Resource_55j8b"]
-script = ExtResource("4_ksji5")
-name = "ultramarine_assault"
-time = 0
-stat = "movement_max"
-effect = 5
-turn_total = 1
-turn_to_go = 0
-delay = 0
-
-[sub_resource type="Resource" id="Resource_id7ej"]
+[sub_resource type="Resource" id="Resource_1oqvu"]
 script = ExtResource("2_twktv")
-name = "Ultramarine Assault"
-type = "Spell"
+name = "Assassination"
+type = "Attack"
 range_type = "Range"
+min_range = 1
+max_range = 1
+range_list = []
+sight = false
+hit_zone = [Vector2i(-1, 0), Vector2i(-2, -1), Vector2i(1, 0), Vector2i(2, -1)]
+number_of_target = 1
+damage = 1
+prob = 1.0
+armor_penetration = -2
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("11_g5xy2")
+
+[sub_resource type="Resource" id="Resource_ykwji"]
+script = ExtResource("2_twktv")
+name = ""
+type = ""
+range_type = ""
 min_range = 0
 max_range = 0
 range_list = []
 sight = false
 hit_zone = []
 number_of_target = 1
-damage = 0
+damage = 1
 prob = 1.0
 armor_penetration = 0
 end_cd_turn = 0
-cd = 2
-statuses = Array[ExtResource("4_ksji5")]([SubResource("Resource_55j8b")])
-icon = ExtResource("9_0pnso")
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
 
 [node name="SkillDatabase" type="Node"]
 script = ExtResource("1_bnr7k")
 skills = {
+"assassination": SubResource("Resource_1oqvu"),
 "boltgun": SubResource("Resource_j7xro"),
 "boltpistol": SubResource("Resource_uhaki"),
 "chainsword": SubResource("Resource_xuvhm"),
 "knife": SubResource("Resource_tbcku"),
+"slash": SubResource("Resource_aw08y"),
+"stealth": SubResource("Resource_ykwji"),
 "ultramarine_assault": SubResource("Resource_id7ej"),
 "ultramarine_squad": SubResource("Resource_wbc7t")
 }
