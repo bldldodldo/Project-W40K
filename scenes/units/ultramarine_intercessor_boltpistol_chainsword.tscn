@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://cgfddyu8ignvv"]
+[gd_scene load_steps=9 format=3 uid="uid://cgfddyu8ignvv"]
 
 [ext_resource type="Shader" path="res://shaders/character_outline.gdshader" id="1_lpn0f"]
 [ext_resource type="Texture2D" uid="uid://3cblviwqehfr" path="res://imagese/sprites/space_marines/ultramarines/ultramarine_intercessor_boltpistol_chainsword.png" id="2_wx5pw"]
+[ext_resource type="Script" path="res://ui/area2D_script_units.gd" id="3_d77l3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_81e6f"]
 shader = ExtResource("1_lpn0f")
@@ -10,6 +11,10 @@ shader_parameter/thickness = 1.0
 shader_parameter/tolerance = 0.0
 shader_parameter/diagonals = true
 shader_parameter/rounded = true
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b7ert"]
+radius = 21.0
+height = 63.0
 
 [sub_resource type="Animation" id="Animation_irrvm"]
 length = 0.001
@@ -34,6 +39,13 @@ material = SubResource("ShaderMaterial_81e6f")
 texture = ExtResource("2_wx5pw")
 centered = false
 offset = Vector2(-34, -72)
+
+[node name="Area2D" type="Area2D" parent="Sprite2D"]
+script = ExtResource("3_d77l3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
+position = Vector2(0, -31)
+shape = SubResource("CapsuleShape2D_b7ert")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -28,7 +28,6 @@ var movement_astargrid = AStarGrid2D.new()
 var movement_astargrid_region = Rect2i(-50, -50, 100, 100)
 var sight_astargrid = AStarGrid2D.new()
 var _mouse_target_position
-#var _blocked_target_position
 var _skill_selected = false
 var _selected_skill: Object
 
@@ -67,9 +66,6 @@ func _unhandled_input(event):
 			if event.is_pressed():
 				# Start drawing a custom path
 				if controlled_combatant_exists and controlled_combatant.arrived:
-					#var mouse_position = get_global_mouse_position()
-					#var mouse_position_i = tile_map.local_to_map(mouse_position)
-					#print(mouse_position_i, " and ", get_vec_dir(controlled_combatant.position, mouse_position_i))
 					is_drawing_path = true
 					drawn_path = PackedVector2Array()  # Reset the drawn path
 			elif event.is_released(): 
@@ -97,7 +93,8 @@ func _unhandled_input(event):
 				var comb = {}
 				
 				if controlled_combatant == {}:
-					comb = get_combatant_from_node((closest_node(check_mouse_over_sprites()))) #get_combatant_at_position(mouse_position_i)
+					pass
+					#comb = get_combatant_from_node((closest_node(check_mouse_over_sprites()))) #get_combatant_at_position(mouse_position_i)
 				else:
 					comb = get_combatant_at_position(mouse_position_i)
 				var local_map = tile_map.map_to_local(mouse_position_i)
@@ -115,8 +112,6 @@ func _unhandled_input(event):
 						_selected_skill = null
 						target_selection_finished.emit()
 						queue_redraw()
-				elif controlled_combatant == {} and comb != null and comb.alive and comb.side == 0:
-					set_controlled_combatant(comb)
 				elif controlled_combatant_exists and controlled_combatant.arrived  :
 					if not is_path_valid(temp_path):
 						reset_selected_action(controlled_combatant)
@@ -187,41 +182,7 @@ func closest_node(array: Array):
 	if array != []:
 		res = array[-1]
 	return res
-
-func get_bounding_box_for_sprites2(node: Node2D) -> Rect2:
-	var global_rect = Rect2()  # Initialize the global rectangle
-	var first_sprite = true
-	for child in node.get_children():
-		if child is Sprite2D:
-			var texture_size = child.texture.get_size() * child.scale
-			var sprite_top_left = child.global_position - Vector2(texture_size.x/2, texture_size.y)
-			var sprite_rect = Rect2(sprite_top_left, texture_size)
-			if first_sprite:
-				global_rect = sprite_rect  # Initialize the global rect with the first sprite
-				first_sprite = false
-			else:
-				global_rect = global_rect.merge(sprite_rect)  # Merge with the existing bounding box
-	return global_rect
-
-
-# Function to check if the mouse is over a Node2D based on its Sprite2D children
-func is_mouse_over_sprite(node: Node2D) -> bool:
-	var mouse_position = get_global_mouse_position()
-	var bounding_box = get_bounding_box_for_sprites2(node)
-	var box_position = bounding_box["position"]
-	var box_size = bounding_box["size"]
-	return mouse_position.x >= box_position.x and mouse_position.x <= box_position.x + box_size.x and \
-		   mouse_position.y >= box_position.y and mouse_position.y <= box_position.y + box_size.y
-
-# Function to iterate over children of the "combat" node and check if the mouse is over any Node2D
-func check_mouse_over_sprites():
-	var _concerned_nodes = []
-	for node in combat.get_children():
-		if node is Node2D and is_mouse_over_sprite(node):
-			print("Mouse is over sprite: ", node.name)
-			_concerned_nodes.append(node)
-	return _concerned_nodes
-
+	
 func is_path_valid(path):
 	# Ensure the path is valid (e.g., within movement range, not blocked)
 	if path == PackedVector2Array() or path.size() - 1 > controlled_combatant.movement:
@@ -252,8 +213,6 @@ func _ready():
 	sight_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	sight_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	sight_astargrid.update()
-	
-	
 	#build blocking spaces arrays
 	for tile in tile_map.get_used_cells():
 		var tile_blocking = tile_map.get_cell_tile_data(tile)
@@ -277,7 +236,6 @@ func new_phase_init():
 		comb.next_action_type = "None"
 		comb.next_move = []
 		comb.selected_path = []
-		print(comb.movement)
 	queue_redraw()
 	signal_end_phase.emit()
 	set_computer_actions()
@@ -285,16 +243,30 @@ func new_phase_init():
 	
 
 func combatant_added(combatant):
-#	movement_astargrid.set_point_solid(combatant.position, true)
-#	movement_astargrid.set_point_weight_scale(combatant.position, INF)
 	_occupied_spaces.append(combatant.position)
 
 
 func combatant_died(combatant):
-#	movement_astargrid.set_point_solid(combatant.position, false)
-	#movement_astargrid.set_point_weight_scale(combatant.position, 1)
 	_occupied_spaces.erase(combatant.position)
 
+func _on_sprite_clicked(comb_name: String):
+	for comb in combat.combatants:
+		if comb.name == comb_name and comb.side == 0:
+			set_controlled_combatant(comb)
+
+func _on_sprite_mouse_over(comb_name: String):
+	for comb in combat.combatants:
+		if comb.name == comb_name:
+			if comb.side == 0:
+				apply_outline(comb, Color(0,0,1,1),1)
+			elif comb.side == 1:
+				apply_outline(comb, Color(1,0,0,1),1)
+			
+func _on_sprite_mouse_exited(comb_name: String):
+	for comb in combat.combatants:
+		if comb.name == comb_name:
+			remove_outline(comb)
+			queue_redraw()
 
 func set_controlled_combatant(combatant: Dictionary):
 	var movement = combatant.movement
@@ -305,23 +277,6 @@ func set_controlled_combatant(combatant: Dictionary):
 	_selected_skill = null
 	print("Controlled_combatant set : ", controlled_combatant.name)
 	combatant_selected.emit(controlled_combatant)
-	update_points_weight(combatant)
-
-func update_points_weight(comb: Dictionary):
-	pass
-	#Update occupied spaces for flying units
-	#for point in _occupied_spaces:
-		#if comb.movement_class == 1:
-			#_astargrid.set_point_weight_scale(point, 1)
-		#else:
-			#_astargrid.set_point_weight_scale(point, INF)
-	#Update point weights for blocking spaces
-	#for class_m in range(_blocking_spaces.size()):
-		#for space in _blocking_spaces[class_m]:
-			#if controlled_combatant.movement_class == class_m:
-			#	_astargrid.set_point_weight_scale(space, INF)
-			#else:
-			#	_astargrid.set_point_weight_scale(space, 1)
 
 func get_distance(point1: Vector2i, point2: Vector2i):
 	return absi(point1.x - point2.x) + absi(point1.y - point2.y)
@@ -366,7 +321,6 @@ func _process(delta):
 						comb.position = tile_map.local_to_map(_next_position)
 						comb.selected_path_id += 1
 						comb.movement -= next_tile_cost
-						print("-1 de mov")
 					else:
 						compute_finish_move(comb, _comb_visual_node)
 
@@ -388,7 +342,6 @@ func compute_finish_move(comb: Dictionary, _comb_visual_node):
 	comb.arrived = true
 	reset_selected_action(comb)
 	_comb_visual_node.position = tile_map.map_to_local(comb.position) + comb.sprite_offset
-	print("fin de movement!")
 
 func verifying_arrived():
 	var _verifying_arrived = true
@@ -438,16 +391,6 @@ func get_vec_dir(position1, position2):
 		return "top_right"
 	elif _diff.x <= 0 and _diff.y <= 0:
 		return "top_left"
-#func set_movement(value):
-#	movement = value
-#	movement_changed.emit(value)
-
-
-#func get_movement():
-#	return movement
-
-#func get_current_combatant():
-#	return combatants[current_combatant]
 
 const tiles_to_check = [
 	Vector2i.RIGHT,
@@ -455,15 +398,7 @@ const tiles_to_check = [
 	Vector2i.LEFT,
 	Vector2i.DOWN
 ]
-#func ai_process(target_position: Vector2i):
-	#find nearest non-solid tile to target_position
-#	var current_position = tile_map.local_to_map(controlled_node.position)
-#	print(current_position)
-#	for tile in tiles_to_check:
-#		if !_astargrid.get_point_weight_scale(target_position + tile) > 999999:
-#			ai_move(target_position + tile)
-#			break
-#	return finished_move
+
 
 func end_phase():
 	if verifying_arrived():
@@ -523,7 +458,6 @@ func move_combatant(comb: Dictionary):
 		comb.previous_position = comb.position
 		comb.selected_path_id = 1
 		comb.arrived = false
-		print(comb.name, " bouge de ", comb.movement," sur le chemin : ", comb.selected_path)
 		queue_redraw()
 	
 
@@ -653,11 +587,6 @@ func comb_died(comb: Dictionary):
 		combat.groups[comb.side].erase(comb_id)
 		combat.current_combatant_alive -= 1
 
-#func ai_move(target_position: Vector2i):
-#	var current_position = tile_map.local_to_map(controlled_node.position)
-#	find_path(target_position)
-#	print(target_position)
-#	move_on_path(current_position)
 
 # Define the function to update weights from obstacles
 func update_tile_weights_from_obstacles():  # Reference to your ObstaclesTileMap
@@ -785,8 +714,8 @@ func apply_outline(comb, color: Color, size: float = 4.0):
 		sprite.material = ShaderMaterial.new()
 	var material = sprite.material as ShaderMaterial
 	material.shader = preload("res://shaders/character_outline.gdshader")  # Path to your shader
-	#material.set_shader_parameter("outline_color", color)
-	#material.set_shader_parameter("outline_size", size)
+	material.set_shader_parameter("color", color)
+	material.set_shader_parameter("thickness", size)
 
 func remove_outline(comb):
 	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
@@ -844,11 +773,10 @@ func set_computer_unit_movement(comb):
 		else:
 			comb.next_action_type = "Move"
 			var _number_of_movements_to_have = randi() % (comb.movement) +2 #+1 once for the list index change and +1 for the % thing
-			print(_number_of_movements_to_have)
 			comb.selected_path = _path.slice(0,_number_of_movements_to_have)
-			print("Path selected for ", comb.name, " and it's ", comb.selected_path)
 	else:
 		print("ERROR : NO TARGET FOUND OR TRYING TO MOVE WITH 0 MOVEMENT")
+
 func set_computer_unit_spell(comb):
 	for _skill_key in comb.skill_list:
 		var _skill_used = SkillDatabase.skills[(_skill_key)]
@@ -857,21 +785,18 @@ func set_computer_unit_spell(comb):
 			comb.selected_skill_id = _skill_key
 			if _skill_used.range_type == "Range":
 				while comb.selected_targets.size() < _skill_used.number_of_target:
-					print("Range")
 					for x in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
 						for y in range(-(_skill_used.max_range+1), _skill_used.max_range+1):
 							var _tile = comb.position + Vector2i(x,y)
 							if is_in_range(comb.position, _tile, _skill_used.min_range, _skill_used.max_range, _skill_used.sight):
 								var _random_value = randf()
 								if _random_value > 0.99:
-									print("computer_added_a_new_tile! (range)")
 									comb.selected_targets.append(_tile)
 			elif _skill_used.range_type == "Range":
 				while comb.selected_targets.size() < _skill_used.number_of_target:
 					for _tile in _selected_skill.range_list:
 						var _random_value = randf()
 						if _random_value > 0.99:
-							print("computer_added_a_new_tile! (list)")
 							comb.selected_targets.append(_tile)
 							
 func set_computer_unit_attack(comb):
@@ -888,14 +813,12 @@ func set_computer_unit_attack(comb):
 							if is_in_range(comb.position, _tile, _skill_used.min_range, _skill_used.max_range, _skill_used.sight):
 								var _random_value = randf()
 								if _random_value > 0.99:
-									print("computer_added_a_new_tile! (range)")
 									comb.selected_targets.append(_tile)
 			elif _skill_used.range_type == "Range":
 				while comb.selected_targets.size() < _skill_used.number_of_target:
 					for _tile in _selected_skill.range_list:
 						var _random_value = randf()
 						if _random_value > 0.99:
-							print("computer_added_a_new_tile! (list)")
 							comb.selected_targets.append(_tile)
 
 func _draw():
@@ -911,72 +834,72 @@ func _draw():
 				var local_position = tile_map.map_to_local(drawn_path[i])
 				draw_line(last_position, local_position, Color(0.5, 0, 0, 1), 2)
 				last_position = local_position
-	for child in combat.get_children():
-		# Calculate the bounding box for sprites in combat
-		var bounding_box = get_bounding_box_for_sprites2(child)
 
-		# Draw the bounding box
-		draw_rect(bounding_box, Color(1, 0, 0, 0.5), false)  # Red rectangle with 50% opacity
-		
 	for comb in combat.combatants:
-		if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None" and not is_drawing_path:
-			var path_length = comb.movement_max
-			for i in range(1, _path.size()):
-				var point = tile_map.map_to_local(_path[i])
-				var draw_color = Color(0.7,0,0,1)
-				if path_length > 0:
-					if i <= comb.movement and movement_astargrid.get_point_weight_scale(_path[i]) < 1000:
-						draw_color = Color(0, 1, 0.2, 1)
-					draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
-				if i > 0:
-					path_length -= get_tile_cost_at_point(point, comb)
-			if _mouse_target_position != null:
-				draw_texture(grid_tex, _mouse_target_position - Vector2(32, 16), Color(0.7,0,0,1))
-			#if _blocked_target_position != null:
-				#draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
-		#elif comb.next_action_type == "Attack":
-			#if _selected_skill
-			
-		elif comb.arrived and _skill_selected and controlled_combatant == comb:
-			var mouse_position = get_global_mouse_position()
-			var mouse_position_i = tile_map.local_to_map(mouse_position)
-			draw_texture(grid_tex, tile_map.map_to_local(mouse_position_i) - Vector2(32, 16), Color(0, 1, 1, 1))
-			var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
-			if is_in_range(comb.position, mouse_position_i, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
-				for _suppl_offset in _skill_used.hit_zone:
-					var _new_tile = hit_zone_compute(comb, mouse_position_i, _suppl_offset)
-					draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 1, 1, 1))
-			if _selected_skill.range_type == "Range":
-				for x in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
-					for y in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
-						var _tile = comb.position + Vector2i(x,y)
-						if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
-							draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 16), Color(0, 0.7, 0.7, 1))
-				for target in comb.selected_targets:
-					draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 0.5, 1))
-					#var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
-					for _suppl_offset in _skill_used.hit_zone:
-						var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-						draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 0.5, 1))
-				#for tile in _selected_skill.
-		if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
-			if comb.next_action_type == "Move":
-				if (not phase_ended) and comb.selected_path != PackedVector2Array():
-					for i in range(1, comb.selected_path.size()):
-						var point = tile_map.map_to_local(comb.selected_path[i])
-						var draw_color = Color(0, 0.8, 0, 1)
+		if comb.side == 0:
+			if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None" and not is_drawing_path:
+				var path_length = comb.movement_max
+				for i in range(1, _path.size()):
+					var point = tile_map.map_to_local(_path[i])
+					var draw_color = Color(0.7,0,0,1)
+					if path_length > 0:
+						if i <= comb.movement and movement_astargrid.get_point_weight_scale(_path[i]) < 1000:
+							draw_color = Color(0, 1, 0.2, 1)
 						draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
-						#if i > 0:
-							#path_length -= get_tile_cost_at_point(point, comb)
-			elif comb.next_action_type == "Attack" or "Spell":
-				if (not phase_ended):
+					if i > 0:
+						path_length -= get_tile_cost_at_point(point, comb)
+				if _mouse_target_position != null:
+					draw_texture(grid_tex, _mouse_target_position - Vector2(32, 16), Color(0.7,0,0,1))
+				#if _blocked_target_position != null:
+					#draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
+			#elif comb.next_action_type == "Attack":
+				#if _selected_skill
+				
+			elif comb.arrived and _skill_selected and controlled_combatant == comb:
+				var mouse_position = get_global_mouse_position()
+				var mouse_position_i = tile_map.local_to_map(mouse_position)
+				draw_texture(grid_tex, tile_map.map_to_local(mouse_position_i) - Vector2(32, 16), Color(0, 1, 1, 1))
+				var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+				if is_in_range(comb.position, mouse_position_i, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+					for _suppl_offset in _skill_used.hit_zone:
+						var _new_tile = hit_zone_compute(comb, mouse_position_i, _suppl_offset)
+						draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 1, 1, 1))
+				if _selected_skill.range_type == "Range":
+					for x in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
+						for y in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
+							var _tile = comb.position + Vector2i(x,y)
+							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+								draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 16), Color(0, 0.7, 0.7, 1))
 					for target in comb.selected_targets:
-						draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 1, 1))
-						var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+						draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 0.5, 1))
+						#var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 						for _suppl_offset in _skill_used.hit_zone:
 							var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 1, 1))
-		if comb.next_action_type == "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
-			apply_outline(comb, Color(0,1,0,1),150)
+							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 0.5, 1))
+					#for tile in _selected_skill.
+			if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
+				if comb.next_action_type == "Move":
+					if (not phase_ended) and comb.selected_path != PackedVector2Array():
+						for i in range(1, comb.selected_path.size()):
+							var point = tile_map.map_to_local(comb.selected_path[i])
+							var draw_color = Color(0, 0.8, 0, 1)
+							draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
+							#if i > 0:
+								#path_length -= get_tile_cost_at_point(point, comb)
+				elif comb.next_action_type == "Attack" or "Spell":
+					if (not phase_ended):
+						for target in comb.selected_targets:
+							draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 1, 1))
+							var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+							for _suppl_offset in _skill_used.hit_zone:
+								var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
+								draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 1, 1))
+			######################################### OUTLINE DRAWING ####################################################
+			if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
+				apply_outline(comb, Color(0,1,0,1),1)
+			elif controlled_combatant_exists and comb == controlled_combatant:
+				apply_outline(comb, Color(1,1,1,1),1)
+			else:
+				remove_outline(comb)
 		else:
 			remove_outline(comb)

@@ -82,11 +82,6 @@ func _ready():
 		combat_start.emit()
 	
 	controller.combatant_deselected.emit()
-	
-	#emit_signal("update_turn_queue", combatants, turn_queue)
-	
-	#controller.set_controlled_combatant(combatants[turn_queue[0]])
-	#game_ui.set_skill_list(combatants[turn_queue[0]].skill_list)
 
 
 func create_combatant(definition: CombatantDefinition, override_name = ""):
@@ -137,13 +132,15 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatants.append(combatant)
 	current_combatant_alive += 1
 	groups[side].append(combatant.name)
-	print("j'ai add")
 	var combatant_scene = combatant.animation_resource.instantiate()	# Instantiate the character's animation scene
 	combatant_scene.name = combatant.name
 	combatant_scene.y_sort_enabled = true
+	print(combatant_scene.get_child(0))
+	var _area_2D = (combatant_scene.get_child(0)).get_child(0)
+	_area_2D.mouse_clicked.connect(controller._on_sprite_clicked)
+	_area_2D.mouse_over_it.connect(controller._on_sprite_mouse_over)
+	_area_2D.mouse_out_of_it.connect(controller._on_sprite_mouse_exited)
 	add_child(combatant_scene)
-	#$"../Terrain/TileMapLayer".add_child(combatant_scene)
-	#print($"../Terrain/TileMapLayer")
 	combatant_scene.position = Vector2(tile_map.map_to_local(position)) + combatant.sprite_offset
 	var anim_player = combatant_scene.get_node("AnimationPlayer") # Store the reference to the AnimationPlayer for controlling animations
 	combatant["anim_player"] = anim_player
@@ -153,6 +150,7 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	create_hp_display(combatant_scene, combatant)
 	combatant_scene.z_index = 2
 	emit_signal("combatant_added", combatant)
+	print("New combatant added : ", combatant.name)
 
 # Function to create and update HP display
 func create_hp_display(combatant_scene: Node2D, combatant: Dictionary):
@@ -247,23 +245,9 @@ func basic_magic(attacker: Dictionary, target: Dictionary):
 	var skill = SkillDatabase.skills["basic_magic"]
 	do_damage(attacker, target, skill)
 
-#func end_turn_func():
-	#end_turn.emit(combatants)
-
-#func new_turn_func():
-	#new_turn.emit()
-#func advance_turn():
-	#emit_signal("turn_advanced", comb)
-	#emit_signal("update_combatants", combatants)
-	#if comb.side == 1:
-	#	await get_tree().create_timer(0.6).timeout
-	#	ai_process(comb)
-
-
 func combat_finish():
 	emit_signal("combat_finished")
 	pass
-
 
 func do_damage(attacker: Dictionary, target: Dictionary, skill: SkillDefinition):
 	var damage = randi_range(skill.min_damage, skill.max_damage)

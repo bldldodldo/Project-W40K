@@ -12,6 +12,25 @@
 [ext_resource type="Texture2D" uid="uid://c51hlf3phcae7" path="res://imagese/icon/skills/icon_slash.png" id="10_0pwdu"]
 [ext_resource type="Texture2D" uid="uid://213ahbn7nteh" path="res://imagese/icon/skills/icon_assassination.png" id="11_g5xy2"]
 
+[sub_resource type="Resource" id="Resource_1oqvu"]
+script = ExtResource("2_twktv")
+name = "Assassination"
+type = "Attack"
+range_type = "Range"
+min_range = 1
+max_range = 1
+range_list = []
+sight = false
+hit_zone = [Vector2i(-1, 0), Vector2i(-2, -1), Vector2i(1, 0), Vector2i(2, -1)]
+number_of_target = 1
+damage = 1
+prob = 1.0
+armor_penetration = -2
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("11_g5xy2")
+
 [sub_resource type="Resource" id="Resource_j7xro"]
 script = ExtResource("2_twktv")
 name = "Boltgun"
@@ -88,6 +107,43 @@ cd = 0
 statuses = Array[ExtResource("4_ksji5")]([])
 icon = ExtResource("5_5oa18")
 
+[sub_resource type="Resource" id="Resource_aw08y"]
+script = ExtResource("2_twktv")
+name = "Slash"
+type = "Attack"
+range_type = "Range"
+min_range = 1
+max_range = 1
+range_list = []
+sight = true
+hit_zone = []
+number_of_target = 1
+damage = 1
+prob = 1.0
+armor_penetration = -1
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+icon = ExtResource("10_0pwdu")
+
+[sub_resource type="Resource" id="Resource_ykwji"]
+script = ExtResource("2_twktv")
+name = ""
+type = ""
+range_type = ""
+min_range = 0
+max_range = 0
+range_list = []
+sight = false
+hit_zone = []
+number_of_target = 1
+damage = 1
+prob = 1.0
+armor_penetration = 0
+end_cd_turn = 0
+cd = 0
+statuses = Array[ExtResource("4_ksji5")]([])
+
 [sub_resource type="Resource" id="Resource_55j8b"]
 script = ExtResource("4_ksji5")
 name = "ultramarine_assault_movement_max"
@@ -155,62 +211,6 @@ end_cd_turn = 0
 cd = 2
 statuses = Array[ExtResource("4_ksji5")]([SubResource("Resource_b3yxp")])
 icon = ExtResource("6_8tgph")
-
-[sub_resource type="Resource" id="Resource_aw08y"]
-script = ExtResource("2_twktv")
-name = "Slash"
-type = "Attack"
-range_type = "Range"
-min_range = 1
-max_range = 1
-range_list = []
-sight = true
-hit_zone = []
-number_of_target = 1
-damage = 1
-prob = 1.0
-armor_penetration = -1
-end_cd_turn = 0
-cd = 0
-statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("10_0pwdu")
-
-[sub_resource type="Resource" id="Resource_1oqvu"]
-script = ExtResource("2_twktv")
-name = "Assassination"
-type = "Attack"
-range_type = "Range"
-min_range = 1
-max_range = 1
-range_list = []
-sight = false
-hit_zone = [Vector2i(-1, 0), Vector2i(-2, -1), Vector2i(1, 0), Vector2i(2, -1)]
-number_of_target = 1
-damage = 1
-prob = 1.0
-armor_penetration = -2
-end_cd_turn = 0
-cd = 0
-statuses = Array[ExtResource("4_ksji5")]([])
-icon = ExtResource("11_g5xy2")
-
-[sub_resource type="Resource" id="Resource_ykwji"]
-script = ExtResource("2_twktv")
-name = ""
-type = ""
-range_type = ""
-min_range = 0
-max_range = 0
-range_list = []
-sight = false
-hit_zone = []
-number_of_target = 1
-damage = 1
-prob = 1.0
-armor_penetration = 0
-end_cd_turn = 0
-cd = 0
-statuses = Array[ExtResource("4_ksji5")]([])
 
 [node name="SkillDatabase" type="Node"]
 script = ExtResource("1_bnr7k")

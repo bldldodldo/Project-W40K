@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dsbqpyeeeuwmn"]
+[gd_scene load_steps=9 format=3 uid="uid://dsbqpyeeeuwmn"]
 
 [ext_resource type="Shader" path="res://shaders/character_outline.gdshader" id="1_742mw"]
 [ext_resource type="Texture2D" uid="uid://roo02k2aa77f" path="res://imagese/sprites/TYRANIDS/tyranids_hormangaunt.png" id="2_wwcuw"]
+[ext_resource type="Script" path="res://ui/area2D_script_units.gd" id="3_l1l8o"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_81e6f"]
 shader = ExtResource("1_742mw")
@@ -10,6 +11,9 @@ shader_parameter/thickness = 1.0
 shader_parameter/tolerance = 0.0
 shader_parameter/diagonals = true
 shader_parameter/rounded = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8p00t"]
+size = Vector2(56, 53)
 
 [sub_resource type="Animation" id="Animation_irrvm"]
 length = 0.001
@@ -33,7 +37,14 @@ y_sort_enabled = true
 material = SubResource("ShaderMaterial_81e6f")
 texture = ExtResource("2_wwcuw")
 centered = false
-offset = Vector2(-48, -64)
+offset = Vector2(-55, -64)
+
+[node name="Area2D" type="Area2D" parent="Sprite2D"]
+script = ExtResource("3_l1l8o")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
+position = Vector2(-6, -26.5)
+shape = SubResource("RectangleShape2D_8p00t")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

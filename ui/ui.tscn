@@ -76,6 +76,7 @@ offset_bottom = 116.0
 
 [node name="Icon" parent="Actions/StatusIcon" index="0"]
 material = SubResource("ShaderMaterial_1qt58")
+flip_h = false
 
 [node name="ActionsPanel" type="PanelContainer" parent="Actions"]
 layout_mode = 0
