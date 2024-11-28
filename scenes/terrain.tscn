@@ -1,18 +1,18 @@
 [gd_scene load_steps=7 format=4 uid="uid://ww05yde5nb2t"]
 
-[ext_resource type="Texture2D" uid="uid://bw3slryprx4nk" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete_wall.png" id="2_834pe"]
-[ext_resource type="Texture2D" uid="uid://doyqfp3063vk3" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete_wall_holed.png" id="2_pib4u"]
+[ext_resource type="Texture2D" uid="uid://bsihtrdqydx5w" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete_wall_low.png" id="2_1cfui"]
+[ext_resource type="Texture2D" uid="uid://bvagjtnl7h2ov" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete_wall_no_sight.png" id="3_mt85a"]
 [ext_resource type="TileSet" uid="uid://b8d0tvj5c73e4" path="res://scenes/terrain.tres" id="117_tk0fr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3ejem"]
-texture = ExtResource("2_pib4u")
+texture = ExtResource("2_1cfui")
 texture_region_size = Vector2i(64, 83)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 25)
 0:0/0/custom_data_0 = true
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5auub"]
-texture = ExtResource("2_834pe")
+texture = ExtResource("3_mt85a")
 texture_region_size = Vector2i(64, 83)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 25)
@@ -37,6 +37,6 @@ tile_set = ExtResource("117_tk0fr")
 [node name="WallMapLayer" type="TileMapLayer" parent="."]
 z_index = 2
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAAQAAIABQAAAAAAAAAQAAEABQAAAAAAAAAQAAAAAQAAAAAAAAAQAP3/BQAAAAAAAAAQAPz/BQAAAAAAAAAQAPv/BQAAAAAAAAAQAAMABQAAAAAAAAAQAAQABQAAAAAAAAAQAP//BQAAAAAAAAAQAP7/BQAAAAAAAAASAAkABQAAAAAAAAASAAgABQAAAAAAAAASAPj/AQAAAAAAAAA=")
+tile_map_data = PackedByteArray("AAAJAAcABQAAAAAAAAAKAAcABQAAAAAAAAALAAcABQAAAAAAAAALAAYAAQAAAAAAAAALAAUAAQAAAAAAAAALAAQABQAAAAAAAAALAAMABQAAAAAAAAAQAPv/BQAAAAAAAAAQAPr/BQAAAAAAAAAQAPn/BQAAAAAAAAAQAPj/BQAAAAAAAAAQAPf/BQAAAAAAAAAPAPj/BQAAAAAAAAAOAPj/BQAAAAAAAAARAAIABQAAAAAAAAARAAEAAQAAAAAAAAARAAAAAQAAAAAAAAARAP//BQAAAAAAAAATAAYABQAAAAAAAAATAAUABQAAAAAAAAATAAQABQAAAAAAAAATAAMABQAAAAAAAAAXAAAABQAAAAAAAAAXAP//BQAAAAAAAAAXAP7/AQAAAAAAAAAXAP3/AQAAAAAAAAANAAAABQAAAAAAAAANAP//BQAAAAAAAAANAP7/BQAAAAAAAAATAAoAAQAAAAAAAAATAAsAAQAAAAAAAAATAAwAAQAAAAAAAAASAAwAAQAAAAAAAAARAAwAAQAAAAAAAAAbAAoABQAAAAAAAAAaAAoABQAAAAAAAAAZAAoABQAAAAAAAAAZAAkABQAAAAAAAAAYAAkABQAAAAAAAAAYAAgABQAAAAAAAAAYAAcABQAAAAAAAAAfAAMABQAAAAAAAAAfAAIABQAAAAAAAAAeAAIABQAAAAAAAAAdAAIABQAAAAAAAAAdAAEABQAAAAAAAAAdAAAABQAAAAAAAAA=")
 tile_set = SubResource("TileSet_pjwp8")
 y_sort_origin = -10

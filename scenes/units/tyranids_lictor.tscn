@@ -38,7 +38,7 @@ y_sort_enabled = true
 material = SubResource("ShaderMaterial_81e6f")
 texture = ExtResource("2_g7k51")
 centered = false
-offset = Vector2(-75, -160)
+offset = Vector2(-82, -160)
 
 [node name="Area2D" type="Area2D" parent="Sprite2D"]
 script = ExtResource("3_fx5da")

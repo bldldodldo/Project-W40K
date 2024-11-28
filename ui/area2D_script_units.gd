@@ -24,7 +24,9 @@ func _on_mouse_exited():
 
 # Emit signal when the Area2D is clicked
 func _on_input_event(viewport, event, shape_idx):
-	if event is InputEventMouseButton and not event.pressed:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		#var _controller = get_node("/root/Game/Controller")
+		#if not _controller._skill_selected and _controller.controlled_combatant == {}:
 		var _Node2D = self.get_parent().get_parent()
 		emit_signal("mouse_clicked", _Node2D.name)
 		

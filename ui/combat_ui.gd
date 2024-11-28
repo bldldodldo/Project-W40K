@@ -8,7 +8,10 @@ signal end_phase()
 
 const TQIcon = preload("res://ui/tq_icon.tscn")
 const StatusIcon = preload("res://ui/status_icon.tscn")
-	
+
+func _ready():
+	$Phase_Label_Timer.connect("timeout", Callable(self, "_on_Phase_Display_Timer_timeout"))
+
 func add_turn_queue_icon(combatant: Dictionary):
 	var new_icon = TQIcon.instantiate()
 	$TurnQueue/Queue.add_child(new_icon)
@@ -65,8 +68,48 @@ func _on_end_phase_button_pressed():
 func end_phase_ui_update():
 	var turn_label = $Turn_Label  
 	var phase_label = $Phase_Label
+	var phase_display_label = $Phase_Label_Beginning  # Reference to the phase display label
+	var phase_display_timer = $Phase_Label_Timer  # Reference to the timer node
 	turn_label.text = "Turn: " + str(combat.turn)
 	phase_label.text = "Phase: " + str(combat.phase)
+	 # Update the large phase display text and make it visible
+	phase_display_label.text = "PHASE: " + str(combat.phase)
+	phase_display_label.visible = true
+	if combat.phase == 1:
+		$Phase_Label_movement_icon.visible = true
+		$Phase_Label_attack_icon.visible = false
+		$Phase_Label_spell_icon.visible = false
+		$Phase_Label_movement_icon_cancelled.visible = false
+		$Phase_Label_attack_icon_cancelled.visible = true
+		$Phase_Label_spell_icon_cancelled.visible = true
+	elif combat.phase == 2:
+		$Phase_Label_movement_icon.visible = true
+		$Phase_Label_attack_icon.visible = true
+		$Phase_Label_spell_icon.visible = true
+		$Phase_Label_movement_icon_cancelled.visible = false
+		$Phase_Label_attack_icon_cancelled.visible = false
+		$Phase_Label_spell_icon_cancelled.visible = false
+	else:
+		$Phase_Label_movement_icon.visible = true
+		$Phase_Label_attack_icon.visible = true
+		$Phase_Label_spell_icon.visible = false
+		$Phase_Label_movement_icon_cancelled.visible = false
+		$Phase_Label_attack_icon_cancelled.visible = false
+		$Phase_Label_spell_icon_cancelled.visible = true
+		
+	# Start the timer to hide the phase display after 3 seconds
+	phase_display_timer.start()
+
+# Called when the timer finishes
+func _on_Phase_Display_Timer_timeout():
+	var phase_display_label = $Phase_Label_Beginning
+	phase_display_label.visible = false
+	$Phase_Label_movement_icon.visible = false
+	$Phase_Label_attack_icon.visible = false
+	$Phase_Label_spell_icon.visible = false
+	$Phase_Label_movement_icon_cancelled.visible = false
+	$Phase_Label_attack_icon_cancelled.visible = false
+	$Phase_Label_spell_icon_cancelled.visible = false
 
 func _combatant_deselected():
 	_target_selection_finished()

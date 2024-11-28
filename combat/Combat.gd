@@ -74,7 +74,7 @@ func _ready():
 	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_5"), 1, Vector2i(28,8))
 	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_6"), 1, Vector2i(26,7))
 	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_7"), 1, Vector2i(28,5))
-	#add_combatant(create_combatant(CombatantDatabase.combatants["goblin"], "Chaos_Space_Marine_3"), 1, Vector2i(25,-0))
+	
 	
 	#TURNS_UNTIL_THE_END
 	 
@@ -129,13 +129,13 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant["position"] = position
 	combatant["side"] = side
 	combatant["previous_position"] = position
+	combatant["mouse_over"] = false
 	combatants.append(combatant)
 	current_combatant_alive += 1
 	groups[side].append(combatant.name)
 	var combatant_scene = combatant.animation_resource.instantiate()	# Instantiate the character's animation scene
 	combatant_scene.name = combatant.name
 	combatant_scene.y_sort_enabled = true
-	print(combatant_scene.get_child(0))
 	var _area_2D = (combatant_scene.get_child(0)).get_child(0)
 	_area_2D.mouse_clicked.connect(controller._on_sprite_clicked)
 	_area_2D.mouse_over_it.connect(controller._on_sprite_mouse_over)
@@ -146,7 +146,7 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant["anim_player"] = anim_player
 	anim_player.play("idle")
 	if side == 1:
-		combatant_scene.scale.x = -1
+		(combatant_scene.get_node("Sprite2D")).scale.x = -1
 	create_hp_display(combatant_scene, combatant)
 	combatant_scene.z_index = 2
 	emit_signal("combatant_added", combatant)
@@ -154,52 +154,54 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 
 # Function to create and update HP display
 func create_hp_display(combatant_scene: Node2D, combatant: Dictionary):
-	# Create an HBoxContainer to hold the HP hearts
-	var hp_container = VBoxContainer.new()
-	hp_container.rotation_degrees = 180
-	hp_container.name = "HPContainer"
-	hp_container.position = Vector2(-30, 0)  # Adjust position based on sprite size
-	hp_container.anchor_left = 150  # Center the HP bar horizontally
-	hp_container.anchor_top = 0
-	combatant_scene.add_child(hp_container)
-
-	# Get the max HP from the combatant and set the current HP
-	var max_hp = combatant.max_hp  # Assuming combatant has max_hp value
-	var current_hp = combatant.hp  # Assuming combatant has hp value
-
-	# Add heart icons to the container (full and empty hearts)
-	for i in range(max_hp):
-		var heart_texture = TextureRect.new()
-		if i < current_hp:
-			# Full heart
-			heart_texture.texture = preload("res://imagese/icon/full_hp_icon.PNG")
-		else:
-			# Empty heart
-			heart_texture.texture = preload("res://imagese/icon/empty_hp_icon.PNG")
-		hp_container.add_child(heart_texture)
+	# Create a TextureProgress node to act as the HP bar
+	var hp_bar = ProgressBar.new()
+	hp_bar.name = "HPBar"
+	hp_bar.position = Vector2(-26, -combatant_scene.get_node("Sprite2D").get_rect().size.y - 5)  # Adjust position based on sprite size
+	hp_bar.anchor_left = 0.5  # Center the HP bar horizontally
+	hp_bar.anchor_top = 0
+	hp_bar.anchor_right = 0.5
+	hp_bar.anchor_bottom = 0.1  # Adjust height based on desired bar size
+	hp_bar.set_custom_minimum_size(Vector2(50, 4))  # Example size (width, height)
+	# Set the range of the HP bar (0 to 300 for example)
+	hp_bar.min_value = 0
+	hp_bar.max_value = combatant.max_hp
+	hp_bar.value = combatant.max_hp  # Set initial HP value or default to 300
+	hp_bar.z_index = 10
+	# Optionally set textures for a custom look
+	#hp_bar.progress_texture = preload("res://textures/hp_bar_fill.png")  # Adjust path
+	#hp_bar.frame_texture = preload("res://textures/hp_bar_background.png")  # Adjust path
+	# Add the HP bar to the combatant scene
+	hp_bar.show_percentage = false
+	hp_bar.fill_mode = 0
+	  # Create a new theme
+	var theme = Theme.new()
+	# Create a StyleBoxFlat for the background
+	var background_style = StyleBoxFlat.new()
+	background_style.bg_color = Color(1, 0.1, 0.1, 1)  # Dark gray
+	# Assign the StyleBox to the theme's "panel" property for ProgressBar
+	theme.set_stylebox("background", "ProgressBar", background_style)
+	# Create a StyleBoxFlat for the fill
+	var fill_style = StyleBoxFlat.new()
+	fill_style.bg_color = Color(0, 0.8, 0, 1)  # Red for the fill
+	# Assign the StyleBox to the theme's "progress" property for ProgressBar
+	theme.set_stylebox("fill", "ProgressBar", fill_style)
+	# Apply the theme to the ProgressBar
+	hp_bar.theme = theme
+	combatant_scene.add_child(hp_bar)
+	combatant["hp_bar"] = hp_bar
 	
-	# Save the HP container reference in the combatant dictionary for later updates
-	combatant["hp_container"] = hp_container
-
+	
 
 # Function to update HP display when HP changes
 func update_hp_display(combatant: Dictionary):
-	var hp_container = combatant["hp_container"]
+	var hp_bar = combatant["hp_bar"]  # Assume 'hp_container' now refers to the ProgressBar
 	var current_hp = combatant.hp
 	var max_hp = combatant.max_hp
-	# Clear the current HP display
-	for child in hp_container.get_children():
-		child.queue_free()
-	# Re-add heart icons based on the new HP values
-	for i in range(max_hp):
-		var heart_texture = TextureRect.new()
-		if i < current_hp:
-			# Full heart
-			heart_texture.texture = preload("res://imagese/icon/full_hp_icon.PNG")
-		else:
-			# Empty heart
-			heart_texture.texture = preload("res://imagese/icon/empty_hp_icon.PNG")
-		hp_container.add_child(heart_texture)
+	# Ensure the ProgressBar's max value matches the max HP
+	hp_bar.max_value = max_hp
+	# Update the ProgressBar's value to match the current HP
+	hp_bar.value = current_hp
 
 
 func get_distance(attacker: Dictionary, target: Dictionary):

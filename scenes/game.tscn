@@ -30,12 +30,16 @@ script = ExtResource("4_cujqt")
 game_ui = NodePath("../../CanvasLayer/UI")
 controller = NodePath("../../Controller")
 
-[node name="Controller" type="Node2D" parent="." node_paths=PackedStringArray("combat", "UI_node")]
+[node name="Controller" type="Node2D" parent="." node_paths=PackedStringArray("controlled_node", "combat", "UI_node")]
 y_sort_enabled = true
 texture_filter = 1
 script = ExtResource("3_dbxfm")
+controlled_node = NodePath(".")
 combat = NodePath("../Terrain/VisualCombat")
 UI_node = NodePath("../CanvasLayer/UI")
+
+[node name="UI_lines" type="Node2D" parent="Controller"]
+z_index = 20
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

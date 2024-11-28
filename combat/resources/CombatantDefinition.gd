@@ -8,7 +8,7 @@ class_name CombatantDefinition
 @export_enum("Fly", "Ground") var movement_class: String
 @export var is_transparent = true #to know if units can corss throught it or not
 @export_group("Stats")
-@export_range(1, 2, 1, "or_greater") var max_hp = 1
+@export_range(0, 300, 1, "or_greater") var max_hp = 50
 @export_range(1, 3, 1, "or_greater") var movement = 3
 @export_range(1, 5, 1, "or_greater") var strength = 1
 @export_range(1, 5, 1, "or_greater") var psy_power = 1
