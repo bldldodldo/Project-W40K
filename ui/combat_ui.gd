@@ -166,10 +166,8 @@ func set_skill_list(skill_list: Array):
 			var skill = SkillDatabase.skills[skill_key]
 			action.icon = skill.icon
 			action.modulate = Color(1,1,1,1)
-			
-			if (skill.type == "Attack" and (comb.number_attacks <= 0 or combat.phase == 1)) or (skill.type == "Spell" and (combat.phase == 3 or combat.phase == 1)):
-				action.modulate = Color(1, 0, 0, 1)  # Semi-transparent red tint
-			
+			if (skill.type == "Attack" and (comb.number_attacks <= 0 or combat.phase == 1)) or (skill.type == "Spell" and (combat.phase == 3 or combat.phase == 1 or comb.end_cd_turn > combat.turn)):
+				action.modulate = Color(0.5, 0, 0, 1)  
 			action.tooltip_text = skill.name
 			action.pressed.connect(func():
 				if combat.phase == 1:
@@ -183,6 +181,8 @@ func set_skill_list(skill_list: Array):
 						controller.begin_target_selection()
 					elif skill.type == "Spell" and combat.phase == 3:
 						print("no Spell in phase 3")
+					elif skill.type == "Spell" and comb.end_cd_turn > combat.turn:
+						print("Combatant can't do spell before turn ", comb.end_cd_turn)
 					elif skill.type == "Spell":
 						comb.next_action_type = skill.type
 						controller.set_selected_skill(skill_key)

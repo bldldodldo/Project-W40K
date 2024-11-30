@@ -32,6 +32,7 @@ animation_resource = ExtResource("8_xnysm")
 sprite_offset = Vector2(3, 0)
 skills = Array[String](["slash"])
 number_attacks_max = 2
+end_cd_turn = 0
 statuses = Array[ExtResource("4_20ea5")]([])
 
 [sub_resource type="Resource" id="Resource_p4u7i"]
@@ -54,6 +55,7 @@ animation_resource = ExtResource("10_7lywx")
 sprite_offset = Vector2(0, 0)
 skills = Array[String](["assassination"])
 number_attacks_max = 1
+end_cd_turn = 0
 statuses = Array[ExtResource("4_20ea5")]([])
 
 [sub_resource type="Resource" id="Resource_kfxn0"]
@@ -74,8 +76,9 @@ move_speed = 250
 icon = ExtResource("6_n7joq")
 animation_resource = ExtResource("5_k7kum")
 sprite_offset = Vector2(3, 0)
-skills = Array[String](["boltgun", "knife", "ultramarine_squad"])
+skills = Array[String](["boltgun", "knife", "ultramarine_squad", "ultramarine_grenade"])
 number_attacks_max = 1
+end_cd_turn = 0
 statuses = Array[ExtResource("4_20ea5")]([])
 
 [sub_resource type="Resource" id="Resource_1hvx6"]
@@ -98,6 +101,7 @@ animation_resource = ExtResource("7_c1lhg")
 sprite_offset = Vector2(3, 0)
 skills = Array[String](["boltpistol", "chainsword", "ultramarine_assault"])
 number_attacks_max = 1
+end_cd_turn = 0
 statuses = Array[ExtResource("4_20ea5")]([])
 
 [node name="CombatantDatabase" type="Node"]

@@ -37,6 +37,7 @@ script = ExtResource("3_dbxfm")
 controlled_node = NodePath(".")
 combat = NodePath("../Terrain/VisualCombat")
 UI_node = NodePath("../CanvasLayer/UI")
+_global_pushed_damages = 10
 
 [node name="UI_lines" type="Node2D" parent="Controller"]
 z_index = 20

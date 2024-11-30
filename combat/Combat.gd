@@ -67,13 +67,13 @@ func _ready():
 	
 	#ADD ENEMIES
 	
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_lictor"], "Tyranid_1"), 1, Vector2i(24,3))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_2"), 1, Vector2i(25,-4))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_3"), 1, Vector2i(23,-8))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_4"), 1, Vector2i(27,-6))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_5"), 1, Vector2i(28,8))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_6"), 1, Vector2i(26,7))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_7"), 1, Vector2i(28,5))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_lictor"], "Tyranid_1"), 1, Vector2i(24,3))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_2"), 1, Vector2i(25,-4))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_3"), 1, Vector2i(23,-8))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_4"), 1, Vector2i(27,-6))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_5"), 1, Vector2i(28,8))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_6"), 1, Vector2i(26,7))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_7"), 1, Vector2i(28,5))
 	
 	
 	#TURNS_UNTIL_THE_END
@@ -114,6 +114,7 @@ func create_combatant(definition: CombatantDefinition, override_name = ""):
 		"selected_skill_id" = null,
 		"selected_targets" = [],
 		"next_action_type" = "None",
+		"end_cd_turn" = definition.end_cd_turn,
 		"arrived" = true,
 		"statuses" = []
 		}

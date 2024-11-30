@@ -24,5 +24,6 @@ class_name CombatantDefinition
 @export_group("Skills")
 @export var skills: Array[String]
 @export var number_attacks_max: int = 1 #most of units have 1. Max is 2 (only 2 phases to use attacks).
+@export var end_cd_turn: int = 0 #for SPELLS
 @export_group("State")
 @export var statuses: Array[Status]

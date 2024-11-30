@@ -30,6 +30,7 @@ var sight_astargrid = AStarGrid2D.new()
 var _mouse_target_position
 var _skill_selected = false
 var _selected_skill: Object
+@export var _global_pushed_damages: int
 
 var is_drawing_path = false #used to handle the custom path feature
 var drawn_path = PackedVector2Array() #used to store the custom path
@@ -41,6 +42,7 @@ var drawn_path = PackedVector2Array() #used to store the custom path
 func _unhandled_input(event):	
 	if event is InputEventKey and event.pressed:
 		if Input.is_action_just_pressed("select_cancel"):
+			reset_selected_action(controlled_combatant)
 			controlled_combatant_exists = false
 			controlled_combatant = {}
 			combatant_deselected.emit()
@@ -48,18 +50,43 @@ func _unhandled_input(event):
 		elif Input.is_action_just_pressed("key_end_turn"):
 			UI_node.end_phase.emit()
 		else:
-			for i in range(9):  # Handles keys 1 through 9 (and 0 as 10, optional)
-				var action_name = "select_unit_" + str(i + 1)
-				if Input.is_action_just_pressed(action_name):
-					if i < combat.groups[0].size():
-						var _comb_name = combat.groups[0][i]
-						for comb in combat.combatants:
-							if comb.name == _comb_name:
-								set_controlled_combatant(comb)
-								#now getting the mouse position to redras correctly the movement path (to not have to wait for the mouse the be moved)
-								var mouse_position = get_global_mouse_position()
-								var mouse_position_i = tile_map.local_to_map(mouse_position)
-								find_path(mouse_position_i)
+			if controlled_combatant == {}:
+				for i in range(9):  # Handles keys 1 through 9 (and 0 as 10, optional)
+					var action_name = "select_unit_" + str(i + 1)
+					if Input.is_action_just_pressed(action_name):
+						if i < combat.groups[0].size():
+							var _comb_name = combat.groups[0][i]
+							for comb in combat.combatants:
+								if comb.name == _comb_name:
+									set_controlled_combatant(comb)
+									#now getting the mouse position to redras correctly the movement path (to not have to wait for the mouse the be moved)
+									var mouse_position = get_global_mouse_position()
+									var mouse_position_i = tile_map.local_to_map(mouse_position)
+									find_path(mouse_position_i)
+			else:
+				for i in range(9):  # Handles keys 1 through 9 (and 0 as 10, optional)
+					var action_name = "select_skill_" + str(i + 1)
+					if Input.is_action_just_pressed(action_name):
+						if i < controlled_combatant.skill_list.size():
+							var skill_key = controlled_combatant.skill_list[i]
+							var skill = SkillDatabase.skills[skill_key]
+							if combat.phase == 1:
+								print("no attack nor spell in phase 1")
+							else:
+								if skill.type == "Attack" and controlled_combatant.number_attacks <= 0:
+									print("No more attack availables this turn")
+								elif skill.type == "Attack" and controlled_combatant.number_attacks > 0:
+									controlled_combatant.next_action_type = skill.type
+									set_selected_skill(skill_key)
+									begin_target_selection()
+								elif skill.type == "Spell" and combat.phase == 3:
+									print("no Spell in phase 3")
+								elif skill.type == "Spell" and controlled_combatant.end_cd_turn > combat.turn:
+									print("Combatant can't do spell before turn ", controlled_combatant.end_cd_turn)
+								elif skill.type == "Spell":
+									controlled_combatant.next_action_type = skill.type
+									set_selected_skill(skill_key)
+									begin_target_selection()
 			
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
@@ -487,21 +514,27 @@ func attack_combatant(comb: Dictionary):
 	
 func spell_combatant(comb: Dictionary):
 	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
-	for _tile in comb.selected_targets:
-		var targeted_comb = get_combatant_at_position(_tile)
-		if targeted_comb == null:
-			print(comb.name, " does magic at ", _tile, " but it's empty")
-		else:
-			print(comb.name, " tries to spellzzz ", targeted_comb.name)
-			spell_compute(comb, targeted_comb)
-		for _suppl_offset in _skill_used.hit_zone:
-			var _new_tile = hit_zone_compute(comb, _tile, _suppl_offset)
-			targeted_comb = get_combatant_at_position(_new_tile)
+	print(comb.end_cd_turn, combat.turn)
+	if comb.end_cd_turn <= combat.turn:
+		for _tile in comb.selected_targets:
+			var targeted_comb = get_combatant_at_position(_tile)
 			if targeted_comb == null:
-				print(comb.name, " does magic at ", _tile+_suppl_offset, " but it's empty")
+				print(comb.name, " does magic at ", _tile, " but it's empty")
 			else:
 				print(comb.name, " tries to spellzzz ", targeted_comb.name)
 				spell_compute(comb, targeted_comb)
+			for _suppl_offset in _skill_used.hit_zone:
+				var _new_tile = hit_zone_compute(comb, _tile, _suppl_offset)
+				targeted_comb = get_combatant_at_position(_new_tile)
+				if targeted_comb == null:
+					print(comb.name, " does magic at ", _tile+_suppl_offset, " but it's empty")
+				else:
+					print(comb.name, " tries to spellzzz ", targeted_comb.name)
+					spell_compute(comb, targeted_comb)
+		comb.end_cd_turn = combat.turn + _skill_used.cd
+		print(comb.name, " can use a spell next in turn ", comb.end_cd_turn)
+	else:
+		print("The comb can't use a spell now ! End of spell cd is : ", comb.end_cd_turn)
 	reset_selected_action(comb)
 
 func hit_zone_compute(comb, _tile, _suppl_offset):
@@ -522,7 +555,6 @@ func hit_zone_compute(comb, _tile, _suppl_offset):
 	elif _dir == "bottom":
 		_new_tile.x = _tile.x - _suppl_offset.x
 		_new_tile.y = _tile.y + _suppl_offset.y
-		#_new_tile.x = 
 	elif _dir == "top_right":
 		_new_tile.x = _tile.x + _suppl_offset.y + _suppl_offset.x
 		_new_tile.y = _tile.y - _suppl_offset.y + _suppl_offset.x
@@ -540,6 +572,84 @@ func hit_zone_compute(comb, _tile, _suppl_offset):
 		pass
 	return _new_tile
 
+func dash_coord_compute(comb, targeted_tile, coord):
+	var _new_tile: Vector2i
+	var _dir = get_vec_dir(comb.position, targeted_tile)
+	if _dir == "self":
+		print("Error : this spell should not be computed on itself")
+	elif _dir == "right":
+		_new_tile.x = comb.position.x + coord.y
+		_new_tile.y = comb.position.y + coord.x
+	elif _dir == "left":
+		_new_tile.x = comb.position.x - coord.y
+		_new_tile.y = comb.position.y - coord.x
+	elif _dir == "top":
+		_new_tile.x = comb.position.x + coord.x
+		_new_tile.y = comb.position.y - coord.y
+	elif _dir == "bottom":
+		_new_tile.x = comb.position.x - coord.x
+		_new_tile.y = comb.position.y + coord.y
+	elif _dir == "top_right":
+		_new_tile.x = comb.position.x + coord.y + coord.x
+		_new_tile.y = comb.position.y - coord.y + coord.x
+	elif _dir == "bottom_right":
+		_new_tile.x = comb.position.x + coord.y - coord.x
+		_new_tile.y = comb.position.y + coord.y + coord.x
+	elif _dir == "bottom_left":
+		_new_tile.x = comb.position.x - coord.y - coord.x
+		_new_tile.y = comb.position.y + coord.y - coord.x
+	elif _dir == "top_left":
+		_new_tile.x = comb.position.x - coord.y + coord.x
+		_new_tile.y = comb.position.y - coord.y - coord.x
+	else:
+		print("WTF ALERT ERRROR BUG")
+		pass
+	return _new_tile
+	
+	
+
+func push_coord_compute(comb, targeted_tile, coord):
+	var _new_tile: Vector2i
+	var _dir = get_vec_dir(comb.position, targeted_tile)
+	if _dir == "self":
+		print("Error : this spell should not be computed on itself")
+	elif _dir == "right":
+		print("r")
+		_new_tile.x = targeted_tile.x + coord.y
+		_new_tile.y = targeted_tile.y + coord.x
+	elif _dir == "left":
+		print("l")
+		_new_tile.x = targeted_tile.x - coord.y
+		_new_tile.y = targeted_tile.y - coord.x
+	elif _dir == "top":
+		print("t")
+		_new_tile.x = targeted_tile.x + coord.x
+		_new_tile.y = targeted_tile.y - coord.y
+	elif _dir == "bottom":
+		print("b")
+		_new_tile.x = targeted_tile.x - coord.x
+		_new_tile.y = targeted_tile.y + coord.y
+	elif _dir == "top_right":
+		print("tr")
+		_new_tile.x = targeted_tile.x + coord.y + coord.x
+		_new_tile.y = targeted_tile.y - coord.y + coord.x
+	elif _dir == "bottom_right":
+		print("br")
+		_new_tile.x = targeted_tile.x + coord.y - coord.x
+		_new_tile.y = targeted_tile.y + coord.y + coord.x
+	elif _dir == "bottom_left":
+		print("bl")
+		_new_tile.x = targeted_tile.x - coord.y - coord.x
+		_new_tile.y = targeted_tile.y + coord.y - coord.x
+	elif _dir == "top_left":
+		print("tl")
+		_new_tile.x = targeted_tile.x - coord.y + coord.x
+		_new_tile.y = targeted_tile.y - coord.y - coord.x
+	else:
+		print("WTF ALERT ERRROR BUG")
+		pass
+	return _new_tile
+
 func attack_compute(comb, targeted_comb):
 	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 	var _prob = randf_range(0.0, 1.0)
@@ -551,6 +661,22 @@ func attack_compute(comb, targeted_comb):
 			_hp_loss = int(_hp_loss * 1.5)
 		_hp_loss -= _skill_used.armor_penetration
 		_hp_loss -= targeted_comb.armor_save
+		if _skill_used.dash_comb == "To_Target":
+			instant_move_compute(comb, dash_compute(comb, targeted_comb.position))
+		elif _skill_used.dash_comb == "Coord":
+			print("dash_coord_compute vaut : ", targeted_comb.position,  _skill_used.dash_comb_coord, dash_coord_compute(comb, targeted_comb.position, _skill_used.dash_comb_coord))
+			instant_move_compute(comb, dash_compute(comb, dash_coord_compute(comb, targeted_comb.position, _skill_used.dash_comb_coord)))
+		if _skill_used.push_target == "To_Comb":
+			var _temporary_result = push_compute(targeted_comb, comb.position)
+			instant_move_compute(targeted_comb, _temporary_result[0])
+			print("la hp loss dopo vaut : ", _temporary_result[1])
+			if _temporary_result[1] != 0:
+				_hp_loss += _global_pushed_damages*2
+		elif _skill_used.push_target == "Coord":
+			var _temporary_result = push_compute(targeted_comb, push_coord_compute(comb, targeted_comb.position, _skill_used.push_target_coord))
+			instant_move_compute(targeted_comb, _temporary_result[0])
+			print("la hp loss dopo vaut : ", _temporary_result[1])
+			_hp_loss += _temporary_result[1]
 		targeted_comb.hp -= _hp_loss
 		combatant_lost_hp.emit(targeted_comb)
 		if targeted_comb.hp <= 0:
@@ -566,6 +692,22 @@ func spell_compute(comb, targeted_comb):
 	if _prob < _skill_used.prob:
 		if _skill_used.damage != 0:
 			var _hp_loss = (comb.psy_power * _skill_used.damage)/targeted_comb.toughness
+			if _skill_used.dash_comb == "To_Target":
+				instant_move_compute(comb, dash_compute(comb, targeted_comb.position))
+			elif _skill_used.dash_comb == "Coord":
+				print("dash_coord_compute vaut : ", targeted_comb.position,  _skill_used.dash_comb_coord, dash_coord_compute(comb, targeted_comb.position, _skill_used.dash_comb_coord))
+				instant_move_compute(comb, dash_compute(comb, dash_coord_compute(comb, targeted_comb.position, _skill_used.dash_comb_coord)))
+			if _skill_used.push_target == "To_Comb":
+				var _temporary_result = push_compute(targeted_comb, comb.position)
+				instant_move_compute(targeted_comb, _temporary_result[0])
+				print("la hp loss dopo vaut : ", _temporary_result[1])
+				if _temporary_result[1] != 0:
+					_hp_loss += _global_pushed_damages*2
+			elif _skill_used.push_target == "Coord":
+				var _temporary_result = push_compute(targeted_comb, push_coord_compute(comb, targeted_comb.position, _skill_used.push_target_coord))
+				instant_move_compute(targeted_comb, _temporary_result[0])
+				print("la hp loss dopo vaut : ", _temporary_result[1])
+				_hp_loss += _temporary_result[1]
 			targeted_comb.hp -= _hp_loss
 			combatant_lost_hp.emit(targeted_comb)
 			print(targeted_comb.name, " lost ", _hp_loss, " and now has ", targeted_comb.hp, " hp.")
@@ -579,9 +721,55 @@ func spell_compute(comb, targeted_comb):
 			print(targeted_comb.name, " has now status ", status_copy.name)
 	else:
 		print("spell failed")
-	_skill_used.end_cd_turn = combat.turn + _skill_used.cd
-	print(_skill_used.name, " can be used next in turn ", _skill_used.end_cd_turn)
+	
+
+
+func dash_compute(comb, targeted_position):
+	var _path = movement_astargrid.get_point_path(comb.position, targeted_position)
+	print("Dans dash_compute : ", _path)
+	var _final_tile = Vector2i()
+	for i in range(len(_path)):
+		print("Dans dash_compute la boucle for : ", i)
+		var tile = _path[i]
+		if get_tile_cost(tile, comb) > 10000 or (get_combatant_at_position(tile) != null and tile != _path[0]):
+			if tile == _path[0]:
+				_final_tile = comb.position
+				print("Dans dash_compute la boucle for on met nouvelle valeur pour _final_tile: ", _final_tile)
+			else:
+				_final_tile = Vector2i(_path[i-1])
+				print("Dans dash_compute la boucle for on met nouvelle valeur pour _final_tile: ", _final_tile)
+			
+	if _final_tile == Vector2i():
+		print("Dans dash_compute après la boucle for _final_tile est NULLE : ", _final_tile)
+			
+		_final_tile = Vector2i(_path[-1])
+	return _final_tile
 		
+func push_compute(comb, targeted_position):
+	var _path = sight_astargrid.get_point_path(comb.position, targeted_position)
+	var _final_tile = Vector2i()
+	var _hp_loss = 0
+	for i in range(len(_path)):
+		var tile = _path[i]
+		if (get_tile_cost(tile, comb) > 10000 or (get_combatant_at_position(tile) != null and tile != _path[0])) and _final_tile == Vector2i():
+			if tile == _path[0]:
+				_final_tile = comb.position
+				_hp_loss = _global_pushed_damages*(1+len(_path)-i)
+			else:
+				_final_tile = Vector2i(_path[i-1])
+				_hp_loss = _global_pushed_damages*(1+len(_path)-i)
+	if _final_tile == Vector2i():
+		_final_tile = Vector2i(_path[-1])
+	return [_final_tile, _hp_loss]
+		
+func instant_move_compute(comb: Dictionary, new_position):
+	print(comb.name, " is willing to instantly move from", comb.position)
+	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
+	_comb_visual_node.position = tile_map.map_to_local(new_position)
+	comb.position = new_position
+	print(comb.name, " is instantly moved to ", new_position)
+
+
 func comb_died(comb: Dictionary):
 	print(comb.name, " died AH LOOSER!")
 	get_node("/root/Game/Terrain/VisualCombat/" + comb.name).queue_free()
@@ -903,7 +1091,7 @@ func _draw():
 							var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 							for _suppl_offset in _skill_used.hit_zone:
 								var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-								draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 1, 1))
+								draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(1, 0.5, 0, 1))
 				elif comb.next_action_type == "Spell":
 					if (not phase_ended):
 						for target in comb.selected_targets:
