@@ -16,6 +16,9 @@ signal end_turn(combatants: Array)
 var combatants = []
 var phase = 3
 var turn = 0
+var temporary_obstacles = []
+var temporary_units = []
+var temporary_traps = [] #called it "temporary" just to have the same names as above
 
 enum Group
 {
@@ -62,14 +65,14 @@ func _ready():
 	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltgun"], "Space_Marine_1"), 0, Vector2i(10,0))
 	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltgun"], "Space_Marine_2"), 0, Vector2i(9,-3))
 	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_3"), 0, Vector2i(9,2))
-	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_4"), 0, Vector2i(10,4))
+	
 	
 	
 	#ADD ENEMIES
 	
-	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_lictor"], "Tyranid_1"), 1, Vector2i(24,3))
-	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_2"), 1, Vector2i(25,-4))
-	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_3"), 1, Vector2i(23,-8))
+	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_lictor"], "Tyranid_1"), 1, Vector2i(24,3))
+	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_2"), 1, Vector2i(25,-4))
+	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_3"), 1, Vector2i(23,-8))
 	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_4"), 1, Vector2i(27,-6))
 	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_5"), 1, Vector2i(28,8))
 	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_6"), 1, Vector2i(26,7))
@@ -153,6 +156,30 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	emit_signal("combatant_added", combatant)
 	print("New combatant added : ", combatant.name)
 
+func add_temporary_obstacle(tile, duration, need_sight):
+	if need_sight:
+		var obstacle_map = get_node("../WallMapLayer")
+		obstacle_map.set_cell(tile, 5, Vector2i(0,0))
+		controller.update_tile_weights_from_obstacles()
+		temporary_obstacles.append([tile, turn + duration])
+	else:
+		var obstacle_map = get_node("../WallMapLayer")
+		obstacle_map.set_cell(tile, 1, Vector2i(0,0))
+		controller.update_tile_weights_from_obstacles()
+		temporary_obstacles.append([tile, turn + duration])
+
+func add_temporary_unit(tile, duration, unit_name, side):
+	var new_name = unit_name + "_turn_" + str(turn) + "_born_at_" + str(tile.x) + "_" + str(tile.y)
+	add_combatant(create_combatant(CombatantDatabase.combatants[unit_name], new_name), side, tile)
+	temporary_units.append([new_name, turn + duration])
+	
+func add_temporary_trap(tile, duration, caster_name, damage, caster_strength, statuses, type):
+	var new_name = "trap_of_" + caster_name + "_turn_" + str(turn) + "_born_at_" + str(tile.x) + "_" + str(tile.y)
+	var obstacle_map = get_node("../TrapMapLayer")
+	obstacle_map.set_cell(tile, 0, Vector2i(0,0))
+	temporary_traps.append([tile, turn + duration, new_name, damage, caster_strength, statuses])
+	
+	
 # Function to create and update HP display
 func create_hp_display(combatant_scene: Node2D, combatant: Dictionary):
 	# Create a TextureProgress node to act as the HP bar

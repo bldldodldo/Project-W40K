@@ -12,9 +12,8 @@ shader_parameter/tolerance = 0.0
 shader_parameter/diagonals = true
 shader_parameter/rounded = true
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3ifdf"]
-radius = 19.0
-height = 63.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dysl5"]
+size = Vector2(35, 21)
 
 [sub_resource type="Animation" id="Animation_irrvm"]
 length = 0.001
@@ -38,14 +37,13 @@ y_sort_enabled = true
 material = SubResource("ShaderMaterial_81e6f")
 texture = ExtResource("2_wlpjd")
 centered = false
-offset = Vector2(-32, -64)
+offset = Vector2(-32, -57)
 
 [node name="Area2D" type="Area2D" parent="Sprite2D"]
 script = ExtResource("3_4a256")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
-position = Vector2(0, -31)
-shape = SubResource("CapsuleShape2D_3ifdf")
+shape = SubResource("RectangleShape2D_dysl5")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -22,3 +22,12 @@ class_name SkillDefinition
 @export var dash_comb_coord: Vector2i
 @export_enum("None", "To_Comb", "Coord") var push_target: String
 @export var push_target_coord: Vector2i
+@export_enum("None", "No_Sight_Needed", "Sight_Needed") var create_obstacle: String
+@export var obstacle_duration: int #number of turns
+@export_enum("None", "Ally", "Ennemy") var create_unit: String
+@export var unit_name: String
+@export var unit_duration: int
+@export_enum("None", "Visible", "Invisible") var create_trap: String
+@export var trap_duration: int
+@export var trap_damage: int
+@export var trap_statuses: Array[Status]

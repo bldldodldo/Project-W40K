@@ -11,6 +11,9 @@ signal combatant_deselected()
 signal signal_end_phase()
 signal signal_end_turn()
 signal combatant_lost_hp(comb: Dictionary)
+signal add_temporary_obstacle(tile_position, duration, sight_bool)
+signal add_temporary_unit(tile_position, duration, unit_name, comb_side)
+signal add_temporary_trap(tile_position, duration, caster_name, damage, caster_strength, statuses, trap_type)
 
 var controlled_combatant_exists = false
 @export var controlled_node: Node2D 
@@ -20,6 +23,7 @@ var controlled_combatant_exists = false
 
 var tile_map : TileMapLayer
 var obstacle_map : TileMapLayer
+var trap_map : TileMapLayer
 var phase_ended = false
 var move_ended = false
 var attack_ended = false
@@ -228,6 +232,7 @@ func is_path_valid(path):
 func _ready():
 	tile_map = get_node("../Terrain/TileMapLayer")
 	obstacle_map = get_node("../Terrain/WallMapLayer")
+	trap_map = get_node("../Terrain/TrapMapLayer")
 	movement_astargrid.region = movement_astargrid_region
 	movement_astargrid.cell_size = Vector2i(1, 1)
 	movement_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
@@ -355,6 +360,28 @@ func _process(delta):
 						comb.movement -= next_tile_cost
 					else:
 						compute_finish_move(comb, _comb_visual_node)
+					for trap in combat.temporary_traps:
+						if comb.position == trap[0]:
+							var _hp_loss = (trap[3] * trap[4])/comb.toughness
+							for status in trap[5]:
+								if status.stat == "invisible":
+									if comb.side == 0 :
+										_comb_visual_node.get_child(0).self_modulate.a = 0.5
+									else:
+										_comb_visual_node.modulate.a = 0
+								status.turn_to_go = status.turn_total
+								var status_copy = status.duplicate(true)
+								(comb.statuses).append(status_copy)
+								print(comb.name, " has now status ", status_copy.name)
+							comb.hp -= _hp_loss
+							combatant_lost_hp.emit(comb)
+							if comb.hp <= 0:
+								comb.hp = 0
+								comb_died(comb)
+							print(comb.name, " lost ", _hp_loss, " and now has ", comb.hp, " hp.")
+							remove_trap_compute(trap)
+					
+					
 	if phase_ended: 
 		if verifying_arrived() and verifying_moved() and verifying_attacked() and verifying_spelled() :
 			phase_ended = false
@@ -467,13 +494,18 @@ func end_turn():
 			print(comb.name, " has ", status.name)
 			if status.turn_to_go <= 0:
 				if status.time == 0:
-					comb[status.stat] -= status.effect
+					if status.stat == "invisible":
+						var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
+						_comb_visual_node.modulate.a = 1
+						_comb_visual_node.get_child(0).self_modulate.a = 1
+					else:
+						comb[status.stat] -= status.effect
 				(comb.statuses).erase(status)
-				print("end of effect !")
+				print(status.name, " : end of effect !")
 			elif status.delay <= 0:
-				if status.time == 1:
+				if status.time == 1 and status.stat != "invisible":
 					comb[status.stat] += status.effect
-				elif status.turn_to_go == status.turn_total:
+				elif status.turn_to_go == status.turn_total and status.stat != "invisible":
 					comb[status.stat] += status.effect
 					print("effect starts ! ", comb.name, " now has ", comb[status.stat])
 				status.turn_to_go -= 1
@@ -481,7 +513,39 @@ func end_turn():
 				status.delay -= 1
 				print("effect in casting time")
 	combat.turn += 1
+	var new_temporary_obstacles = []
+	for obstacle in combat.temporary_obstacles:
+			if obstacle[1] < combat.turn:
+				obstacle_map.set_cell(obstacle[0], -1)
+			else:
+				new_temporary_obstacles.append(obstacle)
+	combat.temporary_obstacles = new_temporary_obstacles
+	var new_temporary_units = []
+	for unit in combat.temporary_units:
+			if unit[1] < combat.turn:
+				for comb_checked in combat.combatants:
+					if comb_checked.name == unit[0]:
+						comb_died(comb_checked)
+			else:
+				new_temporary_units.append(unit)
+	combat.temporary_units = new_temporary_units
+	var new_temporary_traps = []
+	for trap in combat.temporary_traps:
+		if trap[1] < combat.turn:
+			trap_map.set_cell(trap[0], -1)
+		else:
+			new_temporary_traps.append(trap)
+	combat.temporary_traps = new_temporary_traps
+	print(combat.temporary_traps)
+	print(combat.temporary_obstacles)
+	print(combat.temporary_units)
 	print("turn ", combat.turn)
+
+func has_invisibility(comb):
+	for status in comb.statuses:
+		if status.stat == "invisible":
+			return true
+	return false
 
 func move_combatant(comb: Dictionary):
 	var _path_size = comb.selected_path.size()
@@ -523,6 +587,12 @@ func spell_combatant(comb: Dictionary):
 			else:
 				print(comb.name, " tries to spellzzz ", targeted_comb.name)
 				spell_compute(comb, targeted_comb)
+			if _skill_used.create_obstacle == "No_Sight_Needed" or _skill_used.create_obstacle == "Sight_Needed":
+				obstacle_compute(_tile, _skill_used)
+			if _skill_used.create_unit == "Ally" or _skill_used.create_unit == "Ennemy":
+				summon_compute(_tile, _skill_used, comb.side)
+			if _skill_used.create_trap == "Visible" or _skill_used.create_trap == "Invisible":
+				trap_compute(_tile, _skill_used, comb, _skill_used.create_trap)
 			for _suppl_offset in _skill_used.hit_zone:
 				var _new_tile = hit_zone_compute(comb, _tile, _suppl_offset)
 				targeted_comb = get_combatant_at_position(_new_tile)
@@ -531,6 +601,12 @@ func spell_combatant(comb: Dictionary):
 				else:
 					print(comb.name, " tries to spellzzz ", targeted_comb.name)
 					spell_compute(comb, targeted_comb)
+				if _skill_used.create_obstacle == "No_Sight_Needed" or _skill_used.create_obstacle == "Sight_Needed":
+					obstacle_compute(_new_tile, _skill_used)
+				if _skill_used.create_unit == "Ally" or _skill_used.create_unit == "Ennemy":
+					summon_compute(_new_tile, _skill_used, comb.side)
+				if _skill_used.create_trap == "Visible" or _skill_used.create_trap == "Invisible":
+					trap_compute(_new_tile, _skill_used, comb, _skill_used.create_trap)
 		comb.end_cd_turn = combat.turn + _skill_used.cd
 		print(comb.name, " can use a spell next in turn ", comb.end_cd_turn)
 	else:
@@ -715,6 +791,12 @@ func spell_compute(comb, targeted_comb):
 			targeted_comb.hp = 0
 			comb_died(targeted_comb)
 		for status in _skill_used.statuses:
+			if status.stat == "invisible":
+				var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + targeted_comb.name)
+				if targeted_comb.side == 0 :
+					_comb_visual_node.get_child(0).self_modulate.a = 0.5
+				else:
+					_comb_visual_node.modulate.a = 0
 			status.turn_to_go = status.turn_total
 			var status_copy = status.duplicate(true)
 			(targeted_comb.statuses).append(status_copy)
@@ -768,8 +850,68 @@ func instant_move_compute(comb: Dictionary, new_position):
 	_comb_visual_node.position = tile_map.map_to_local(new_position)
 	comb.position = new_position
 	print(comb.name, " is instantly moved to ", new_position)
+	
+	
+func obstacle_compute(tile_position, _skill_used):
+	var targeted_comb = get_combatant_at_position(tile_position)
+	if targeted_comb != null:
+		var positions = [Vector2i(1,0), Vector2i(0,1), Vector2i(-1,0), Vector2i(0,-1)]
+		var random_placement = randi_range(1,4)
+		var final_pose = tile_position
+		for i in range(4):
+			if final_pose == tile_position:
+				var _tried_position = tile_position+positions[random_placement%4]
+				if get_combatant_at_position(_tried_position) == null and movement_astargrid.get_point_weight_scale(_tried_position) < 1000:
+					final_pose = _tried_position
+				random_placement += 1
+		if final_pose == tile_position:
+			print("ERROR : Not enough space so no spell")
+		else:
+			instant_move_compute(targeted_comb, final_pose)
+			if _skill_used.create_obstacle == "No_Sight_Needed":
+				add_temporary_obstacle.emit(tile_position, _skill_used.obstacle_duration, false)
+			elif _skill_used.create_obstacle == "Sight_Needed":
+				add_temporary_obstacle.emit(tile_position, _skill_used.obstacle_duration, true)
+	else:
+		if _skill_used.create_obstacle == "No_Sight_Needed":
+			add_temporary_obstacle.emit(tile_position, _skill_used.obstacle_duration, false)
+		elif _skill_used.create_obstacle == "Sight_Needed":
+			add_temporary_obstacle.emit(tile_position, _skill_used.obstacle_duration, true)
 
+func summon_compute(tile, skill, comb_side):
+	var targeted_comb = get_combatant_at_position(tile)
+	if targeted_comb != null:
+		print("Can't summon here, there is someone !")
+	else:
+		if skill.create_unit == "Ally":
+			add_temporary_unit.emit(tile, skill.unit_duration, skill.unit_name, comb_side)
+		elif skill.create_unit == "Ennemy":
+			add_temporary_unit.emit(tile, skill.unit_duration, skill.unit_name, comb_side + 1 % 2)
 
+func trap_compute(tile_position, skill, caster_comb, trap_type):
+	for trap in combat.temporary_traps:
+		if trap[0] == tile_position:
+			print("There is already a trap here")
+			return false
+	add_temporary_trap.emit(tile_position, skill.trap_duration, caster_comb.name, skill.trap_damage, caster_comb.strength, skill.trap_statuses, trap_type)
+	if trap_type == "Visible":
+		pass
+	elif trap_type == "Invisible":
+		if caster_comb.side == 1:
+			print("SPEEELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
+			trap_map.set_cell(tile_position, -1)
+
+func remove_trap_compute(removed_trap):
+	var new_temporary_traps = []
+	for trap in combat.temporary_traps:
+		if trap[0] == removed_trap[0]:
+			trap_map.set_cell(trap[0], -1)
+			print(removed_trap)
+		else:
+			new_temporary_traps.append(trap)
+	combat.temporary_traps = new_temporary_traps
+	
+	
 func comb_died(comb: Dictionary):
 	print(comb.name, " died AH LOOSER!")
 	get_node("/root/Game/Terrain/VisualCombat/" + comb.name).queue_free()
@@ -1027,8 +1169,9 @@ func _draw():
 				draw_line(last_position, local_position, Color(0.5, 0, 0, 1), 2)
 				last_position = local_position
 
-	for comb in combat.combatants:
-		draw_texture(grid_tex, tile_map.map_to_local(comb.position) - Vector2(32, 16), Color(0, 0, 0, 0.6))
+	for comb in combat.combatants:		
+		if comb.side == 0 or (comb.side == 1 and not has_invisibility(comb)):
+			draw_texture(grid_tex, tile_map.map_to_local(comb.position) - Vector2(32, 16), Color(0, 0, 0, 0.3))
 		if comb.side == 0:
 			if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None" and not is_drawing_path:
 				var path_length = comb.movement_max

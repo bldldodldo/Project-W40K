@@ -34,6 +34,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_j7xro"]
 script = ExtResource("2_twktv")
@@ -56,6 +65,15 @@ dash_comb = "None"
 dash_comb_coord = Vector2i(0, 0)
 push_target = "None"
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_uhaki"]
 script = ExtResource("2_twktv")
@@ -78,6 +96,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_xuvhm"]
 script = ExtResource("2_twktv")
@@ -100,6 +127,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_tbcku"]
 script = ExtResource("2_twktv")
@@ -122,6 +158,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_aw08y"]
 script = ExtResource("2_twktv")
@@ -144,6 +189,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_ykwji"]
 script = ExtResource("2_twktv")
@@ -165,6 +219,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_55j8b"]
 script = ExtResource("4_ksji5")
@@ -207,6 +270,46 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
+
+[sub_resource type="Resource" id="Resource_30ang"]
+script = ExtResource("2_twktv")
+name = "Ultramarine Grenade"
+type = "Spell"
+range_type = "Range"
+min_range = 1
+max_range = 7
+range_list = []
+sight = false
+hit_zone = [Vector2i(-1, 0), Vector2i(1, 0)]
+number_of_target = 1
+damage = 25
+prob = 1.0
+armor_penetration = 0
+icon = ExtResource("12_ewajw")
+cd = 1
+statuses = Array[ExtResource("4_ksji5")]([])
+dash_comb = ""
+dash_comb_coord = Vector2i(0, 0)
+push_target = ""
+push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = "Invisible"
+trap_duration = 2
+trap_damage = 10
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [sub_resource type="Resource" id="Resource_b3yxp"]
 script = ExtResource("4_ksji5")
@@ -239,28 +342,15 @@ dash_comb = ""
 dash_comb_coord = Vector2i(0, 0)
 push_target = ""
 push_target_coord = Vector2i(0, 0)
-
-[sub_resource type="Resource" id="Resource_30ang"]
-script = ExtResource("2_twktv")
-name = "Ultramarine Grenade"
-type = "Spell"
-range_type = "Range"
-min_range = 1
-max_range = 7
-range_list = []
-sight = false
-hit_zone = [Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]
-number_of_target = 1
-damage = 25
-prob = 1.0
-armor_penetration = 0
-icon = ExtResource("12_ewajw")
-cd = 3
-statuses = Array[ExtResource("4_ksji5")]([])
-dash_comb = ""
-dash_comb_coord = Vector2i(0, 0)
-push_target = ""
-push_target_coord = Vector2i(0, 0)
+create_obstacle = ""
+obstacle_duration = 0
+create_unit = ""
+unit_name = ""
+unit_duration = 0
+create_trap = ""
+trap_duration = 0
+trap_damage = 0
+trap_statuses = Array[ExtResource("4_ksji5")]([])
 
 [node name="SkillDatabase" type="Node"]
 script = ExtResource("1_bnr7k")
