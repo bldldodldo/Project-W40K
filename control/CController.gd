@@ -1054,8 +1054,8 @@ func apply_outline(comb, color: Color, size: float = 4.0):
 func remove_outline(comb):
 	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
 	var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
-	if sprite.material:
-		sprite.material = null  # Remove the ShaderMaterial
+	#if sprite.material:
+		#sprite.material = null  # Remove the ShaderMaterial
 
 func end_button_color_switch(color_to_use: Color):
 	# Get the EndPhaseButton node

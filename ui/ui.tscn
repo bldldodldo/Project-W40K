@@ -71,17 +71,21 @@ offset_bottom = 592.0
 
 [node name="Actions" type="Control" parent="."]
 anchors_preset = 0
-offset_left = 335.0
-offset_top = 519.0
-offset_right = 479.0
-offset_bottom = 631.0
+offset_left = 860.0
+offset_top = 920.0
+offset_right = 1004.0
+offset_bottom = 1032.0
 
 [node name="StatusIcon" parent="Actions" instance=ExtResource("4_mn0g0")]
 layout_mode = 2
-offset_left = 142.0
-offset_top = 4.0
-offset_right = 254.0
-offset_bottom = 116.0
+anchor_left = -2.322
+anchor_top = -4.649
+anchor_right = -2.322
+anchor_bottom = -4.649
+offset_left = 476.368
+offset_top = 524.688
+offset_right = 588.368
+offset_bottom = 636.688
 
 [node name="Icon" parent="Actions/StatusIcon" index="0"]
 material = SubResource("ShaderMaterial_1qt58")
@@ -187,9 +191,9 @@ text = "end_phase
 
 [node name="Information" type="PanelContainer" parent="Actions"]
 layout_mode = 0
-offset_left = 597.0
+offset_left = 860.0
 offset_top = -170.0
-offset_right = 794.0
+offset_right = 1057.0
 offset_bottom = 106.0
 
 [node name="Text" type="RichTextLabel" parent="Actions/Information"]
@@ -217,19 +221,19 @@ text = "Select Target"
 
 [node name="Turn_Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 194.0
-offset_top = 589.0
-offset_right = 234.0
-offset_bottom = 612.0
+offset_left = 731.0
+offset_top = 989.0
+offset_right = 771.0
+offset_bottom = 1012.0
 text = "ahah
 "
 
 [node name="Phase_Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 194.0
-offset_top = 618.0
-offset_right = 234.0
-offset_bottom = 641.0
+offset_left = 731.0
+offset_top = 1018.0
+offset_right = 771.0
+offset_bottom = 1041.0
 text = "lol
 "
 
@@ -250,27 +254,27 @@ vertical_alignment = 1
 wait_time = 1.5
 
 [node name="Phase_Label_movement_icon" type="Sprite2D" parent="."]
-position = Vector2(506, 175)
+position = Vector2(890, 300)
 texture = ExtResource("8_h5dvs")
 
 [node name="Phase_Label_attack_icon" type="Sprite2D" parent="."]
-position = Vector2(576, 175)
+position = Vector2(960, 300)
 texture = ExtResource("9_xu3ax")
 
 [node name="Phase_Label_spell_icon" type="Sprite2D" parent="."]
-position = Vector2(646, 175)
+position = Vector2(1040, 300)
 texture = ExtResource("10_it5fu")
 
 [node name="Phase_Label_movement_icon_cancelled" type="Sprite2D" parent="."]
-position = Vector2(506, 175)
+position = Vector2(890, 300)
 texture = ExtResource("11_elaob")
 
 [node name="Phase_Label_attack_icon_cancelled" type="Sprite2D" parent="."]
-position = Vector2(576, 175)
+position = Vector2(960, 300)
 texture = ExtResource("12_hk3va")
 
 [node name="Phase_Label_spell_icon_cancelled" type="Sprite2D" parent="."]
-position = Vector2(646, 175)
+position = Vector2(1040, 300)
 texture = ExtResource("13_uqljk")
 
 [connection signal="pressed" from="Actions/EndPhaseButton" to="." method="_on_end_phase_button_pressed"]

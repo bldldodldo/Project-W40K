@@ -63,16 +63,16 @@ func _ready():
 	randomize()
 	#ADD PLAYERS
 	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltgun"], "Space_Marine_1"), 0, Vector2i(10,0))
-	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltgun"], "Space_Marine_2"), 0, Vector2i(9,-3))
-	add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_3"), 0, Vector2i(9,2))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_2"), 0, Vector2i(9,-3))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["ultramarine_intercessor_boltpistol_chainsword"], "Space_Marine_3"), 0, Vector2i(9,2))
 	
 	
 	
 	#ADD ENEMIES
 	
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_lictor"], "Tyranid_1"), 1, Vector2i(24,3))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_2"), 1, Vector2i(25,-4))
-	add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_3"), 1, Vector2i(23,-8))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_lictor"], "Tyranid_1"), 1, Vector2i(24,3))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_2"), 1, Vector2i(25,-4))
+	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_3"), 1, Vector2i(23,-8))
 	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_4"), 1, Vector2i(27,-6))
 	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_5"), 1, Vector2i(28,8))
 	#add_combatant(create_combatant(CombatantDatabase.combatants["tyranids_hormagaunt"], "Tyranid_6"), 1, Vector2i(26,7))
@@ -141,14 +141,15 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant_scene.name = combatant.name
 	combatant_scene.y_sort_enabled = true
 	var _area_2D = (combatant_scene.get_child(0)).get_child(0)
-	_area_2D.mouse_clicked.connect(controller._on_sprite_clicked)
-	_area_2D.mouse_over_it.connect(controller._on_sprite_mouse_over)
-	_area_2D.mouse_out_of_it.connect(controller._on_sprite_mouse_exited)
+	#_area_2D.mouse_clicked.connect(controller._on_sprite_clicked)
+	#_area_2D.mouse_over_it.connect(controller._on_sprite_mouse_over)
+	#_area_2D.mouse_out_of_it.connect(controller._on_sprite_mouse_exited)
 	add_child(combatant_scene)
 	combatant_scene.position = Vector2(tile_map.map_to_local(position)) + combatant.sprite_offset
 	var anim_player = combatant_scene.get_node("AnimationPlayer") # Store the reference to the AnimationPlayer for controlling animations
+	var animated_sprite2D = combatant_scene.get_node("AnimatedSprite2D")
 	combatant["anim_player"] = anim_player
-	anim_player.play("idle")
+	animated_sprite2D.play("BG_run")
 	if side == 1:
 		(combatant_scene.get_node("Sprite2D")).scale.x = -1
 	create_hp_display(combatant_scene, combatant)
@@ -185,7 +186,7 @@ func create_hp_display(combatant_scene: Node2D, combatant: Dictionary):
 	# Create a TextureProgress node to act as the HP bar
 	var hp_bar = ProgressBar.new()
 	hp_bar.name = "HPBar"
-	hp_bar.position = Vector2(-26, -combatant_scene.get_node("Sprite2D").get_rect().size.y - 5)  # Adjust position based on sprite size
+	#hp_bar.position = Vector2(-26, -combatant_scene.get_node("Sprite2D").get_rect().size.y - 5)  # Adjust position based on sprite size
 	hp_bar.anchor_left = 0.5  # Center the HP bar horizontally
 	hp_bar.anchor_top = 0
 	hp_bar.anchor_right = 0.5

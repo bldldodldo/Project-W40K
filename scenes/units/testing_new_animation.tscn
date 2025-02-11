@@ -1,0 +1,96 @@
+[gd_scene load_steps=20 format=3 uid="uid://dfryv08t6w46k"]
+
+[ext_resource type="Texture2D" uid="uid://dbf7g31byhwpf" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-1.png" id="1_sylpo"]
+[ext_resource type="Texture2D" uid="uid://dmtjpwnaibrqh" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-2.png" id="2_6u7k5"]
+[ext_resource type="Texture2D" uid="uid://lakgcr247dr5" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-3.png" id="3_wsym6"]
+[ext_resource type="Texture2D" uid="uid://dnu8lqd1861em" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-4.png" id="4_uvm8i"]
+[ext_resource type="Texture2D" uid="uid://bai4butag4wjr" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-5.png" id="5_wd857"]
+[ext_resource type="Texture2D" uid="uid://dadjfdebm0ld0" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-6.png" id="6_rhq2k"]
+[ext_resource type="Texture2D" uid="uid://dsaoa8m6di3xa" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-7.png" id="7_0sw3e"]
+[ext_resource type="Texture2D" uid="uid://cgnou5syo6wbf" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-8.png" id="8_uocko"]
+[ext_resource type="Texture2D" uid="uid://cbbw2eh1dem1" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-9.png" id="9_5kx5g"]
+[ext_resource type="Texture2D" uid="uid://d3s0br2mx5dfe" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-10.png" id="10_ogxy7"]
+[ext_resource type="Texture2D" uid="uid://dxj7248l0xtla" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-11.png" id="11_e8oqm"]
+[ext_resource type="Texture2D" uid="uid://dib43airpj06e" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-12.png" id="12_4btqm"]
+[ext_resource type="Texture2D" uid="uid://ctsbk1fgw10nb" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-13.png" id="13_kxoxn"]
+[ext_resource type="Texture2D" uid="uid://blvnnfbwskdvt" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-14.png" id="14_14qtp"]
+[ext_resource type="Texture2D" uid="uid://ukrwqbee5lb1" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-15.png" id="15_kcge4"]
+[ext_resource type="Texture2D" uid="uid://bt45x2dfdflbf" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-16.png" id="16_qj61f"]
+[ext_resource type="Texture2D" uid="uid://cq07lcyrr36h8" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-17.png" id="17_hsh0l"]
+[ext_resource type="Texture2D" uid="uid://vmhotar1lmpk" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-18.png" id="18_8smce"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xr7ix"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_sylpo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_6u7k5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_wsym6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_uvm8i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_wd857")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_rhq2k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_0sw3e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_uocko")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_5kx5g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_ogxy7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_e8oqm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_4btqm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_kxoxn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_14qtp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_kcge4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_qj61f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_hsh0l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_8smce")
+}],
+"loop": true,
+"name": &"BG_run",
+"speed": 24.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.01, 0.01)
+sprite_frames = SubResource("SpriteFrames_xr7ix")
+animation = &"BG_run"
+frame = 17
+frame_progress = 0.75797

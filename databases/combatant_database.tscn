@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://databases/combatant_database.gd" id="1_5ebs0"]
 [ext_resource type="Script" path="res://combat/resources/CombatantDefinition.gd" id="2_rggep"]
 [ext_resource type="Script" path="res://combat/resources/StatusDefinition.gd" id="4_20ea5"]
-[ext_resource type="PackedScene" uid="uid://b2susye62l1ym" path="res://scenes/units/ultramarine_intercessor_boltgun.tscn" id="5_k7kum"]
 [ext_resource type="Texture2D" uid="uid://dpgmg5ql4ptm7" path="res://imagese/icon/units/icon_ultramarine_boltgun.png" id="6_n7joq"]
 [ext_resource type="PackedScene" uid="uid://cgfddyu8ignvv" path="res://scenes/units/ultramarine_intercessor_boltpistol_chainsword.tscn" id="7_c1lhg"]
 [ext_resource type="Texture2D" uid="uid://dt5ssy10kogh2" path="res://imagese/icon/units/icon_ultramarine_assault.png" id="7_g5aji"]
+[ext_resource type="PackedScene" uid="uid://dfryv08t6w46k" path="res://scenes/units/testing_new_animation.tscn" id="8_32tdy"]
 [ext_resource type="PackedScene" uid="uid://dsbqpyeeeuwmn" path="res://scenes/units/tyranids_hormagaunt.tscn" id="8_xnysm"]
 [ext_resource type="Texture2D" uid="uid://ctec27l0l32cw" path="res://imagese/icon/units/icon_tyranids_hormagaunt.png" id="9_x7b8e"]
 [ext_resource type="PackedScene" uid="uid://fqa4q0kehuq4" path="res://scenes/units/tyranids_lictor.tscn" id="10_7lywx"]
@@ -74,7 +74,7 @@ crit_chance = 5
 weight = 1000
 move_speed = 250
 icon = ExtResource("6_n7joq")
-animation_resource = ExtResource("5_k7kum")
+animation_resource = ExtResource("8_32tdy")
 sprite_offset = Vector2(3, 0)
 skills = Array[String](["boltgun", "knife", "ultramarine_squad", "ultramarine_grenade"])
 number_attacks_max = 1
