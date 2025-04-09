@@ -28,8 +28,11 @@ crit_chance = 5
 weight = 200
 move_speed = 380
 icon = ExtResource("9_x7b8e")
+orientation = 0
+animation_played = "idle"
 animation_resource = ExtResource("8_xnysm")
 sprite_offset = Vector2(3, 0)
+sprite_offsets = {}
 skills = Array[String](["slash"])
 number_attacks_max = 2
 end_cd_turn = 0
@@ -49,10 +52,13 @@ toughness = 20
 armor_save = 0
 crit_chance = 30
 weight = 1000
-move_speed = 200
+move_speed = 2000
 icon = ExtResource("11_yxcy0")
+orientation = 0
+animation_played = "idle"
 animation_resource = ExtResource("10_7lywx")
 sprite_offset = Vector2(0, 0)
+sprite_offsets = {}
 skills = Array[String](["assassination"])
 number_attacks_max = 1
 end_cd_turn = 0
@@ -72,10 +78,30 @@ toughness = 40
 armor_save = 5
 crit_chance = 5
 weight = 1000
-move_speed = 250
+move_speed = 1600
 icon = ExtResource("6_n7joq")
+orientation = 0
+animation_played = "idle"
 animation_resource = ExtResource("8_32tdy")
-sprite_offset = Vector2(3, 0)
+sprite_offset = Vector2(0, 0)
+sprite_offsets = {
+"DL_idle": Vector2(-20, 15),
+"DL_kick": Vector2(-180, 80),
+"DL_run": Vector2(10, 60),
+"DL_shoot": Vector2(-10, 50),
+"DR_idle": Vector2(0, 0),
+"DR_kick": Vector2(0, 0),
+"DR_run": Vector2(0, 0),
+"DR_shoot": Vector2(0, 0),
+"UL_idle": Vector2(0, 30),
+"UL_kick": Vector2(-50, 30),
+"UL_run": Vector2(0, 30),
+"UL_shoot": Vector2(0, 30),
+"UR_idle": Vector2(-20, 90),
+"UR_kick": Vector2(95, 90),
+"UR_run": Vector2(-20, 40),
+"UR_shoot": Vector2(-20, 90)
+}
 skills = Array[String](["boltgun", "knife", "ultramarine_squad", "ultramarine_grenade"])
 number_attacks_max = 1
 end_cd_turn = 0
@@ -97,8 +123,11 @@ crit_chance = 15
 weight = 800
 move_speed = 300
 icon = ExtResource("7_g5aji")
+orientation = 0
+animation_played = "idle"
 animation_resource = ExtResource("7_c1lhg")
 sprite_offset = Vector2(3, 0)
+sprite_offsets = {}
 skills = Array[String](["boltpistol", "chainsword", "ultramarine_assault"])
 number_attacks_max = 1
 end_cd_turn = 0

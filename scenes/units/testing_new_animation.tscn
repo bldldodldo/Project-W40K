@@ -1,96 +1,709 @@
-[gd_scene load_steps=20 format=3 uid="uid://dfryv08t6w46k"]
+[gd_scene load_steps=157 format=3 uid="uid://dfryv08t6w46k"]
 
-[ext_resource type="Texture2D" uid="uid://dbf7g31byhwpf" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-1.png" id="1_sylpo"]
-[ext_resource type="Texture2D" uid="uid://dmtjpwnaibrqh" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-2.png" id="2_6u7k5"]
-[ext_resource type="Texture2D" uid="uid://lakgcr247dr5" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-3.png" id="3_wsym6"]
-[ext_resource type="Texture2D" uid="uid://dnu8lqd1861em" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-4.png" id="4_uvm8i"]
-[ext_resource type="Texture2D" uid="uid://bai4butag4wjr" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-5.png" id="5_wd857"]
-[ext_resource type="Texture2D" uid="uid://dadjfdebm0ld0" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-6.png" id="6_rhq2k"]
-[ext_resource type="Texture2D" uid="uid://dsaoa8m6di3xa" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-7.png" id="7_0sw3e"]
-[ext_resource type="Texture2D" uid="uid://cgnou5syo6wbf" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-8.png" id="8_uocko"]
-[ext_resource type="Texture2D" uid="uid://cbbw2eh1dem1" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-9.png" id="9_5kx5g"]
-[ext_resource type="Texture2D" uid="uid://d3s0br2mx5dfe" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-10.png" id="10_ogxy7"]
-[ext_resource type="Texture2D" uid="uid://dxj7248l0xtla" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-11.png" id="11_e8oqm"]
-[ext_resource type="Texture2D" uid="uid://dib43airpj06e" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-12.png" id="12_4btqm"]
-[ext_resource type="Texture2D" uid="uid://ctsbk1fgw10nb" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-13.png" id="13_kxoxn"]
-[ext_resource type="Texture2D" uid="uid://blvnnfbwskdvt" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-14.png" id="14_14qtp"]
-[ext_resource type="Texture2D" uid="uid://ukrwqbee5lb1" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-15.png" id="15_kcge4"]
-[ext_resource type="Texture2D" uid="uid://bt45x2dfdflbf" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-16.png" id="16_qj61f"]
-[ext_resource type="Texture2D" uid="uid://cq07lcyrr36h8" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-17.png" id="17_hsh0l"]
-[ext_resource type="Texture2D" uid="uid://vmhotar1lmpk" path="res://imagese/sprites_animation/animation_test/BG_-_run_-_Anim_-_2-18.png" id="18_8smce"]
+[ext_resource type="Shader" path="res://shaders/shader_matching_colors.gdshader" id="1_2m5kt"]
+[ext_resource type="Texture2D" uid="uid://c2e6rjmhu1vux" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/idle/C_SM_INT_B_DL_idle-1.png" id="2_bqvp7"]
+[ext_resource type="Texture2D" uid="uid://bh64de4v7o3ka" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/idle/C_SM_INT_B_DL_idle-2.png" id="3_661b5"]
+[ext_resource type="Texture2D" uid="uid://ct0ktbenown0u" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/idle/C_SM_INT_B_DL_idle-3.png" id="4_01tiy"]
+[ext_resource type="Texture2D" uid="uid://ci7xffvhw136o" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/idle/C_SM_INT_B_DL_idle-4.png" id="5_84iwm"]
+[ext_resource type="Texture2D" uid="uid://cjy7rjs51tahe" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-1.png" id="6_8oq44"]
+[ext_resource type="Texture2D" uid="uid://cxc7jpnml2c6i" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-1.png" id="6_hmtbw"]
+[ext_resource type="Texture2D" uid="uid://baky5dawx2fcm" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-2.png" id="7_dpsxi"]
+[ext_resource type="Texture2D" uid="uid://bcb8subdqrgf6" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-2.png" id="7_u5suf"]
+[ext_resource type="Texture2D" uid="uid://bl16q08ifskt" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-3.png" id="8_agpfv"]
+[ext_resource type="Texture2D" uid="uid://dvvhgyjh5gbrp" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-3.png" id="8_fhpn8"]
+[ext_resource type="Texture2D" uid="uid://di6aj3ngq1xk1" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-4.png" id="9_031mi"]
+[ext_resource type="Texture2D" uid="uid://b5fkta8hwf0l4" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-4.png" id="9_unis7"]
+[ext_resource type="Texture2D" uid="uid://cgjt13q66hxnw" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-5.png" id="10_4e3uc"]
+[ext_resource type="Texture2D" uid="uid://2rqbr8mf682y" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-5.png" id="10_be212"]
+[ext_resource type="Texture2D" uid="uid://da43fjs14y21v" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-6.png" id="11_hvum7"]
+[ext_resource type="Texture2D" uid="uid://xwjnrd6v4582" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-6.png" id="11_phxaq"]
+[ext_resource type="Texture2D" uid="uid://cgelhud4uk20x" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-7.png" id="12_epqnr"]
+[ext_resource type="Texture2D" uid="uid://cfcno0lj0aur7" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-7.png" id="12_i8emk"]
+[ext_resource type="Texture2D" uid="uid://bjygo0lrlsnxn" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-8.png" id="13_a7aoc"]
+[ext_resource type="Texture2D" uid="uid://b00k6oxb7n3ua" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-8.png" id="13_rkwri"]
+[ext_resource type="Texture2D" uid="uid://16lgtakcl0qx" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-9.png" id="14_2twql"]
+[ext_resource type="Texture2D" uid="uid://kuvxf53s1lh3" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-9.png" id="14_pgmiy"]
+[ext_resource type="Texture2D" uid="uid://by2fqcemgqjvi" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-10.png" id="15_hdmeq"]
+[ext_resource type="Texture2D" uid="uid://cxbbp527b06no" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-10.png" id="15_ngi76"]
+[ext_resource type="Texture2D" uid="uid://cakj5bxbfmnyd" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/kick/C_SM_INT_B_DL_kick-11.png" id="16_03pmx"]
+[ext_resource type="Texture2D" uid="uid://doxq28j87gop6" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/kick/C_SM_INT_B_UL_kick-11.png" id="16_21qge"]
+[ext_resource type="Texture2D" uid="uid://b6ujys7ncbgub" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-1.png" id="17_8j33g"]
+[ext_resource type="Texture2D" uid="uid://pntvqokci5qu" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-1.png" id="17_dm65u"]
+[ext_resource type="Texture2D" uid="uid://dkvyarsvmluwk" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-2.png" id="18_fo7nu"]
+[ext_resource type="Texture2D" uid="uid://kxut07ouwud0" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-2.png" id="18_s6hjn"]
+[ext_resource type="Texture2D" uid="uid://hahis4wyuc46" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-3.png" id="19_4kvyd"]
+[ext_resource type="Texture2D" uid="uid://buxgavyk3ttyq" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-3.png" id="19_c1p5w"]
+[ext_resource type="Texture2D" uid="uid://cqy2ny04ui2qf" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-4.png" id="20_1dqfi"]
+[ext_resource type="Texture2D" uid="uid://bofc0san8jgsb" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/idle/C_SM_INT_B_UL_idle-1.png" id="20_g7exu"]
+[ext_resource type="Texture2D" uid="uid://hbqs1ew8ugiu" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-4.png" id="20_q0yef"]
+[ext_resource type="Texture2D" uid="uid://cynwrngkk7uct" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/idle/C_SM_INT_B_UL_idle-2.png" id="21_gd0tk"]
+[ext_resource type="Texture2D" uid="uid://q5snydbt7w4x" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-5.png" id="21_tll58"]
+[ext_resource type="Texture2D" uid="uid://cdgqof78he7jq" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-5.png" id="21_w5qq0"]
+[ext_resource type="Texture2D" uid="uid://bhkxdkcqc4bjr" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/idle/C_SM_INT_B_UL_idle-3.png" id="22_7p3eb"]
+[ext_resource type="Texture2D" uid="uid://btmvaw6turgwv" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-6.png" id="22_fjmvk"]
+[ext_resource type="Texture2D" uid="uid://g882kdrhv27l" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-6.png" id="22_s1eyy"]
+[ext_resource type="Texture2D" uid="uid://r3ig3382mjox" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/idle/C_SM_INT_B_UL_idle-4.png" id="23_brmfh"]
+[ext_resource type="Texture2D" uid="uid://dp1bku63dypwp" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-7.png" id="23_pdvbw"]
+[ext_resource type="Texture2D" uid="uid://bfe7kw6fgtprb" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-7.png" id="23_ui4y3"]
+[ext_resource type="Texture2D" uid="uid://c7x7xgei5nqpq" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-8.png" id="24_0msld"]
+[ext_resource type="Texture2D" uid="uid://b0111h33si8yn" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-8.png" id="24_hqsdn"]
+[ext_resource type="Texture2D" uid="uid://b028yr2iicsm" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-9.png" id="25_ubg3i"]
+[ext_resource type="Texture2D" uid="uid://xdbqrvbtkt2u" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-9.png" id="25_v40bw"]
+[ext_resource type="Texture2D" uid="uid://cmspuyfoupk7d" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-10.png" id="26_6od00"]
+[ext_resource type="Texture2D" uid="uid://cg04ypw3kdv2a" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-10.png" id="26_vgkl8"]
+[ext_resource type="Texture2D" uid="uid://bnok0dn4mo74l" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-11.png" id="27_ho6eh"]
+[ext_resource type="Texture2D" uid="uid://h20t8tffny2p" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-11.png" id="27_o1oin"]
+[ext_resource type="Texture2D" uid="uid://gp5gk3014p6s" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-12.png" id="28_l6gi1"]
+[ext_resource type="Texture2D" uid="uid://b257j4mdrw5oh" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-12.png" id="28_pi1ql"]
+[ext_resource type="Texture2D" uid="uid://bgqirrhd2rufd" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-13.png" id="29_a1iss"]
+[ext_resource type="Texture2D" uid="uid://cv0j3iob2sa72" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-13.png" id="29_qlxxu"]
+[ext_resource type="Texture2D" uid="uid://dfdh1cpsvpv2g" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-14.png" id="30_7uku1"]
+[ext_resource type="Texture2D" uid="uid://dxwxbvc40d543" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-14.png" id="30_a8ry6"]
+[ext_resource type="Texture2D" uid="uid://ddcmneisjflvq" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-15.png" id="31_bukbo"]
+[ext_resource type="Texture2D" uid="uid://cowql6xofmqip" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-15.png" id="31_iw1r0"]
+[ext_resource type="Texture2D" uid="uid://vqyemb2nj5xn" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-16.png" id="32_vbpa3"]
+[ext_resource type="Texture2D" uid="uid://b2tepx1c1waqe" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-16.png" id="32_writ4"]
+[ext_resource type="Texture2D" uid="uid://chktlmukdh6me" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-17.png" id="33_2y4kw"]
+[ext_resource type="Texture2D" uid="uid://nnajtbcgjpt8" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-17.png" id="33_d7x6e"]
+[ext_resource type="Texture2D" uid="uid://b4m1v7pwrqt0s" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/run/C_SM_INT_B_UL_run-18.png" id="34_2hs4c"]
+[ext_resource type="Texture2D" uid="uid://b6xqjepuifud" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/run/C_SM_INT_B_DL_run-18.png" id="34_cslnd"]
+[ext_resource type="Texture2D" uid="uid://cn31w6t6ef4ec" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-1.png" id="35_57asr"]
+[ext_resource type="Texture2D" uid="uid://dh4gi3mwb0l6b" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-1.png" id="35_kwicj"]
+[ext_resource type="Texture2D" uid="uid://bm5ntp4q1ihox" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-2.png" id="36_6kid7"]
+[ext_resource type="Texture2D" uid="uid://kmil2b7gt5sd" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-2.png" id="36_82f7o"]
+[ext_resource type="Texture2D" uid="uid://l4cm808uj7xi" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-3.png" id="37_p64sw"]
+[ext_resource type="Texture2D" uid="uid://bv6s5cxqhxa13" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-3.png" id="37_v05ik"]
+[ext_resource type="Texture2D" uid="uid://bdpsucnqnx2fw" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-4.png" id="38_73nvk"]
+[ext_resource type="Texture2D" uid="uid://bmhk6dm8bgj0a" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-4.png" id="38_271ps"]
+[ext_resource type="Texture2D" uid="uid://bgqhj1tdbj50l" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-5.png" id="39_8xrtn"]
+[ext_resource type="Texture2D" uid="uid://d1rqy2b6eju33" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-5.png" id="39_fh6vy"]
+[ext_resource type="Texture2D" uid="uid://c30urw5fra3gq" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-6.png" id="40_svtpi"]
+[ext_resource type="Texture2D" uid="uid://bsxrr3jp5rvf1" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-6.png" id="40_xjpm7"]
+[ext_resource type="Texture2D" uid="uid://c4bko0wryl31p" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-7.png" id="41_pidnj"]
+[ext_resource type="Texture2D" uid="uid://c2xjqmhsa720a" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-7.png" id="41_sdi86"]
+[ext_resource type="Texture2D" uid="uid://btwp2ys5ycfbl" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-8.png" id="42_7csgc"]
+[ext_resource type="Texture2D" uid="uid://brr2doyrw4u0q" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-8.png" id="42_pcejh"]
+[ext_resource type="Texture2D" uid="uid://da3htwc4muaqt" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-9.png" id="43_harh3"]
+[ext_resource type="Texture2D" uid="uid://bv0pt58t52f4i" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-9.png" id="43_tqa7w"]
+[ext_resource type="Texture2D" uid="uid://cbkxp5o467bdw" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-10.png" id="44_7ug1k"]
+[ext_resource type="Texture2D" uid="uid://cpdffe0q4cxbf" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-10.png" id="44_fwyb4"]
+[ext_resource type="Texture2D" uid="uid://ckjxbeelbn7s2" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-11.png" id="45_cderq"]
+[ext_resource type="Texture2D" uid="uid://bad4hq2syi18d" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-11.png" id="45_dksy3"]
+[ext_resource type="Texture2D" uid="uid://bph3peuiri52v" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-12.png" id="46_04e2g"]
+[ext_resource type="Texture2D" uid="uid://cu5gmt3jo8ayl" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-12.png" id="46_i7d2g"]
+[ext_resource type="Texture2D" uid="uid://ndxl45o3b2g0" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-13.png" id="47_i5hyx"]
+[ext_resource type="Texture2D" uid="uid://v0v66fbg3mng" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-13.png" id="47_rtrg7"]
+[ext_resource type="Texture2D" uid="uid://3o6s53e13mm0" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-14.png" id="48_0p2o2"]
+[ext_resource type="Texture2D" uid="uid://c1iwmdee8skrf" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-14.png" id="48_6f8yj"]
+[ext_resource type="Texture2D" uid="uid://dr6gv05u1iq5l" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-15.png" id="49_gpppx"]
+[ext_resource type="Texture2D" uid="uid://dsvfy8jcc053j" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-15.png" id="49_hswhw"]
+[ext_resource type="Texture2D" uid="uid://bqth0hx6pc6k6" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DL/shoot/C_SM_INT_B_DL_shoot-16.png" id="50_4u6uf"]
+[ext_resource type="Texture2D" uid="uid://dn0vycmvthtoq" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UL/shoot/C_SM_INT_B_UL_shoot-16.png" id="50_sbtb1"]
+[ext_resource type="Texture2D" uid="uid://1pw0oyxsveqk" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DR/Idle/C_SM_INT_B_DR_idle-1.png" id="51_fblen"]
+[ext_resource type="Texture2D" uid="uid://c65nvnmmgsjgh" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DR/Idle/C_SM_INT_B_DR_idle-2.png" id="52_j7ke6"]
+[ext_resource type="Texture2D" uid="uid://bbovbtwcjv56h" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DR/Idle/C_SM_INT_B_DR_idle-3.png" id="53_34kx2"]
+[ext_resource type="Texture2D" uid="uid://drgv7whmnhue8" path="res://imagese/sprites_animation/space_marines/SM_INT_B/DR/Idle/C_SM_INT_B_DR_idle-4.png" id="54_dgoga"]
+[ext_resource type="Texture2D" uid="uid://de4cyst2maf7u" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/idle/C_SM_INT_B_UR_idle-1.png" id="100_bwbf5"]
+[ext_resource type="Texture2D" uid="uid://ucy84fpc7tmd" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/idle/C_SM_INT_B_UR_idle-2.png" id="101_0qahr"]
+[ext_resource type="Texture2D" uid="uid://dxy7r1ml4vfey" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/idle/C_SM_INT_B_UR_idle-3.png" id="102_r1rvg"]
+[ext_resource type="Texture2D" uid="uid://cypjssmq61j52" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/idle/C_SM_INT_B_UR_idle-4.png" id="103_ri2lf"]
+[ext_resource type="Texture2D" uid="uid://brflysavxv4tk" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-1.png" id="104_yk1k7"]
+[ext_resource type="Texture2D" uid="uid://bgn08jr1te2b0" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-2.png" id="105_gsp8m"]
+[ext_resource type="Texture2D" uid="uid://btgtvjhxt0nmn" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-3.png" id="106_dolep"]
+[ext_resource type="Texture2D" uid="uid://cqsw7elybwp32" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-4.png" id="107_wd18s"]
+[ext_resource type="Texture2D" uid="uid://boi48qmkwsayd" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-5.png" id="108_6vey8"]
+[ext_resource type="Texture2D" uid="uid://bw3qxx77v038m" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-6.png" id="109_b4j20"]
+[ext_resource type="Texture2D" uid="uid://cv6vjlwps60bp" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-7.png" id="110_6lwyx"]
+[ext_resource type="Texture2D" uid="uid://b1dom2lpcgl37" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-8.png" id="111_0x535"]
+[ext_resource type="Texture2D" uid="uid://bo2t24nnygcw6" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-9.png" id="112_5wxhv"]
+[ext_resource type="Texture2D" uid="uid://772pqodmlifn" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-10.png" id="113_p35yc"]
+[ext_resource type="Texture2D" uid="uid://bv1elk0vc37tu" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/kick/C_SM_INT_B_UR_kick-11.png" id="114_l6a4m"]
+[ext_resource type="Texture2D" uid="uid://23ffsek8h3fe" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-1.png" id="115_3wyu1"]
+[ext_resource type="Texture2D" uid="uid://sw0po0ggds78" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-2.png" id="116_1v2wm"]
+[ext_resource type="Texture2D" uid="uid://b2mvlnp0gl4p6" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-3.png" id="117_6tfbt"]
+[ext_resource type="Texture2D" uid="uid://daug3u2rhalym" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-4.png" id="118_4x7kp"]
+[ext_resource type="Texture2D" uid="uid://iwvx6m2jflox" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-5.png" id="119_r1mjp"]
+[ext_resource type="Texture2D" uid="uid://dfycnlhyj5042" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-6.png" id="120_c316r"]
+[ext_resource type="Texture2D" uid="uid://bs18pfw8lw3tm" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-7.png" id="121_f3ngo"]
+[ext_resource type="Texture2D" uid="uid://de3exg5wuh0c" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-8.png" id="122_e25ch"]
+[ext_resource type="Texture2D" uid="uid://b876i4j0vc5ih" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-9.png" id="123_tf2dt"]
+[ext_resource type="Texture2D" uid="uid://cbqbetf0xrn28" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-10.png" id="124_643dk"]
+[ext_resource type="Texture2D" uid="uid://bntrjkddppklt" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-11.png" id="125_vdx17"]
+[ext_resource type="Texture2D" uid="uid://ccmjb0erm00bk" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-12.png" id="126_ea7tw"]
+[ext_resource type="Texture2D" uid="uid://byoqxghk4u4sw" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-13.png" id="127_4h2vu"]
+[ext_resource type="Texture2D" uid="uid://c88ld4xu2peku" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-14.png" id="128_1kqcc"]
+[ext_resource type="Texture2D" uid="uid://dwjyqstoyqw2d" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-15.png" id="129_mncw0"]
+[ext_resource type="Texture2D" uid="uid://rlb8mr2rh3cf" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-16.png" id="130_rolni"]
+[ext_resource type="Texture2D" uid="uid://bolsb1n5130cx" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-17.png" id="131_wuhwn"]
+[ext_resource type="Texture2D" uid="uid://cudj7kbf7l0uc" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/run/C_SM_INT_B_UR_run-18.png" id="132_2vc10"]
+[ext_resource type="Texture2D" uid="uid://d4b5h07ambj3j" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-1.png" id="133_hectp"]
+[ext_resource type="Texture2D" uid="uid://dfbxji4llrpel" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-2.png" id="134_f0gtv"]
+[ext_resource type="Texture2D" uid="uid://d0mahjhvw2253" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-3.png" id="135_3yhxo"]
+[ext_resource type="Texture2D" uid="uid://bavil4vf5q4w1" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-4.png" id="136_2d48u"]
+[ext_resource type="Texture2D" uid="uid://be8bvfg68eloh" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-8.png" id="137_arlke"]
+[ext_resource type="Texture2D" uid="uid://bry1xqt1iv6ks" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-5.png" id="138_xry6y"]
+[ext_resource type="Texture2D" uid="uid://dw5jqey0xbf0l" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-6.png" id="139_alugu"]
+[ext_resource type="Texture2D" uid="uid://bht4lqrhmpuim" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-7.png" id="140_omvwr"]
+[ext_resource type="Texture2D" uid="uid://c1cwroy3p2q4g" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-9.png" id="141_sa1er"]
+[ext_resource type="Texture2D" uid="uid://18yrp03o2v2f" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-10.png" id="142_2m6wc"]
+[ext_resource type="Texture2D" uid="uid://c0gmr4ys1ghrb" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-11.png" id="143_ot1mi"]
+[ext_resource type="Texture2D" uid="uid://cb25lf6n0x7lk" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-12.png" id="144_4eimp"]
+[ext_resource type="Texture2D" uid="uid://c7qrqdyh7s413" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-13.png" id="145_l5cij"]
+[ext_resource type="Texture2D" uid="uid://cfxilyuddndm7" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-14.png" id="146_im6je"]
+[ext_resource type="Texture2D" uid="uid://gyc1ss0cmyrr" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-15.png" id="147_8t5m8"]
+[ext_resource type="Texture2D" uid="uid://cafpsvtxsm248" path="res://imagese/sprites_animation/space_marines/SM_INT_B/UR/shoot/C_SM_INT_B_UR_shoot-16.png" id="148_rmdmk"]
+[ext_resource type="Script" path="res://scenes/units/animated_sprite_2d.gd" id="149_dsvtv"]
+[ext_resource type="Script" path="res://scenes/units/unit_ui.gd" id="149_y1j4o"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xi5ed"]
+shader = ExtResource("1_2m5kt")
+shader_parameter/Color_Head = Vector4(0.25, 0.4, 0.96, 0)
+shader_parameter/Color_Torso = Vector4(0.25, 0.4, 0.96, 0)
+shader_parameter/Shoulder_L = Vector4(0.9, 0.9, 0.9, 0)
+shader_parameter/Shoulder_R = Vector4(0.9, 0.9, 0.9, 0)
+shader_parameter/Arm_L = Vector4(0.25, 0.4, 0.96, 0)
+shader_parameter/Arm_R = Vector4(0.25, 0.4, 0.96, 0)
+shader_parameter/Leg_L = Vector4(0.25, 0.4, 0.96, 0)
+shader_parameter/Leg_R = Vector4(0.25, 0.4, 0.96, 0)
+shader_parameter/Weapon_L_main = Vector4(0.6, 0.6, 0.6, 0)
+shader_parameter/Weapon_R = Vector4(0, 0, 0, 0)
+shader_parameter/tolerance = 0.4
+shader_parameter/spread_radius = 5
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xr7ix"]
 animations = [{
 "frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_sylpo")
+"duration": 15.0,
+"texture": ExtResource("2_bqvp7")
 }, {
-"duration": 1.0,
-"texture": ExtResource("2_6u7k5")
+"duration": 13.0,
+"texture": ExtResource("3_661b5")
 }, {
-"duration": 1.0,
-"texture": ExtResource("3_wsym6")
+"duration": 19.0,
+"texture": ExtResource("4_01tiy")
 }, {
-"duration": 1.0,
-"texture": ExtResource("4_uvm8i")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_wd857")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_rhq2k")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_0sw3e")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_uocko")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_5kx5g")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_ogxy7")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_e8oqm")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12_4btqm")
-}, {
-"duration": 1.0,
-"texture": ExtResource("13_kxoxn")
-}, {
-"duration": 1.0,
-"texture": ExtResource("14_14qtp")
-}, {
-"duration": 1.0,
-"texture": ExtResource("15_kcge4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("16_qj61f")
-}, {
-"duration": 1.0,
-"texture": ExtResource("17_hsh0l")
-}, {
-"duration": 1.0,
-"texture": ExtResource("18_8smce")
+"duration": 9.0,
+"texture": ExtResource("5_84iwm")
 }],
 "loop": true,
-"name": &"BG_run",
+"name": &"DL_idle",
 "speed": 24.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 17.0,
+"texture": ExtResource("6_8oq44")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_dpsxi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_fhpn8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_031mi")
+}, {
+"duration": 5.0,
+"texture": ExtResource("10_4e3uc")
+}, {
+"duration": 2.0,
+"texture": ExtResource("11_phxaq")
+}, {
+"duration": 3.0,
+"texture": ExtResource("12_i8emk")
+}, {
+"duration": 2.0,
+"texture": ExtResource("13_a7aoc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_pgmiy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_ngi76")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_03pmx")
+}],
 "loop": true,
-"name": &"default",
-"speed": 5.0
+"name": &"DL_kick",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_dm65u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_fo7nu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_c1p5w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_q0yef")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_w5qq0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_fjmvk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_ui4y3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_0msld")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_ubg3i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_6od00")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_ho6eh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_pi1ql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_qlxxu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_a8ry6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_iw1r0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_vbpa3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_d7x6e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_cslnd")
+}],
+"loop": true,
+"name": &"DL_run",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 8.0,
+"texture": ExtResource("35_kwicj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_82f7o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_v05ik")
+}, {
+"duration": 2.0,
+"texture": ExtResource("38_271ps")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_fh6vy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_svtpi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_pidnj")
+}, {
+"duration": 2.0,
+"texture": ExtResource("42_7csgc")
+}, {
+"duration": 3.0,
+"texture": ExtResource("43_harh3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_fwyb4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_dksy3")
+}, {
+"duration": 2.0,
+"texture": ExtResource("46_04e2g")
+}, {
+"duration": 4.0,
+"texture": ExtResource("47_rtrg7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_6f8yj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_hswhw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("50_4u6uf")
+}],
+"loop": true,
+"name": &"DL_shoot",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 15.0,
+"texture": ExtResource("51_fblen")
+}, {
+"duration": 13.0,
+"texture": ExtResource("52_j7ke6")
+}, {
+"duration": 19.0,
+"texture": ExtResource("53_34kx2")
+}, {
+"duration": 9.0,
+"texture": ExtResource("54_dgoga")
+}],
+"loop": true,
+"name": &"DR_idle",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 15.0,
+"texture": ExtResource("20_g7exu")
+}, {
+"duration": 13.0,
+"texture": ExtResource("21_gd0tk")
+}, {
+"duration": 19.0,
+"texture": ExtResource("22_7p3eb")
+}, {
+"duration": 9.0,
+"texture": ExtResource("23_brmfh")
+}],
+"loop": true,
+"name": &"UL_idle",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 17.0,
+"texture": ExtResource("6_hmtbw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_u5suf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_agpfv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_unis7")
+}, {
+"duration": 5.0,
+"texture": ExtResource("10_be212")
+}, {
+"duration": 2.0,
+"texture": ExtResource("11_hvum7")
+}, {
+"duration": 3.0,
+"texture": ExtResource("12_epqnr")
+}, {
+"duration": 2.0,
+"texture": ExtResource("13_rkwri")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_2twql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_hdmeq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_21qge")
+}],
+"loop": true,
+"name": &"UL_kick",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_8j33g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_s6hjn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_4kvyd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_1dqfi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_tll58")
+}, {
+"duration": 2.0,
+"texture": ExtResource("22_s1eyy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_pdvbw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_hqsdn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_v40bw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_vgkl8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_o1oin")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_l6gi1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_a1iss")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_7uku1")
+}, {
+"duration": 2.0,
+"texture": ExtResource("31_bukbo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_writ4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_2y4kw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_2hs4c")
+}],
+"loop": true,
+"name": &"UL_run",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 8.0,
+"texture": ExtResource("35_57asr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_6kid7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_p64sw")
+}, {
+"duration": 2.0,
+"texture": ExtResource("38_73nvk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_8xrtn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_xjpm7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_sdi86")
+}, {
+"duration": 2.0,
+"texture": ExtResource("42_pcejh")
+}, {
+"duration": 3.0,
+"texture": ExtResource("43_tqa7w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_7ug1k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_cderq")
+}, {
+"duration": 2.0,
+"texture": ExtResource("46_i7d2g")
+}, {
+"duration": 4.0,
+"texture": ExtResource("47_i5hyx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_0p2o2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_gpppx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("50_sbtb1")
+}],
+"loop": true,
+"name": &"UL_shoot",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 15.0,
+"texture": ExtResource("100_bwbf5")
+}, {
+"duration": 13.0,
+"texture": ExtResource("101_0qahr")
+}, {
+"duration": 19.0,
+"texture": ExtResource("102_r1rvg")
+}, {
+"duration": 9.0,
+"texture": ExtResource("103_ri2lf")
+}],
+"loop": true,
+"name": &"UR_idle",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 17.0,
+"texture": ExtResource("104_yk1k7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("105_gsp8m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("106_dolep")
+}, {
+"duration": 1.0,
+"texture": ExtResource("107_wd18s")
+}, {
+"duration": 5.0,
+"texture": ExtResource("108_6vey8")
+}, {
+"duration": 2.0,
+"texture": ExtResource("109_b4j20")
+}, {
+"duration": 3.0,
+"texture": ExtResource("110_6lwyx")
+}, {
+"duration": 2.0,
+"texture": ExtResource("111_0x535")
+}, {
+"duration": 1.0,
+"texture": ExtResource("112_5wxhv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("113_p35yc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("114_l6a4m")
+}],
+"loop": true,
+"name": &"UR_kick",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("115_3wyu1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("116_1v2wm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("117_6tfbt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("118_4x7kp")
+}, {
+"duration": 2.0,
+"texture": ExtResource("119_r1mjp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("120_c316r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("121_f3ngo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("122_e25ch")
+}, {
+"duration": 1.0,
+"texture": ExtResource("123_tf2dt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("124_643dk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("125_vdx17")
+}, {
+"duration": 1.0,
+"texture": ExtResource("126_ea7tw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("127_4h2vu")
+}, {
+"duration": 2.0,
+"texture": ExtResource("128_1kqcc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("129_mncw0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("130_rolni")
+}, {
+"duration": 1.0,
+"texture": ExtResource("131_wuhwn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("132_2vc10")
+}],
+"loop": true,
+"name": &"UR_run",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 8.0,
+"texture": ExtResource("133_hectp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("134_f0gtv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("135_3yhxo")
+}, {
+"duration": 2.0,
+"texture": ExtResource("136_2d48u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("137_arlke")
+}, {
+"duration": 1.0,
+"texture": ExtResource("138_xry6y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("139_alugu")
+}, {
+"duration": 2.0,
+"texture": ExtResource("140_omvwr")
+}, {
+"duration": 3.0,
+"texture": ExtResource("141_sa1er")
+}, {
+"duration": 1.0,
+"texture": ExtResource("142_2m6wc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("143_ot1mi")
+}, {
+"duration": 2.0,
+"texture": ExtResource("144_4eimp")
+}, {
+"duration": 4.0,
+"texture": ExtResource("145_l5cij")
+}, {
+"duration": 1.0,
+"texture": ExtResource("146_im6je")
+}, {
+"duration": 1.0,
+"texture": ExtResource("147_8t5m8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("148_rmdmk")
+}],
+"loop": true,
+"name": &"UR_shoot",
+"speed": 24.0
 }]
 
 [node name="Node2D" type="Node2D"]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-scale = Vector2(0.01, 0.01)
+y_sort_enabled = true
+material = SubResource("ShaderMaterial_xi5ed")
+position = Vector2(0, -10)
+scale = Vector2(1.2, 1.2)
 sprite_frames = SubResource("SpriteFrames_xr7ix")
-animation = &"BG_run"
-frame = 17
-frame_progress = 0.75797
+animation = &"DL_shoot"
+offset = Vector2(0, -250)
+script = ExtResource("149_dsvtv")
+animation_name_list = Array[String](["idle", "kick", "run", "shoot"])
+
+[node name="unit_ui" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("149_y1j4o")

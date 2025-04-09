@@ -12,11 +12,11 @@ var is_dezooming = false
 var is_moving = false
 
 # Min and max zoom levels
-var min_zoom = Vector2(1.4, 1.4)  # Zoomed in
-var max_zoom = Vector2(5, 5)   # Default view (prevent zooming out beyond this)
+var min_zoom = Vector2(0.18, 0.18)  # Zoomed out
+var max_zoom = Vector2(1, 1)   # 2oomed in
 var zoom_limit = Vector2(1, 1)
 var zoom_margin = 0.001
-var zoom_step = 0.2
+var zoom_step = 0.05
 var move_origin = Vector2(540, 300)
 var move_limit = Vector2(0,0)
 var move_margin = 0.5

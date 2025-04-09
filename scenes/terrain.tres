@@ -1,33 +1,49 @@
-[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://b8d0tvj5c73e4"]
+[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://b8d0tvj5c73e4"]
 
-[ext_resource type="Texture2D" uid="uid://c5xfjnqn7fa73" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Grass.png" id="1_6goey"]
-[ext_resource type="Texture2D" uid="uid://dh4mrxeasribh" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Concrete.png" id="1_yi4jk"]
-[ext_resource type="Texture2D" uid="uid://br8flid3dtrvk" path="res://imagese/tiles/isometric tileset/Isometric Tile Set/Intersection 3 Way 2.png" id="3_q12cg"]
+[ext_resource type="Texture2D" uid="uid://6t50oowyfccn" path="res://imagese/tiles/sand/T_SAND_01_A.PNG" id="1_10mpq"]
+[ext_resource type="Texture2D" uid="uid://umkaqhnmvpow" path="res://imagese/tiles/sand/W_SAND_01_A.png" id="2_fgyho"]
+[ext_resource type="Texture2D" uid="uid://b8nlgd2sk2bsh" path="res://imagese/tiles/sand/T_SAND_01_B.PNG" id="2_of04r"]
+[ext_resource type="Texture2D" uid="uid://733n6x8ue42m" path="res://imagese/tiles/sand/W_SAND_01_B.png" id="3_5qt8w"]
+[ext_resource type="Texture2D" uid="uid://cmd4thkgb4ho7" path="res://imagese/tiles/sand/T_SAND_05_A.PNG" id="3_jggk5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hdu0d"]
-texture = ExtResource("1_yi4jk")
-texture_region_size = Vector2i(64, 44)
+texture = ExtResource("1_10mpq")
+texture_region_size = Vector2i(640, 440)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, -6)
+0:0/0/texture_origin = Vector2i(0, -60)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nlanx"]
+texture = ExtResource("2_fgyho")
+texture_region_size = Vector2i(640, 600)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 17)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tmddv"]
+texture = ExtResource("3_5qt8w")
+texture_region_size = Vector2i(640, 600)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 17)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d55dh"]
-texture = ExtResource("1_6goey")
-texture_region_size = Vector2i(64, 44)
+texture = ExtResource("2_of04r")
+texture_region_size = Vector2i(640, 440)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, -6)
+0:0/0/texture_origin = Vector2i(0, -60)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pv76c"]
-texture = ExtResource("3_q12cg")
-texture_region_size = Vector2i(64, 44)
+texture = ExtResource("3_jggk5")
+texture_region_size = Vector2i(640, 440)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, -6)
+0:0/0/texture_origin = Vector2i(0, -60)
 
 [resource]
 tile_shape = 1
 tile_layout = 5
-tile_size = Vector2i(64, 32)
+tile_size = Vector2i(640, 320)
 custom_data_layer_0/name = "Blocks"
 custom_data_layer_0/type = 2
 sources/66 = SubResource("TileSetAtlasSource_d55dh")
 sources/67 = SubResource("TileSetAtlasSource_pv76c")
 sources/0 = SubResource("TileSetAtlasSource_hdu0d")
+sources/1 = SubResource("TileSetAtlasSource_nlanx")
+sources/2 = SubResource("TileSetAtlasSource_tmddv")

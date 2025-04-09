@@ -43,6 +43,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_j7xro"]
 script = ExtResource("2_twktv")
@@ -54,7 +56,7 @@ max_range = 8
 range_list = []
 sight = true
 hit_zone = []
-number_of_target = 1
+number_of_target = 2
 damage = 8
 prob = 0.9
 armor_penetration = -8
@@ -74,6 +76,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = "shoot"
+animation_frames_to_wait = 17
 
 [sub_resource type="Resource" id="Resource_uhaki"]
 script = ExtResource("2_twktv")
@@ -105,6 +109,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_xuvhm"]
 script = ExtResource("2_twktv")
@@ -136,6 +142,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_tbcku"]
 script = ExtResource("2_twktv")
@@ -167,6 +175,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = "kick"
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_aw08y"]
 script = ExtResource("2_twktv")
@@ -198,6 +208,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_ykwji"]
 script = ExtResource("2_twktv")
@@ -228,6 +240,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_55j8b"]
 script = ExtResource("4_ksji5")
@@ -279,6 +293,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_30ang"]
 script = ExtResource("2_twktv")
@@ -310,6 +326,8 @@ create_trap = "Invisible"
 trap_duration = 2
 trap_damage = 10
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [sub_resource type="Resource" id="Resource_b3yxp"]
 script = ExtResource("4_ksji5")
@@ -351,6 +369,8 @@ create_trap = ""
 trap_duration = 0
 trap_damage = 0
 trap_statuses = Array[ExtResource("4_ksji5")]([])
+animation_name = ""
+animation_frames_to_wait = 0
 
 [node name="SkillDatabase" type="Node"]
 script = ExtResource("1_bnr7k")

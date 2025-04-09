@@ -31,3 +31,6 @@ class_name SkillDefinition
 @export var trap_duration: int
 @export var trap_damage: int
 @export var trap_statuses: Array[Status]
+@export_group("Visuals")
+@export var animation_name: String
+@export var animation_frames_to_wait: int

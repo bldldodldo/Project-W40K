@@ -100,8 +100,11 @@ func create_combatant(definition: CombatantDefinition, override_name = ""):
 		"number_attacks_max" = definition.number_attacks_max,
 		"number_attacks" = definition.number_attacks_max,
 		"icon" = definition.icon,
+		"orientation" = definition.orientation,
+		"animation_played" = definition.animation_played,
 		"animation_resource" = definition.animation_resource,
 		"sprite_offset" = definition.sprite_offset,
+		"sprite_offsets" = definition.sprite_offsets,
 		"movement_max" = definition.movement,
 		"movement" = definition.movement,
 		"strength" = definition.strength,
@@ -146,14 +149,14 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	#_area_2D.mouse_out_of_it.connect(controller._on_sprite_mouse_exited)
 	add_child(combatant_scene)
 	combatant_scene.position = Vector2(tile_map.map_to_local(position)) + combatant.sprite_offset
-	var anim_player = combatant_scene.get_node("AnimationPlayer") # Store the reference to the AnimationPlayer for controlling animations
 	var animated_sprite2D = combatant_scene.get_node("AnimatedSprite2D")
-	combatant["anim_player"] = anim_player
-	animated_sprite2D.play("BG_run")
 	if side == 1:
-		(combatant_scene.get_node("Sprite2D")).scale.x = -1
+		combatant["orientation"] = "UL"
+	else: 
+		combatant["orientation"] = "DL"
+	animated_sprite2D.play(combatant["orientation"] + "_" + combatant["animation_played"])
 	create_hp_display(combatant_scene, combatant)
-	combatant_scene.z_index = 2
+	combatant_scene.z_index = 0
 	emit_signal("combatant_added", combatant)
 	print("New combatant added : ", combatant.name)
 
@@ -231,6 +234,63 @@ func update_hp_display(combatant: Dictionary):
 	hp_bar.max_value = max_hp
 	# Update the ProgressBar's value to match the current HP
 	hp_bar.value = current_hp
+
+const grid_tex = preload("res://imagese/grid_marker.png")
+
+func ui_set_tile_marker(comb_name, pos, texture = grid_tex, color = Color(1,1,1,1)):
+	var _ui_marker_node = get_node_or_null("/root/Game/Terrain/VisualCombat/" + comb_name + "_marker_shadow")
+	if not _ui_marker_node:
+		_ui_marker_node = Node2D.new()
+		_ui_marker_node.name = comb_name + "_marker_shadow"
+		var _script = load("res://scenes/units/unit_ui.gd")
+		_ui_marker_node.set_script(_script)
+		add_child(_ui_marker_node)
+		_ui_marker_node.position = pos
+	_ui_marker_node.add_texture(texture, pos, color)
+	
+
+func ui_set_tile(comb_name, ui_type, number, pos, texture = grid_tex, color = Color(1,1,1,1)):
+	var _ui_marker_node = get_node_or_null("/root/Game/Terrain/VisualCombat/" + comb_name + "_" + ui_type + "_" + str(number))
+	if not _ui_marker_node:
+		_ui_marker_node = Node2D.new()
+		_ui_marker_node.name = comb_name + "_" + ui_type + "_" + str(number)
+		var _script = load("res://scenes/units/unit_ui.gd")
+		_ui_marker_node.set_script(_script)
+		add_child(_ui_marker_node)
+		_ui_marker_node.position = pos
+	_ui_marker_node.set_visible(true)
+	_ui_marker_node.add_texture(texture, pos, color)
+
+func ui_set_line(comb_name, ui_type, number, pos1, pos2, color = Color(1,1,1,1)):
+	var _ui_line_node = get_node_or_null("/root/Game/Terrain/VisualCombat/" + comb_name + "_" + ui_type + "_" + str(number))
+	if not _ui_line_node:
+		_ui_line_node = Node2D.new()
+		_ui_line_node.name = comb_name + "_" + ui_type + "_" + str(number)
+		var _script = load("res://scenes/units/unit_ui_line.gd")
+		_ui_line_node.set_script(_script)
+		add_child(_ui_line_node)
+		_ui_line_node.position = pos1
+	_ui_line_node.set_visible(true)
+	_ui_line_node.add_line(pos1, pos2, color)
+
+
+func erase_ui_markers(comb_name, ui_type, much = 25):
+	var _ui_marker_node
+	for i in range(much):
+		_ui_marker_node = get_node_or_null("/root/Game/Terrain/VisualCombat/" + comb_name + "_" + ui_type + "_" + str(i))
+		if _ui_marker_node:
+			_ui_marker_node.set_visible(false)
+
+func erase_ui_markers_named(_name):
+	var _ui_marker_node = get_node_or_null("/root/Game/Terrain/VisualCombat/" + _name + "_marker_shadow")
+	if _ui_marker_node:
+		_ui_marker_node.set_visible(false)
+
+
+
+
+
+
 
 
 func get_distance(attacker: Dictionary, target: Dictionary):

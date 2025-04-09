@@ -18,12 +18,14 @@ signal add_temporary_trap(tile_position, duration, caster_name, damage, caster_s
 var controlled_combatant_exists = false
 @export var controlled_node: Node2D 
 @export var combat: Combat
+@export var Terrain: Node2D
 @export var controlled_combatant: Dictionary
 @export var UI_node: Control
 
 var tile_map : TileMapLayer
 var obstacle_map : TileMapLayer
 var trap_map : TileMapLayer
+var terrain_ui : Node2D
 var phase_ended = false
 var move_ended = false
 var attack_ended = false
@@ -38,6 +40,8 @@ var _selected_skill: Object
 
 var is_drawing_path = false #used to handle the custom path feature
 var drawn_path = PackedVector2Array() #used to store the custom path
+@export var grid_marker_offset: Vector2 = Vector2(325, 160)
+@export var line_marker_offset: Vector2 = Vector2(200, 0)
 
 
 
@@ -250,10 +254,32 @@ func _ready():
 		var tile_blocking = tile_map.get_cell_tile_data(tile)
 		for block in tile_blocking.get_custom_data("Blocks"):
 			_blocking_spaces[block].append(tile)
-	
-func combat_start():
-	combat.phase = 3
+	# Preload animations for all combatants
+
+
+func preload_animations():
+	var dir_list = ["UL", "UR", "DL"] #["UL_", "UR_", "DL_", "DR_"]
+	for comb in combat.combatants:
+		var animated_sprite = get_node("/root/Game/Terrain/VisualCombat/" + comb.name + "/AnimatedSprite2D")
+		if animated_sprite:
+			var animations = animated_sprite.animation_name_list
+			for dir in dir_list:
+				for anim in animations:
+					print("Playing : ", dir + anim)
+					comb["orientation"] = dir
+					comb["animation_played"] = anim
+					animated_sprite.position += comb["sprite_offsets"][comb["orientation"] + "_" + comb["animation_played"]]
+					animated_sprite.play(dir + "_" + anim)
+					await animated_sprite.animation_looped
+					animated_sprite.stop()
+					animated_sprite.position -= comb["sprite_offsets"][comb["orientation"] + "_" + comb["animation_played"]]
+					
 	new_phase_init()
+	print("fin de preload !")
+
+func combat_start():
+	preload_animations()
+	combat.phase = 3
 
 func new_phase_init():
 	if combat.phase == 3:
@@ -268,6 +294,7 @@ func new_phase_init():
 		comb.next_action_type = "None"
 		comb.next_move = []
 		comb.selected_path = []
+		change_animation_unit(comb,"idle")
 	queue_redraw()
 	signal_end_phase.emit()
 	set_computer_actions()
@@ -346,7 +373,7 @@ func _process(delta):
 		if comb.arrived == false:
 			var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
 			_comb_visual_node.position += _comb_visual_node.position.direction_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) * delta * comb.move_speed
-			if _comb_visual_node.position.distance_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) < 5 :
+			if _comb_visual_node.position.distance_to(tile_map.map_to_local(comb.position) + comb.sprite_offset) < 50 :
 				if comb.selected_path_id >= comb.selected_path.size() or comb.movement <= 0:
 					compute_finish_move(comb, _comb_visual_node)
 				else:
@@ -355,9 +382,11 @@ func _process(delta):
 					var _next_position_comb = get_combatant_at_position(new_position)
 					var next_tile_cost = get_tile_cost(new_position, comb)
 					if next_tile_cost <= comb.movement and (_next_position_comb == null or (_next_position_comb.is_transparent and not _next_position_comb.arrived and _next_position_comb.selected_path.size() > _next_position_comb.selected_path_id)): #_next_position_comb.movement > 0
+						change_orientation_unit(comb, comb.position, new_position)
 						comb.position = tile_map.local_to_map(_next_position)
 						comb.selected_path_id += 1
 						comb.movement -= next_tile_cost
+						change_animation_unit(comb, "run")
 					else:
 						compute_finish_move(comb, _comb_visual_node)
 					for trap in combat.temporary_traps:
@@ -429,7 +458,7 @@ func verifying_spelled():
 			_verifying_spelled = false
 	return _verifying_spelled
 
-func get_vec_dir(position1, position2):
+func direction_compute(position1, position2):
 	var _diff = position2 - position1
 	if _diff.x == 0 and _diff.y == 0:
 		return "self"
@@ -449,6 +478,22 @@ func get_vec_dir(position1, position2):
 		return "top_right"
 	elif _diff.x <= 0 and _diff.y <= 0:
 		return "top_left"
+
+
+func orientation_compute(position1, position2):
+	var _diff = position2 - position1
+	if _diff.x == 0 and _diff.y == 0:
+		return "self"
+	elif _diff.x == 0 and _diff.y >= 0:
+		return "DL"
+	elif _diff.x == 0 and _diff.y <= 0:
+		return "UR"
+	elif _diff.x >= 0 and _diff.y == 0:
+		return "DR"
+	elif _diff.x <= 0 and _diff.y == 0:
+		return "UL"
+	else:
+		return ""
 
 const tiles_to_check = [
 	Vector2i.RIGHT,
@@ -558,7 +603,9 @@ func move_combatant(comb: Dictionary):
 
 func attack_combatant(comb: Dictionary):
 	var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+	change_animation_unit(comb, _skill_used.animation_name)
 	for _tile in comb.selected_targets:
+		change_orientation_unit(comb, comb.position, _tile)
 		var targeted_comb = get_combatant_at_position(_tile)
 		if targeted_comb == null:
 			print(comb.name, " hits ", _tile, " but it's empty")
@@ -615,7 +662,7 @@ func spell_combatant(comb: Dictionary):
 
 func hit_zone_compute(comb, _tile, _suppl_offset):
 	var _new_tile: Vector2i
-	var _dir = get_vec_dir(comb.position, _tile)
+	var _dir = direction_compute(comb.position, _tile)
 	if _dir == "self":
 		_new_tile.x = _tile.x + _suppl_offset.x
 		_new_tile.y = _tile.y + _suppl_offset.y
@@ -650,7 +697,7 @@ func hit_zone_compute(comb, _tile, _suppl_offset):
 
 func dash_coord_compute(comb, targeted_tile, coord):
 	var _new_tile: Vector2i
-	var _dir = get_vec_dir(comb.position, targeted_tile)
+	var _dir = direction_compute(comb.position, targeted_tile)
 	if _dir == "self":
 		print("Error : this spell should not be computed on itself")
 	elif _dir == "right":
@@ -686,7 +733,7 @@ func dash_coord_compute(comb, targeted_tile, coord):
 
 func push_coord_compute(comb, targeted_tile, coord):
 	var _new_tile: Vector2i
-	var _dir = get_vec_dir(comb.position, targeted_tile)
+	var _dir = direction_compute(comb.position, targeted_tile)
 	if _dir == "self":
 		print("Error : this spell should not be computed on itself")
 	elif _dir == "right":
@@ -1042,18 +1089,20 @@ func get_tile_cost_at_point(point, comb):
 	return get_tile_cost(tile, comb)
 
 func apply_outline(comb, color: Color, size: float = 4.0):
-	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
-	var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
-	if not sprite.material:
-		sprite.material = ShaderMaterial.new()
-	var material = sprite.material as ShaderMaterial
-	material.shader = preload("res://shaders/character_outline.gdshader")  # Path to your shader
-	material.set_shader_parameter("color", color)
-	material.set_shader_parameter("thickness", size)
+	pass
+	#var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
+	#var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
+	#if not sprite.material:
+	#	sprite.material = ShaderMaterial.new()
+	#var material = sprite.material as ShaderMaterial
+	#material.shader = preload("res://shaders/character_outline.gdshader")  # Path to your shader
+	#material.set_shader_parameter("color", color)
+	#material.set_shader_parameter("thickness", size)
 
 func remove_outline(comb):
-	var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
-	var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
+	pass
+	#var _comb_visual_node = get_node("/root/Game/Terrain/VisualCombat/" + comb.name)
+	#var sprite = get_node(String(_comb_visual_node.get_path()) + "/Sprite2D")
 	#if sprite.material:
 		#sprite.material = null  # Remove the ShaderMaterial
 
@@ -1068,10 +1117,32 @@ func end_button_color_switch(color_to_use: Color):
 		shader_material.set_shader_parameter("color_factor", 1.0)
 	else:
 		print("EndPhaseButton does not have a ShaderMaterial.")	
+		
+func change_animation_unit(comb, animation_to_play = ""):
+	var animated_sprite2D = get_node("/root/Game/Terrain/VisualCombat/" + comb.name + "/AnimatedSprite2D")
+	animated_sprite2D.position -= comb["sprite_offsets"][comb["orientation"] + "_" + comb["animation_played"]]
+	if animation_to_play == "":
+		animated_sprite2D.play(comb["orientation"] + "_" + comb["animation_played"])
+	else:
+		comb["animation_played"] = animation_to_play
+		animated_sprite2D.play(comb["orientation"] + "_" + animation_to_play)
+	animated_sprite2D.position += comb["sprite_offsets"][comb["orientation"] + "_" + comb["animation_played"]]
+
+func change_orientation_unit(comb, _last_position, _next_position):
+	var animated_sprite2D = get_node("/root/Game/Terrain/VisualCombat/" + comb.name + "/AnimatedSprite2D")
+	var new_orientation = orientation_compute(Vector2i(_last_position), Vector2i(_next_position))
+	var current_frame = animated_sprite2D.get_frame()
+	animated_sprite2D.position -= comb["sprite_offsets"][comb["orientation"] + "_" + comb["animation_played"]]
+	if new_orientation != "":
+		comb["orientation"] = new_orientation
+		animated_sprite2D.play(new_orientation + "_" + comb["animation_played"])
+		animated_sprite2D.set_frame(current_frame)
+		animated_sprite2D.play()
+	animated_sprite2D.position += comb["sprite_offsets"][comb["orientation"] + "_" + comb["animation_played"]]
 
 
 func set_computer_actions():
-	for comb in combat.combatants:
+	for comb in combat.combatants:	
 		if comb.side == 1:
 			if combat.phase == 1:
 				set_computer_unit_movement(comb)
@@ -1132,7 +1203,7 @@ func set_computer_unit_spell(comb):
 						var _random_value = randf()
 						if _random_value > 0.99:
 							comb.selected_targets.append(_tile)
-							
+		
 func set_computer_unit_attack(comb):
 	for _skill_key in comb.skill_list:
 		var _skill_used = SkillDatabase.skills[(_skill_key)]
@@ -1155,23 +1226,45 @@ func set_computer_unit_attack(comb):
 						if _random_value > 0.99:
 							comb.selected_targets.append(_tile)
 
+
+
+							
+
+
+
+
 func _draw():
+	for comb in combat.combatants:
+		combat.erase_ui_markers(comb.name, "path")
+		combat.erase_ui_markers(comb.name, "range", 200)
+		combat.erase_ui_markers(comb.name, "suppl_target_range", 25)
+		combat.erase_ui_markers(comb.name, "target", 10)
+		combat.erase_ui_markers(comb.name, "suppl_target", 50)
+		combat.erase_ui_markers(comb.name, "target_temp", 10)
+		combat.erase_ui_markers(comb.name, "suppl_target_temp", 25)
+		combat.erase_ui_markers(comb.name, "target_line", 10)
+		combat.erase_ui_markers(comb.name, "attack")
+		combat.erase_ui_markers(comb.name, "movement_line_temp", 25)
+		combat.erase_ui_markers(comb.name, "movement_line", 25)
+		combat.erase_ui_markers(comb.name, "movement_destination", 1)
+	combat.erase_ui_markers_named("mouse_target")
+	
 	if is_drawing_path and drawn_path.size() > 0:
 		# Draw the path as a series of connected lines
 		var last_position = tile_map.map_to_local(controlled_combatant.position)  # Start at the combatant's position
 		for i in range(drawn_path.size()):
 			if i <= controlled_combatant.movement:
 				var local_position = tile_map.map_to_local(drawn_path[i])
-				draw_line(last_position, local_position, Color(0, 0.8, 0, 1), 2)
+				combat.ui_set_line(controlled_combatant.name, "movement_line_temp", i, last_position, local_position, Color(0, 0.8, 0, 1))
 				last_position = local_position
 			elif i == controlled_combatant.movement+1:
 				var local_position = tile_map.map_to_local(drawn_path[i])
-				draw_line(last_position, local_position, Color(0.5, 0, 0, 1), 2)
+				combat.ui_set_line(controlled_combatant.name, "movement_line_temp", i, last_position, local_position, Color(0.5, 0, 0, 1))
 				last_position = local_position
 
 	for comb in combat.combatants:		
 		if comb.side == 0 or (comb.side == 1 and not has_invisibility(comb)):
-			draw_texture(grid_tex, tile_map.map_to_local(comb.position) - Vector2(32, 16), Color(0, 0, 0, 0.3))
+			combat.ui_set_tile_marker(comb.name, tile_map.map_to_local(comb.position) - grid_marker_offset, grid_tex, Color(0,0,0,0.3))
 		if comb.side == 0:
 			if comb.arrived and _skill_selected == false and controlled_combatant == comb and comb.next_action_type == "None" and not is_drawing_path:
 				var path_length = comb.movement_max
@@ -1181,70 +1274,81 @@ func _draw():
 					if path_length > 0:
 						if i <= comb.movement and movement_astargrid.get_point_weight_scale(_path[i]) < 1000:
 							draw_color = Color(0, 1, 0.2, 1)
-						draw_texture(grid_tex, point - Vector2(32, 16), draw_color)
+						combat.ui_set_tile(comb.name, "path", i, point - grid_marker_offset, grid_tex, draw_color)	
 					if i > 0:
 						path_length -= get_tile_cost_at_point(point, comb)
 				if _mouse_target_position != null:
-					draw_texture(grid_tex, _mouse_target_position - Vector2(32, 16), Color(0.7,0,0,1))
-				#if _blocked_target_position != null:
-					#draw_texture(grid_tex, _blocked_target_position - Vector2(32, 22))
-			#elif comb.next_action_type == "Attack":
-				#if _selected_skill
+					combat.ui_set_tile_marker("mouse_target", _mouse_target_position - grid_marker_offset, grid_tex, Color(0.7,0,0,1))
 				
 			elif comb.arrived and _skill_selected and controlled_combatant == comb:
 				var mouse_position = get_global_mouse_position()
 				var mouse_position_i = tile_map.local_to_map(mouse_position)
-				draw_texture(grid_tex, tile_map.map_to_local(mouse_position_i) - Vector2(32, 16), Color(0, 1, 1, 1))
+				combat.ui_set_tile_marker("mouse_target", tile_map.map_to_local(mouse_position_i) - grid_marker_offset, grid_tex, Color(0, 1, 1, 1))
 				var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
 				if is_in_range(comb.position, mouse_position_i, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
+					var _i = 0 
 					for _suppl_offset in _skill_used.hit_zone:
 						var _new_tile = hit_zone_compute(comb, mouse_position_i, _suppl_offset)
-						draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 1, 1, 1))
+						if obstacle_map.get_cell_source_id(_new_tile) == -1:
+							combat.ui_set_tile(comb.name, "suppl_target_range", _i, tile_map.map_to_local(_new_tile) - grid_marker_offset, grid_tex, Color(0, 1, 1, 1))
+							_i += 1
 				if _selected_skill.range_type == "Range":
+					var _i = 0
 					for x in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
 						for y in range(-(_selected_skill.max_range+1), _selected_skill.max_range+1):
 							var _tile = comb.position + Vector2i(x,y)
 							if is_in_range(comb.position, _tile, _selected_skill.min_range, _selected_skill.max_range, _selected_skill.sight):
-								draw_texture(grid_tex, tile_map.map_to_local(_tile) - Vector2(32, 16), Color(0, 0.7, 0.7, 1))
+								combat.ui_set_tile(comb.name, "range", _i, tile_map.map_to_local(_tile) - grid_marker_offset, grid_tex, Color(0, 0.7, 0.7, 1))
+								_i += 1
+					var _j = 0
 					for target in comb.selected_targets:
-						draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 0.5, 1))
-						#var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+						combat.ui_set_tile(comb.name, "target_temp", _j, tile_map.map_to_local(target) - grid_marker_offset, grid_tex, Color(0, 0.5, 0.5, 1))
+						_j += 1
+						var _k = 0
 						for _suppl_offset in _skill_used.hit_zone:
 							var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-							draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 0.5, 1))
-					#for tile in _selected_skill.
+							if obstacle_map.get_cell_source_id(_new_tile) == -1:
+								combat.ui_set_tile(comb.name, "suppl_target_temp", _k, tile_map.map_to_local(_new_tile) - grid_marker_offset, grid_tex, Color(0, 0.5, 0.5, 1))
+								_k += 1
 			if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)) and _skill_selected == false:
 				if comb.next_action_type == "Move":
 					if (not phase_ended) and comb.selected_path != PackedVector2Array():
 						var last_position = tile_map.map_to_local(comb.position)  # Start at the combatant's position
 						var draw_color = Color(0, 0.8, 0, 1)
 						for i in range(1, comb.selected_path.size()):
-							#var point = tile_map.map_to_local(comb.selected_path[i])
 							var local_position = tile_map.map_to_local(comb.selected_path[i])
-							draw_line(last_position, local_position, Color(0, 0.8, 0, 1), 2)
+							combat.ui_set_line(comb.name, "movement_line", i, last_position, local_position, Color(0, 0.8, 0, 1))
 							last_position = local_position
-						draw_texture(grid_tex, tile_map.map_to_local(comb.selected_path[-1]) - Vector2(32, 16), draw_color)
-							#if i > 0:
-								#path_length -= get_tile_cost_at_point(point, comb)
+						combat.ui_set_tile(comb.name, "movement_destination", 0, tile_map.map_to_local(comb.selected_path[-1]) - grid_marker_offset, grid_tex, Color(0, 0.8, 0, 1))
 				elif comb.next_action_type == "Attack":
 					if (not phase_ended):
+						var _i = 0
 						for target in comb.selected_targets:
-							draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(1, 0.5, 0, 1))
-							draw_line(tile_map.map_to_local(comb.position), tile_map.map_to_local(target), Color(1, 0, 0, 1), 2)
+							combat.ui_set_tile(comb.name, "target", _i, tile_map.map_to_local(target) - grid_marker_offset, grid_tex, Color(1, 0.5, 0, 1))
+							combat.ui_set_line(comb.name, "target_line", _i, tile_map.map_to_local(comb.position), tile_map.map_to_local(target), Color(1, 0, 0, 1))
+							_i += 1
 							var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+							var _j = 0
 							for _suppl_offset in _skill_used.hit_zone:
 								var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-								draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(1, 0.5, 0, 1))
+								if obstacle_map.get_cell_source_id(_new_tile) == -1:
+									combat.ui_set_tile(comb.name, "suppl_target", _j, tile_map.map_to_local(_new_tile) - grid_marker_offset, grid_tex, Color(1, 0.5, 0, 1))
+									_j += 1
 				elif comb.next_action_type == "Spell":
 					if (not phase_ended):
+						var _i = 0
 						for target in comb.selected_targets:
-							draw_texture(grid_tex, tile_map.map_to_local(target) - Vector2(32, 16), Color(0, 0.5, 1, 1))
-							draw_line(tile_map.map_to_local(comb.position), tile_map.map_to_local(target), Color(0, 0, 1, 1), 2)
+							combat.ui_set_tile(comb.name, "target", _i, tile_map.map_to_local(target) - grid_marker_offset, grid_tex, Color(1, 0.5, 0, 1))
+							combat.ui_set_line(comb.name, "target_line", _i, tile_map.map_to_local(comb.position), tile_map.map_to_local(target), Color(1, 0, 0, 1))
+							_i += 1
 							var _skill_used = SkillDatabase.skills[(comb.selected_skill_id)]
+							var _j = 0
 							for _suppl_offset in _skill_used.hit_zone:
 								var _new_tile = hit_zone_compute(comb, target, _suppl_offset)
-								draw_texture(grid_tex, tile_map.map_to_local(_new_tile) - Vector2(32, 16), Color(0, 0.5, 1, 1))
-				
+								if obstacle_map.get_cell_source_id(_new_tile) == -1:
+									combat.ui_set_tile(comb.name, "suppl_target", _j, tile_map.map_to_local(_new_tile) - grid_marker_offset, grid_tex, Color(1, 0.5, 0, 1))
+									_j += 1
+								
 ##################################################### OUTLINE DRAWING ####################################################
 			if comb.next_action_type != "None" and ((controlled_combatant_exists and comb != controlled_combatant) or (not controlled_combatant_exists)):
 				if comb.mouse_over:
@@ -1262,3 +1366,7 @@ func _draw():
 				apply_outline(comb, Color(1,0,0,1),1)
 			else:
 				remove_outline(comb)
+
+
+func _on_ui_end_phase() -> void:
+	pass # Replace with function body.
